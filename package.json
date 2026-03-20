@@ -1,0 +1,27 @@
+{
+  "name": "hexarot",
+  "version": "1.0.0",
+  "description": "HexaRot — A visual cipher combining colour-based symbol encoding with geometric block rotations. Web application and REST API built with NestJS, Vue.js 3 and TypeScript.",
+  "private": true,
+  "scripts": {
+    "prepare": "husky"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MarvinLeRouge/HexaRot.git"
+  },
+  "author": "Jean Ceugniet",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MarvinLeRouge/HexaRot/issues"
+  },
+  "homepage": "https://github.com/MarvinLeRouge/HexaRot#readme",
+  "devDependencies": {
+    "husky": "^9.1.7",
+    "lint-staged": "^16.4.0"
+  },
+  "lint-staged": {
+    "backend/src/**/*.ts": "backend/node_modules/.bin/eslint --fix --flag unstable_config_lookup_from_file",
+    "frontend/src/**/*.{ts,vue}": "frontend/node_modules/.bin/eslint --fix --no-warn-ignored"
+  }
+}

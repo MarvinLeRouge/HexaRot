@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Alphabet {
+  id            Int      @id @default(autoincrement())
+  name          String   @unique
+  symbolWidth   Int
+  symbolHeight  Int
+  symbols       Symbol[]
+}
+
+model Symbol {
+  id         Int         @id @default(autoincrement())
+  char       String
+  variant    String      @default("")
+  alphabetId Int
+  alphabet   Alphabet    @relation(fields: [alphabetId], references: [id])
+  colorCases ColorCase[]
+
+  @@unique([char, variant, alphabetId])
+}
+
+model ColorCase {
+  id       Int    @id @default(autoincrement())
+  x        Int
+  y        Int
+  color    String
+  symbolId Int
+  symbol   Symbol @relation(fields: [symbolId], references: [id])
+
+  @@unique([x, y, symbolId])
+}

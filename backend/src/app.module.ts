@@ -11,7 +11,16 @@ import { ValidationModule } from './validation/validation.module';
 import { ApiModule } from './api/api.module';
 
 @Module({
-  imports: [AlphabetModule, CipherModule, RotationModule, KeyModule, ReadingOrderModule, RendererModule, ValidationModule, ApiModule],
+  imports: [
+    AlphabetModule,
+    CipherModule,
+    RotationModule,
+    KeyModule,
+    ReadingOrderModule,
+    RendererModule,
+    ValidationModule,
+    ApiModule,
+  ],
   controllers: [AppController],
   providers: [AppService],
 })

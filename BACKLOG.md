@@ -205,7 +205,7 @@ checked. The workflow must use caching to keep run times reasonable.
 - **type:** ci
 - **id:** CI-002
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** infra
 - **complexity:** XL

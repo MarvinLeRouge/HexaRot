@@ -251,7 +251,7 @@ Sync logic:
 - **type:** feat
 - **id:** FEAT-001
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** critical
 - **domain:** alphabet
 - **complexity:** M
@@ -1099,7 +1099,7 @@ translation file and implementing the language switcher in the UI.
 - **type:** feat
 - **id:** FEAT-021
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** api
 - **complexity:** L

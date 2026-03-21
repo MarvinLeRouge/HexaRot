@@ -35,10 +35,10 @@ function parseBacklog(content) {
   const errors = [];
   const warnings = [];
 
-  const blocks = content.split('<!-- ITEM:BEGIN -->').slice(1);
+  const blocks = content.split(/<!-- ITEM:BEGIN -->\n/).slice(1);
 
   for (const block of blocks) {
-    const raw = block.split('<!-- ITEM:END -->')[0].trim();
+    const raw = block.split(/\n<!-- ITEM:END -->/)[0].trim();
     const item = {};
     const itemErrors = [];
 

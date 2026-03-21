@@ -44,6 +44,7 @@ function parseBacklog(content) {
 
     const headingMatch = raw.match(/^###\s+\[([A-Z]+-\d+)\]/m);
     if (!headingMatch) {
+      console.error('DEBUG — raw block start (200 chars):', JSON.stringify(raw.substring(0, 200)));
       errors.push('Found an item block with no valid ID in heading — aborting.');
       continue;
     }

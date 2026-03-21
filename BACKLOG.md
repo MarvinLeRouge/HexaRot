@@ -251,7 +251,7 @@ Sync logic:
 - **type:** feat
 - **id:** FEAT-001
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** alphabet
 - **complexity:** M
@@ -286,7 +286,7 @@ value from the Hexahue palette.
 - **type:** feat
 - **id:** FEAT-002
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** cipher
 - **complexity:** S
@@ -324,7 +324,7 @@ where `PreprocessResult` contains the processed string and an array of unknown c
 - **type:** feat
 - **id:** FEAT-003
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** high
 - **domain:** validation
 - **complexity:** S
@@ -362,7 +362,7 @@ The validator does not block execution — it informs.
 - **type:** feat
 - **id:** FEAT-004
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** key
 - **complexity:** M
@@ -401,7 +401,7 @@ The codec must expose:
 - **type:** feat
 - **id:** FEAT-005
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** high
 - **domain:** reading-order
 - **complexity:** M
@@ -439,7 +439,7 @@ where "end" is.
 - **type:** feat
 - **id:** FEAT-006
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** cipher
 - **complexity:** L
@@ -476,7 +476,7 @@ The output is a typed 2D grid of colour cases, ready for the rotation step.
 - **type:** feat
 - **id:** FEAT-007
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** rotation
 - **complexity:** L
@@ -515,7 +515,7 @@ The engine must also support the inverse operation (for decoding).
 - **type:** feat
 - **id:** FEAT-008
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** high
 - **domain:** cipher
 - **complexity:** S
@@ -549,7 +549,7 @@ implement `encodeHeader` and `decodeHeader` functions.
 - **type:** feat
 - **id:** FEAT-009
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** renderer
 - **complexity:** M
@@ -588,7 +588,7 @@ The header row is rendered above the grid. The Hexahue standard colour palette i
 - **type:** feat
 - **id:** FEAT-010
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** renderer
 - **complexity:** M
@@ -624,7 +624,7 @@ additional assets. Case sizes follow the same pixel values as the PNG renderer.
 - **type:** feat
 - **id:** FEAT-011
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** api
 - **complexity:** M
@@ -672,7 +672,7 @@ Response:
 - **type:** feat
 - **id:** FEAT-012
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** api
 - **complexity:** M
@@ -711,7 +711,7 @@ Response:
 - **type:** feat
 - **id:** FEAT-013
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** medium
 - **domain:** api
 - **complexity:** S
@@ -744,7 +744,7 @@ decoded parameters as a structured object.
 - **type:** feat
 - **id:** FEAT-014
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** frontend
 - **complexity:** L
@@ -785,7 +785,7 @@ vue-i18n keys (English only in V1, keys must be structured for future French add
 - **type:** feat
 - **id:** FEAT-015
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** critical
 - **domain:** frontend
 - **complexity:** M
@@ -819,7 +819,7 @@ All UI strings are routed through vue-i18n keys.
 - **type:** feat
 - **id:** FEAT-016
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** S
@@ -853,7 +853,7 @@ All UI strings are routed through vue-i18n keys.
 - **type:** test
 - **id:** TEST-001
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** high
 - **domain:** cipher
 - **complexity:** M
@@ -883,7 +883,7 @@ these modules. Tests must be deterministic and isolated (no database, no filesys
 - **type:** test
 - **id:** TEST-002
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** high
 - **domain:** api
 - **complexity:** M
@@ -914,7 +914,7 @@ supertest. Tests cover happy paths, validation errors, and round-trip correctnes
 - **type:** test
 - **id:** TEST-003
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** M
@@ -945,7 +945,7 @@ transitions, and API call mocking.
 - **type:** docs
 - **id:** DOCS-001
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** medium
 - **domain:** docs
 - **complexity:** M

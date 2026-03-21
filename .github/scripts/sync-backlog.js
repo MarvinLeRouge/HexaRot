@@ -260,7 +260,9 @@ function buildIssueTitle(item) {
 
 async function main() {
   console.log('Reading BACKLOG.md...');
-  const content = fs.readFileSync('BACKLOG.md', 'utf8');
+  const backlogPath = require('path').resolve(__dirname, '../../BACKLOG.md');
+  console.log(`BACKLOG.md path: ${backlogPath}`);
+  const content = fs.readFileSync(backlogPath, 'utf8');
 
   console.log('Parsing backlog...');
   const { items, errors, warnings } = parseBacklog(content);

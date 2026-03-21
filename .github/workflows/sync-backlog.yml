@@ -34,4 +34,5 @@ jobs:
           GITHUB_OWNER: MarvinLeRouge
           GITHUB_REPO: HexaRot
           PROJECT_ID: PVT_kwHOAA1qPc4BSIDU
-        run: node .github/scripts/sync-backlog.js
+        run: node sync-backlog.js
+        working-directory: .github/scripts

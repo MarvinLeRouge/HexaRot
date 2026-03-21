@@ -1,0 +1,137 @@
+name: Track branch — move issue to In Progress
+
+on:
+  create:
+
+jobs:
+  track-branch:
+    name: Move issue to In Progress
+    runs-on: ubuntu-latest
+    if: github.ref_type == 'branch'
+
+    steps:
+      - name: Extract backlog ID from branch name
+        id: extract
+        run: |
+          BRANCH="${{ github.ref_name }}"
+          # Convention: type/ID-description (e.g. feat/FEAT-001-visual-alphabet)
+          ID=$(echo "$BRANCH" | grep -oE '[A-Z]+-[0-9]+' | head -1)
+          if [ -z "$ID" ]; then
+            echo "Branch '$BRANCH' does not match backlog convention — ignored."
+            echo "matched=false" >> $GITHUB_OUTPUT
+          else
+            echo "Backlog ID: $ID"
+            echo "matched=true" >> $GITHUB_OUTPUT
+            echo "backlog_id=$ID" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Find issue by backlog ID
+        if: steps.extract.outputs.matched == 'true'
+        id: find-issue
+        env:
+          GH_TOKEN: ${{ secrets.HEXAROT_PROJECT_TOKEN }}
+        run: |
+          ID="${{ steps.extract.outputs.backlog_id }}"
+          # Search for issue containing the backlog-id marker
+          ISSUE_NUMBER=$(gh api graphql -f query='
+            query($repo: String!, $owner: String!) {
+              repository(owner: $owner, name: $repo) {
+                issues(first: 100, states: OPEN) {
+                  nodes {
+                    number
+                    body
+                  }
+                }
+              }
+            }
+          ' -f owner="MarvinLeRouge" -f repo="HexaRot" \
+            --jq ".data.repository.issues.nodes[] | select(.body | contains(\"backlog-id: $ID\")) | .number")
+
+          if [ -z "$ISSUE_NUMBER" ]; then
+            echo "No open issue found for backlog ID '$ID' — ignored."
+            echo "found=false" >> $GITHUB_OUTPUT
+          else
+            echo "Found issue #$ISSUE_NUMBER"
+            echo "found=true" >> $GITHUB_OUTPUT
+            echo "issue_number=$ISSUE_NUMBER" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Move issue to In Progress on Kanban
+        if: steps.find-issue.outputs.found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.HEXAROT_PROJECT_TOKEN }}
+        run: |
+          ISSUE_NUMBER="${{ steps.find-issue.outputs.issue_number }}"
+          PROJECT_ID="PVT_kwHOAA1qPc4BSIDU"
+
+          # Get project item ID for this issue
+          ITEM_ID=$(gh api graphql -f query='
+            query($project: ID!) {
+              node(id: $project) {
+                ... on ProjectV2 {
+                  items(first: 100) {
+                    nodes {
+                      id
+                      content {
+                        ... on Issue {
+                          number
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ' -f project="$PROJECT_ID" \
+            --jq ".data.node.items.nodes[] | select(.content.number == $ISSUE_NUMBER) | .id")
+
+          if [ -z "$ITEM_ID" ]; then
+            echo "Issue #$ISSUE_NUMBER not found in project — ignored."
+            exit 0
+          fi
+
+          # Get the Status field ID and the In Progress option ID
+          FIELD_INFO=$(gh api graphql -f query='
+            query($project: ID!) {
+              node(id: $project) {
+                ... on ProjectV2 {
+                  fields(first: 20) {
+                    nodes {
+                      ... on ProjectV2SingleSelectField {
+                        id
+                        name
+                        options {
+                          id
+                          name
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          ' -f project="$PROJECT_ID")
+
+          FIELD_ID=$(echo "$FIELD_INFO" | jq -r '.data.node.fields.nodes[] | select(.name == "Status") | .id')
+          OPTION_ID=$(echo "$FIELD_INFO" | jq -r '.data.node.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "In Progress") | .id')
+
+          if [ -z "$FIELD_ID" ] || [ -z "$OPTION_ID" ]; then
+            echo "Could not find Status field or In Progress option — aborting."
+            exit 1
+          fi
+
+          # Update the item status
+          gh api graphql -f query='
+            mutation($project: ID!, $item: ID!, $field: ID!, $option: String!) {
+              updateProjectV2ItemFieldValue(input: {
+                projectId: $project
+                itemId: $item
+                fieldId: $field
+                value: { singleSelectOptionId: $option }
+              }) {
+                projectV2Item { id }
+              }
+            }
+          ' -f project="$PROJECT_ID" -f item="$ITEM_ID" -f field="$FIELD_ID" -f option="$OPTION_ID"
+
+          echo "Issue #$ISSUE_NUMBER moved to In Progress."

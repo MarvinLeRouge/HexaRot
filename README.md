@@ -194,6 +194,13 @@ Personal project with a dual purpose:
 
 ---
 
+## Contributing
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) for setup instructions, including the GitHub Actions
+token configuration required to run the full CI/CD pipeline.
+
+---
+
 ## License
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.

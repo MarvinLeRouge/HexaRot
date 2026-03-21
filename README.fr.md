@@ -195,6 +195,13 @@ Projet personnel à double vocation :
 
 ---
 
+## Contribuer
+
+Voir [CONTRIBUTING.fr.md](CONTRIBUTING.fr.md) pour les instructions de configuration,
+notamment la mise en place du token GitHub Actions requis pour le pipeline CI/CD complet.
+
+---
+
 ## Licence
 
 Ce projet est sous licence MIT — voir le fichier [LICENSE](LICENSE) pour plus de détails.

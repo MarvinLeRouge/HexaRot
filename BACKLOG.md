@@ -2,7 +2,7 @@
 
 ## Meta
 sync-version: 1
-last-updated: 2026-03-20
+last-updated: 2026-03-23
 
 ---
 
@@ -243,6 +243,40 @@ Sync logic:
 - Conflict between GitHub-side edit and backlog.md is logged; backlog.md wins
 - Invalid backlog (missing field, bad value, unknown dependency ID) aborts sync with
   a clear error message referencing the offending item ID
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CI-003] Add PostgreSQL service to CI pipeline for integration tests
+
+- **type:** ci
+- **id:** CI-003
+- **milestone:** v1
+- **status:** ready
+- **priority:** high
+- **domain:** infra
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** CI-001
+- **learning:** [GitHub Actions services, Docker service containers in CI, environment variable injection in GitHub Actions, database seeding in CI pipelines]
+- **labels:** [ci, domain:infra, priority:high, milestone:v1]
+
+#### Description
+
+Amend the CI workflow to support integration tests that require a live PostgreSQL
+database. The backend job must declare a `services:` block with a PostgreSQL container,
+inject the `DATABASE_URL` environment variable, wait for the service to be healthy,
+run Prisma migrations, and execute the database seed before running tests.
+
+This unblocks TEST-002 (API integration tests) in CI.
+
+#### Acceptance criteria
+
+- CI backend job declares a `services:` block with a PostgreSQL image
+- `DATABASE_URL` is injected as an environment variable in the backend job
+- Job waits for PostgreSQL to be healthy before running any commands
+- Prisma migrations are applied before tests run
+- Seed script runs successfully before tests run
+- TEST-002 integration tests pass in CI
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
@@ -848,6 +882,49 @@ All UI strings are routed through vue-i18n keys.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
+### [TEST-004] Shared MockAlphabet for contract testing
+
+- **type:** test
+- **id:** TEST-004
+- **milestone:** v1
+- **status:** ready
+- **priority:** high
+- **domain:** alphabet
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** FEAT-001
+- **learning:** [test doubles vocabulary (stub vs mock vs fake), interface contract testing in TypeScript, shared test fixtures]
+- **labels:** [test, domain:alphabet, priority:high, milestone:v1]
+
+#### Description
+
+Implement a `MockAlphabet` — a minimal, self-contained implementation of `VisualAlphabet`
+intended exclusively for use in tests. It must be defined independently of `HexahueAlphabet`
+and must use deliberately different symbol dimensions (e.g. 3×2 instead of Hexahue's 2×3)
+to ensure that tests exercising the `VisualAlphabet` contract are not accidentally coupled
+to Hexahue-specific dimensions.
+
+`MockAlphabet` must be placed in a shared test utilities module, importable by any test
+suite in the backend. It supports a small, fixed character set (e.g. A–F) with hardcoded
+colour grids.
+
+This item also formalises the `symbolWidth` and `symbolHeight` properties as required
+members of the `VisualAlphabet` interface, so that consumers (validator, grid constructor)
+can query dimensions without knowing the concrete implementation.
+
+#### Acceptance criteria
+
+- `MockAlphabet` implements `VisualAlphabet` fully
+- Symbol dimensions differ from Hexahue (width ≠ 2 or height ≠ 3)
+- `symbolWidth` and `symbolHeight` are exposed as required properties on `VisualAlphabet`
+- `MockAlphabet` is importable from a shared test utilities path (e.g. `test/utils/mock-alphabet`)
+- `HexahueAlphabet` exposes `symbolWidth: 2` and `symbolHeight: 3` in conformance with
+  the updated interface
+- At least one existing test (FEAT-001 unit tests) is updated to use `MockAlphabet`
+  for contract-level assertions, separate from Hexahue-specific assertions
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
 ### [TEST-001] Backend unit test suite — cipher and key modules
 
 - **type:** test
@@ -888,7 +965,7 @@ these modules. Tests must be deterministic and isolated (no database, no filesys
 - **domain:** api
 - **complexity:** M
 - **parent:** ~
-- **depends-on:** FEAT-011, FEAT-012, FEAT-013, TEST-001
+- **depends-on:** FEAT-011, FEAT-012, FEAT-013, TEST-001, CI-003
 - **learning:** [NestJS testing module, supertest for HTTP integration tests, test database setup and teardown, fixture patterns]
 - **labels:** [test, domain:api, priority:high, milestone:v1]
 

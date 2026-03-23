@@ -23,8 +23,8 @@ const VALID_COMPLEXITIES = ['XS', 'S', 'M', 'L', 'XL'];
 const STATUS_TO_COLUMN = {
   backlog: 'Backlog',
   ready: 'Ready',
-  in_progress: 'In Progress',
-  in_review: 'In Review',
+  in_progress: 'In progress',
+  in_review: 'In review',
   done: 'Done',
 };
 

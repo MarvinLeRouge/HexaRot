@@ -887,7 +887,7 @@ All UI strings are routed through vue-i18n keys.
 - **type:** test
 - **id:** TEST-004
 - **milestone:** v1
-- **status:** ready
+- **status:** backlog
 - **priority:** high
 - **domain:** alphabet
 - **complexity:** S

@@ -251,7 +251,7 @@ Sync logic:
 - **type:** ci
 - **id:** CI-003
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** infra
 - **complexity:** S
@@ -276,7 +276,7 @@ This unblocks TEST-002 (API integration tests) in CI.
 - Job waits for PostgreSQL to be healthy before running any commands
 - Prisma migrations are applied before tests run
 - Seed script runs successfully before tests run
-- TEST-002 integration tests pass in CI
+- The configuration allows future integration tests to access PostgreSQL without further modifications to the workflow
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->

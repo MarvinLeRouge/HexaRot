@@ -320,7 +320,7 @@ value from the Hexahue palette.
 - **type:** feat
 - **id:** FEAT-002
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** cipher
 - **complexity:** S

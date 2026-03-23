@@ -396,7 +396,7 @@ The validator does not block execution — it informs.
 - **type:** feat
 - **id:** FEAT-004
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** key
 - **complexity:** M

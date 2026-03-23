@@ -320,7 +320,7 @@ value from the Hexahue palette.
 - **type:** feat
 - **id:** FEAT-002
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** critical
 - **domain:** cipher
 - **complexity:** S
@@ -358,7 +358,7 @@ where `PreprocessResult` contains the processed string and an array of unknown c
 - **type:** feat
 - **id:** FEAT-003
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** high
 - **domain:** validation
 - **complexity:** S
@@ -887,7 +887,7 @@ All UI strings are routed through vue-i18n keys.
 - **type:** test
 - **id:** TEST-004
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** high
 - **domain:** alphabet
 - **complexity:** S

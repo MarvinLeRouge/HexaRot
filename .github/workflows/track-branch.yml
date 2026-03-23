@@ -113,7 +113,7 @@ jobs:
           ' -f project="$PROJECT_ID")
 
           FIELD_ID=$(echo "$FIELD_INFO" | jq -r '.data.node.fields.nodes[] | select(.name == "Status") | .id')
-          OPTION_ID=$(echo "$FIELD_INFO" | jq -r '.data.node.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "In Progress") | .id')
+          OPTION_ID=$(echo "$FIELD_INFO" | jq -r '.data.node.fields.nodes[] | select(.name == "Status") | .options[] | select(.name == "In progress") | .id')
 
           if [ -z "$FIELD_ID" ] || [ -z "$OPTION_ID" ]; then
             echo "Could not find Status field or In Progress option — aborting."

@@ -285,7 +285,7 @@ This unblocks TEST-002 (API integration tests) in CI.
 - **type:** feat
 - **id:** FEAT-001
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** alphabet
 - **complexity:** M

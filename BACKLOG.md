@@ -435,7 +435,7 @@ The codec must expose:
 - **type:** feat
 - **id:** FEAT-005
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** high
 - **domain:** reading-order
 - **complexity:** M
@@ -745,7 +745,7 @@ Response:
 - **type:** feat
 - **id:** FEAT-013
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** api
 - **complexity:** S

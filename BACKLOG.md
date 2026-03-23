@@ -358,7 +358,7 @@ where `PreprocessResult` contains the processed string and an array of unknown c
 - **type:** feat
 - **id:** FEAT-003
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** validation
 - **complexity:** S

@@ -1,10 +1,10 @@
-# TEST-004 — Shared MockAlphabet for contract testing — Implementation Plan
+# TEST-004 - Shared MockAlphabet for contract testing - Implementation Plan
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a `MockAlphabet` test double implementing `VisualAlphabet` with dimensions deliberately different from Hexahue (3 wide × 2 tall instead of 2 wide × 3 tall), plus a contract-level test suite proving `VisualAlphabet` consumers don't accidentally assume Hexahue's specific dimensions.
+**Goal:** Add a `MockAlphabet` test double implementing `VisualAlphabet` with dimensions deliberately different from Hexahue (3 wide x 2 tall instead of 2 wide x 3 tall), plus a contract-level test suite proving `VisualAlphabet` consumers don't accidentally assume Hexahue's specific dimensions.
 
-**Architecture:** `MockAlphabet` is a plain class (no NestJS DI, no database) living in a shared test-utilities module under `backend/src/shared/testing/`, hardcoding grids for six characters (A–F). A separate contract spec exercises it the same way `HexahueAlphabet`'s own spec exercises dimensions/getBlock/getSupportedChars, but driven entirely off `symbolWidth`/`symbolHeight`/`getSupportedChars()` so it never hardcodes "2" or "3".
+**Architecture:** `MockAlphabet` is a plain class (no NestJS DI, no database) living in a shared test-utilities module under `backend/src/shared/testing/`, hardcoding grids for six characters (A-F). A separate contract spec exercises it the same way `HexahueAlphabet`'s own spec exercises dimensions/getBlock/getSupportedChars, but driven entirely off `symbolWidth`/`symbolHeight`/`getSupportedChars()` so it never hardcodes "2" or "3".
 
 **Tech Stack:** TypeScript (strict), Jest + ts-jest. Jest `rootDir` is `backend/src`, so all test files must live under `backend/src/`.
 
@@ -13,7 +13,7 @@
 - TypeScript strict mode, no implicit any (existing `tsconfig.json`).
 - Code, comments, commit messages: English. Comments only where the WHY isn't obvious from the code.
 - Functions/methods verb-first, camelCase; classes PascalCase; files kebab-case.
-- `VisualAlphabet.symbolWidth` / `symbolHeight` are **already** required interface members (`backend/src/shared/types/visual-alphabet.interface.ts:12,15`) and already implemented by `HexahueAlphabet` (`symbolWidth = 2`, `symbolHeight = 3`). No interface or `HexahueAlphabet` changes are needed for this plan — TEST-004's backlog acceptance criteria about "formalising symbolWidth/symbolHeight as required members" are already satisfied by existing code.
+- `VisualAlphabet.symbolWidth` / `symbolHeight` are **already** required interface members (`backend/src/shared/types/visual-alphabet.interface.ts:12,15`) and already implemented by `HexahueAlphabet` (`symbolWidth = 2`, `symbolHeight = 3`). No interface or `HexahueAlphabet` changes are needed for this plan - TEST-004's backlog acceptance criteria about "formalising symbolWidth/symbolHeight as required members" are already satisfied by existing code.
 - Conventional Commits format, with the mandatory modified-files list, per global CLAUDE.md.
 - Branch: `test/TEST-004-mock-alphabet`, created from up-to-date `main`.
 
@@ -21,9 +21,9 @@
 
 ## File Structure
 
-- Create: `backend/src/shared/testing/mock-alphabet.ts` — the `MockAlphabet` class (implements `VisualAlphabet`).
-- Create: `backend/src/shared/testing/mock-alphabet.spec.ts` — correctness tests for the double itself (exact grid values, unsupported-char error, no duplicate chars).
-- Create: `backend/src/shared/testing/visual-alphabet-contract.spec.ts` — dimension-agnostic contract tests, driven by `MockAlphabet`'s own reported `symbolWidth`/`symbolHeight`, proving no test assumption leaks in from Hexahue's 2×3.
+- Create: `backend/src/shared/testing/mock-alphabet.ts` - the `MockAlphabet` class (implements `VisualAlphabet`).
+- Create: `backend/src/shared/testing/mock-alphabet.spec.ts` - correctness tests for the double itself (exact grid values, unsupported-char error, no duplicate chars).
+- Create: `backend/src/shared/testing/visual-alphabet-contract.spec.ts` - dimension-agnostic contract tests, driven by `MockAlphabet`'s own reported `symbolWidth`/`symbolHeight`, proving no test assumption leaks in from Hexahue's 2x3.
 
 No existing files are modified. `HexahueAlphabet` and its spec are untouched since the interface members they need already exist.
 
@@ -37,9 +37,9 @@ No existing files are modified. `HexahueAlphabet` and its spec are untouched sin
 
 **Interfaces:**
 - Consumes: `VisualAlphabet` (`backend/src/shared/types/visual-alphabet.interface.ts`), `ColorGrid` (`backend/src/shared/types/color-grid.type.ts`), `UnsupportedCharacterError` (`backend/src/alphabet/errors/unsupported-character.error.ts`).
-- Produces: `export class MockAlphabet implements VisualAlphabet` with `readonly symbolWidth = 3`, `readonly symbolHeight = 2`, `getBlock(char: string): ColorGrid`, `getSupportedChars(): string[]`. Supported chars: exactly `'A'`, `'B'`, `'C'`, `'D'`, `'E'`, `'F'` (uppercase only, case-sensitive — mirrors `HexahueAlphabet` behaviour where lowercase input is unsupported).
+- Produces: `export class MockAlphabet implements VisualAlphabet` with `readonly symbolWidth = 3`, `readonly symbolHeight = 2`, `getBlock(char: string): ColorGrid`, `getSupportedChars(): string[]`. Supported chars: exactly `'A'`, `'B'`, `'C'`, `'D'`, `'E'`, `'F'` (uppercase only, case-sensitive - mirrors `HexahueAlphabet` behaviour where lowercase input is unsupported).
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // backend/src/shared/testing/mock-alphabet.spec.ts
@@ -92,12 +92,12 @@ describe('MockAlphabet', () => {
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd backend && npx jest shared/testing/mock-alphabet.spec.ts`
-Expected: FAIL — `Cannot find module './mock-alphabet'`
+Expected: FAIL - `Cannot find module './mock-alphabet'`
 
-- [ ] **Step 3: Write minimal implementation**
+- [x] **Step 3: Write minimal implementation**
 
 ```typescript
 // backend/src/shared/testing/mock-alphabet.ts
@@ -157,12 +157,12 @@ export class MockAlphabet implements VisualAlphabet {
 }
 ```
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd backend && npx jest shared/testing/mock-alphabet.spec.ts`
 Expected: PASS (6 tests)
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add backend/src/shared/testing/mock-alphabet.ts backend/src/shared/testing/mock-alphabet.spec.ts
@@ -170,8 +170,8 @@ git commit -m "$(cat <<'EOF'
 test(alphabet): add MockAlphabet test double with non-Hexahue dimensions
 
 Modified files:
-- backend/src/shared/testing/mock-alphabet.ts — new VisualAlphabet double, 3x2 symbols, chars A-F
-- backend/src/shared/testing/mock-alphabet.spec.ts — correctness tests for the double
+- backend/src/shared/testing/mock-alphabet.ts - new VisualAlphabet double, 3x2 symbols, chars A-F
+- backend/src/shared/testing/mock-alphabet.spec.ts - correctness tests for the double
 EOF
 )"
 ```
@@ -185,9 +185,9 @@ EOF
 
 **Interfaces:**
 - Consumes: `MockAlphabet` from Task 1 (`./mock-alphabet`).
-- Produces: nothing consumed by later tasks — this is a leaf test file.
+- Produces: nothing consumed by later tasks - this is a leaf test file.
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 ```typescript
 // backend/src/shared/testing/visual-alphabet-contract.spec.ts
@@ -233,24 +233,24 @@ describe('VisualAlphabet contract (dimension-agnostic, via MockAlphabet)', () =>
 });
 ```
 
-- [ ] **Step 2: Run test to verify it fails**
+- [x] **Step 2: Run test to verify it fails**
 
 Run: `cd backend && npx jest shared/testing/visual-alphabet-contract.spec.ts`
-Expected: FAIL only if Task 1 wasn't committed yet in this working tree — otherwise it should already PASS since `MockAlphabet` exists. If Task 1 is already merged, treat this as red-green in one step: write the test, confirm it currently passes against `MockAlphabet` (Step 2 becomes a pass-confirmation, not a failure — note this explicitly when running the plan and move directly to Step 4).
+Expected: FAIL only if Task 1 wasn't committed yet in this working tree - otherwise it should already PASS since `MockAlphabet` exists. If Task 1 is already merged, treat this as red-green in one step: write the test, confirm it currently passes against `MockAlphabet` (Step 2 becomes a pass-confirmation, not a failure - note this explicitly when running the plan and move directly to Step 4).
 
-- [ ] **Step 3: (No implementation step — this task only adds tests against existing code)**
+- [x] **Step 3: (No implementation step - this task only adds tests against existing code)**
 
-- [ ] **Step 4: Run test to verify it passes**
+- [x] **Step 4: Run test to verify it passes**
 
 Run: `cd backend && npx jest shared/testing/visual-alphabet-contract.spec.ts`
 Expected: PASS (5 tests)
 
-- [ ] **Step 5: Run full backend test suite**
+- [x] **Step 5: Run full backend test suite**
 
 Run: `cd backend && npm run test`
 Expected: PASS, all existing suites (`hexahue-alphabet.service.spec.ts`, `preprocess.spec.ts`, `validate-params.spec.ts`, `key-codec.spec.ts`, `app.controller.spec.ts`) plus the two new files, no regressions.
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add backend/src/shared/testing/visual-alphabet-contract.spec.ts
@@ -258,7 +258,7 @@ git commit -m "$(cat <<'EOF'
 test(alphabet): add dimension-agnostic VisualAlphabet contract suite
 
 Modified files:
-- backend/src/shared/testing/visual-alphabet-contract.spec.ts — contract tests driven off MockAlphabet's own reported dimensions, decoupled from Hexahue's 2x3
+- backend/src/shared/testing/visual-alphabet-contract.spec.ts - contract tests driven off MockAlphabet's own reported dimensions, decoupled from Hexahue's 2x3
 EOF
 )"
 ```
@@ -267,4 +267,8 @@ EOF
 
 ## After this plan
 
-Push `test/TEST-004-mock-alphabet`, update `BACKLOG.md` (`TEST-004` status `ready` → `done`) in the same PR — this must happen inside the feature PR, not via a direct push to `main`, so the backlog-sync automation picks it up correctly — and hand back title/description for the user to open the PR. Next up per the validated roadmap: **FEAT-005** (reading order strategies).
+Push `test/TEST-004-mock-alphabet`, update `BACKLOG.md` (`TEST-004` status `ready` -> `done`) in the same PR - this must happen inside the feature PR, not via a direct push to `main`, so the backlog-sync automation picks it up correctly - and hand back title/description for the user to open the PR. Next up per the validated roadmap: **FEAT-005** (reading order strategies).
+
+## Post-review addendum (final whole-branch review)
+
+The final review found the plan's Task 2 interpretation of the TEST-004 acceptance criterion ("an existing test is updated to use MockAlphabet") was too weak: `visual-alphabet-contract.spec.ts` only exercises `MockAlphabet` against itself, so the fixture had zero real consumers. A third, small task was added after review to close that gap: add a consumer test to `backend/src/cipher/preprocess.spec.ts` using `MockAlphabet`, replacing the ad-hoc partial-object cast that was there before. See the branch's final commits for the exact change. A parameterised `describeVisualAlphabetContract` harness (applying the same assertions to both `MockAlphabet` and `HexahueAlphabet`) was identified as a further improvement and deferred to a follow-up backlog item rather than expanding this branch.

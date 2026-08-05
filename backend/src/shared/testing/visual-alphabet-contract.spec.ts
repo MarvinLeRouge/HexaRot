@@ -1,7 +1,11 @@
 import { MockAlphabet } from './mock-alphabet';
 
 describe('VisualAlphabet contract (dimension-agnostic, via MockAlphabet)', () => {
-  const alphabet = new MockAlphabet();
+  let alphabet: MockAlphabet;
+
+  beforeEach(() => {
+    alphabet = new MockAlphabet();
+  });
 
   it("reports dimensions other than Hexahue's 2x3, to prove no test hardcodes them", () => {
     expect(alphabet.symbolWidth).not.toBe(2);

@@ -1,5 +1,4 @@
-import { VisualAlphabet } from '../types/visual-alphabet.interface';
-import { ColorGrid } from '../types/color-grid.type';
+import { VisualAlphabet, ColorGrid } from '../types';
 import { UnsupportedCharacterError } from '../../alphabet/errors/unsupported-character.error';
 
 /**
@@ -40,6 +39,11 @@ export class MockAlphabet implements VisualAlphabet {
     ],
   };
 
+  /**
+   * Returns the colour grid for the given character.
+   *
+   * @throws {UnsupportedCharacterError} If the character is not one of A-F.
+   */
   getBlock(char: string): ColorGrid {
     const grid = this.blocks[char];
     if (!grid) {
@@ -48,6 +52,7 @@ export class MockAlphabet implements VisualAlphabet {
     return grid;
   }
 
+  /** Returns the six supported characters: A-F. */
   getSupportedChars(): string[] {
     return Object.keys(this.blocks);
   }

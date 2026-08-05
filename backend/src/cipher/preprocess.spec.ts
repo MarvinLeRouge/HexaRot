@@ -1,5 +1,6 @@
 import { preprocess } from './preprocess';
 import { VisualAlphabet } from '../shared/types';
+import { MockAlphabet } from '../shared/testing/mock-alphabet';
 
 // ---------------------------------------------------------------------------
 // Mock alphabet — Hexahue supported character set, no database required
@@ -170,6 +171,18 @@ describe('preprocess()', () => {
       const { text, unknownChars } = preprocess('hello, world.', mockAlphabet);
       expect(text).toBe('HELLO, WORLD.');
       expect(unknownChars).toHaveLength(0);
+    });
+  });
+
+  // -------------------------------------------------------------------------
+  // Contract-level: any VisualAlphabet implementation
+  // -------------------------------------------------------------------------
+
+  describe('contract-level: works with any VisualAlphabet implementation', () => {
+    it('filters against whatever character set the alphabet reports (MockAlphabet, not Hexahue)', () => {
+      const { text, unknownChars } = preprocess('abcxyz', new MockAlphabet());
+      expect(text).toBe('ABC');
+      expect(unknownChars).toEqual(['X', 'Y', 'Z']);
     });
   });
 });

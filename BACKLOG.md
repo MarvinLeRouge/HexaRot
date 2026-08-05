@@ -2,7 +2,7 @@
 
 ## Meta
 sync-version: 1
-last-updated: 2026-03-23
+last-updated: 2026-08-05
 
 ---
 
@@ -1171,7 +1171,7 @@ translation file and implementing the language switcher in the UI.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
-### [FEAT-021] User authentication — registration, token issuance and validation
+### [FEAT-021] User authentication — registration with email confirmation, token issuance and validation
 
 - **type:** feat
 - **id:** FEAT-021
@@ -1179,26 +1179,245 @@ translation file and implementing the language switcher in the UI.
 - **status:** ready
 - **priority:** medium
 - **domain:** api
-- **complexity:** L
+- **complexity:** XL
 - **parent:** ~
 - **depends-on:** CHORE-004
-- **learning:** [JWT token design, token expiry and refresh strategies, NestJS Guards, bcrypt password hashing, RGPD considerations for user data]
+- **learning:** [JWT token design, token expiry and refresh strategies, NestJS Guards, bcrypt password hashing, RGPD considerations for user data, transactional email via SMTP relay, single-use token hashing]
 - **labels:** [feat, domain:api, priority:medium, milestone:v2]
 
 #### Description
 
-Implement user registration and token-based authentication. A user registers with an
-email and password. On login, a time-limited JWT token is issued. Protected API
-endpoints validate the token via a NestJS Guard.
+Implement user registration and token-based authentication, gated by email confirmation.
+A user registers with an email and password. The account is created with
+`emailVerified: false` and cannot log in until the address is confirmed.
 
-Token lifetime and refresh strategy to be defined at implementation time.
+A single-use verification token is generated, stored hashed (never in plaintext) with a
+24-hour expiry in a dedicated `VerificationToken` table, and emailed to the user via a
+`MailerService` abstraction. The production implementation sends through Brevo's SMTP
+relay (`smtp-relay.brevo.com:587`), following the same pattern already in production on
+GeoChallenge-Tracker and HiveMind. A no-op implementation is used in tests, exposing the
+last-sent token for assertions instead of sending real mail.
+
+The email contains a link to a frontend confirmation page
+(`{FRONTEND_BASE_URL}/verify-email?token=...`). Visiting it calls the verification
+endpoint, which marks the account as verified. Because login is blocked until then, a
+rate-limited resend endpoint is required so a user who loses or lets the link expire can
+recover without contacting support.
+
+On successful login, a time-limited JWT token is issued. Protected API endpoints
+validate the token via a NestJS Guard. Token lifetime and refresh strategy to be defined
+at implementation time.
 
 #### Acceptance criteria
 
-- User can register with email + password
+- User can register with email + password; account is created with `emailVerified: false`
 - Password is hashed (bcrypt), never stored in plaintext
-- Login returns a JWT with a defined expiry
-- Protected endpoints reject requests without a valid token
-- Expired tokens are rejected with a 401 response
 - Registration rejects duplicate email addresses
+- A verification token is generated, stored hashed (not plaintext) with a 24-hour expiry
+- `MailerService` interface has an SMTP implementation (Brevo relay config: host, port,
+  user, password, from address, frontend base URL) and a no-op test implementation
+- Confirmation endpoint marks the account verified and invalidates the token (single use)
+- Confirmation endpoint rejects an unknown, expired, or already-used token with a
+  descriptive 400 error
+- Resend-verification endpoint is rate-limited and does not reveal whether an email
+  address is registered (same response for existing and non-existing accounts)
+- Login is rejected with 401 for an unverified account, with a message distinguishable
+  from "wrong password"
+- Login returns a JWT with a defined expiry for a verified account
+- Protected endpoints reject requests without a valid token
+- Expired JWTs are rejected with a 401 response
+- `.env.example` documents `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`,
+  `FRONTEND_BASE_URL`
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CHORE-006] Traefik-based local development environment — dev/prod parity
+
+- **type:** chore
+- **id:** CHORE-006
+- **milestone:** v1
+- **status:** ready
+- **priority:** high
+- **domain:** infra
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** CHORE-003
+- **learning:** [Traefik dynamic Docker provider, label-based routing, path-prefix stripping, Docker external networks, local DNS resolution for .local domains]
+- **labels:** [chore, domain:infra, priority:high, milestone:v1]
+
+#### Description
+
+Reconfigure `docker-compose.yml` so local development is routed through Traefik instead
+of publishing container ports directly, mirroring the topology used in production. The
+backend and frontend containers join an external `traefik-public` network (provided by
+the existing local Traefik reverse proxy) plus an internal network for
+service-to-service traffic. Routing labels expose the stack at
+`hexarot.marvinlerouge.local`: the frontend on `/`, the backend API on `/api` with the
+prefix stripped before it reaches NestJS, both on the `web` entrypoint (no TLS locally).
+
+Direct host port publication for `backend` (3000) and `frontend` (5173) is removed.
+PostgreSQL keeps a `127.0.0.1`-bound port for local tooling (Prisma Studio, direct
+psql access) — it is not routed through Traefik.
+
+#### Acceptance criteria
+
+- `docker-compose up` starts the stack without publishing backend/frontend ports directly
+- Frontend is reachable at `http://hexarot.marvinlerouge.local` once the host resolves
+  that name (documented, not automated) and the local Traefik proxy is running
+- Backend API is reachable at `http://hexarot.marvinlerouge.local/api/...` with the
+  `/api` prefix stripped before reaching NestJS routes
+- `backend` and `frontend` join `traefik-public` (external) and an `internal` network;
+  `postgres` stays on `internal` only
+- `docker-compose.yml` contains no hardcoded credentials
+- `CONTRIBUTING.md` documents the prerequisite: local Traefik proxy running and
+  `hexarot.marvinlerouge.local` resolving to `127.0.0.1` (`/etc/hosts` entry)
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CHORE-007] Production Dockerfiles and docker-compose.prod.yml
+
+- **type:** chore
+- **id:** CHORE-007
+- **milestone:** v1
+- **status:** backlog
+- **priority:** medium
+- **domain:** infra
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** CHORE-006
+- **learning:** [multi-stage Docker builds, production vs dev build targets, Traefik TLS via Let's Encrypt certresolver, container image tagging strategy]
+- **labels:** [chore, domain:infra, priority:medium, milestone:v1]
+
+#### Description
+
+Add multi-stage `Dockerfile`s for `backend` and `frontend` with a `production` target
+(build stage + slim runtime, no dev dependencies, no bind mounts). Add
+`docker-compose.prod.yml` at the repository root, structurally parallel to
+`docker-compose.yml` but pulling pre-built images (`ghcr.io/...:${IMAGE_TAG:-latest}`)
+instead of building locally, and routed through Traefik's `websecure` entrypoint with
+`tls.certresolver=letsencrypt` on `${DOMAIN}`, matching the pattern already in
+production use on HiveMind.
+
+This item prepares the deployment artefacts only. It does not touch the production
+server and does not run any deployment.
+
+#### Acceptance criteria
+
+- `backend/Dockerfile` and `frontend/Dockerfile` each expose a `production` target
+  producing a minimal runtime image (no source bind mounts, no dev dependencies)
+- `docker-compose.prod.yml` references images by tag, not a local build context
+- Traefik labels use `websecure` entrypoint, TLS enabled, `certresolver=letsencrypt`,
+  `Host(\`${DOMAIN}\`)` routing, backend under `/api` with prefix stripped
+- No credentials hardcoded; all secrets come from environment variables / env file
+- `docker-compose.prod.yml` builds and starts locally against the production images
+  when manually tested with a locally-built image tag
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CI-004] Build and deploy pipeline — GHCR images and VPS deployment
+
+- **type:** ci
+- **id:** CI-004
+- **milestone:** v1
+- **status:** backlog
+- **priority:** medium
+- **domain:** infra
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** CHORE-007
+- **learning:** [GitHub Actions workflow_run triggers, GHCR authentication and image push, SSH deployment via GitHub Actions, remote docker compose orchestration]
+- **labels:** [ci, domain:infra, priority:medium, milestone:v1]
+
+#### Description
+
+Add a `build-deploy.yml` workflow that builds and pushes the backend and frontend
+`production` images to GHCR after CI passes on `main` (or via manual
+`workflow_dispatch`), then deploys by SSHing into the VPS, pulling the new images,
+running pending Prisma migrations, and restarting the stack via
+`docker-compose.prod.yml` — mirroring the workflow already in production use on
+HiveMind.
+
+This workflow is authored and committed as part of this item, but is never executed by
+the implementation thread: it only runs once merged to `main` via GitHub Actions, using
+repository secrets (`DEPLOY_SSH_HOST`, `DEPLOY_SSH_USER`, `DEPLOY_SSH_PRIVATE_KEY`,
+`DOMAIN`, `VITE_API_BASE_URL`) that must be configured by the repository owner. No
+direct SSH access to the production server is performed outside of this pipeline.
+
+#### Acceptance criteria
+
+- Workflow builds and pushes tagged + `latest` images for backend and frontend to GHCR
+- Workflow triggers after a successful CI run on `main`, and supports manual dispatch
+- Deployment step fetches `docker-compose.prod.yml` at the deployed commit SHA, pulls
+  images, runs `prisma migrate deploy`, then restarts the stack
+- Required secrets are documented in `CONTRIBUTING.md` (names only, no values)
+- Workflow fails loudly (non-zero exit) if any step fails, with no partial silent state
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-001] UI/UX design pass — encode, decode and key views
+
+- **type:** refactor
+- **id:** REFACTOR-001
+- **milestone:** v1
+- **status:** backlog
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** FEAT-014, FEAT-015, FEAT-016
+- **learning:** [visual hierarchy, accessibility (WCAG contrast/focus states), responsive layout patterns, design token systems, Vue.js component polish without behavioural regressions]
+- **labels:** [refactor, domain:frontend, priority:medium, milestone:v1]
+
+#### Description
+
+Audit and polish the encode, decode, and key views once they are functionally complete.
+No new features and no behavioural changes — this item covers visual hierarchy,
+spacing/typography consistency, accessibility (contrast, focus states, keyboard
+navigation), responsive behaviour, empty/error/loading states, and light/dark theming if
+applicable. Existing i18n keys and API contracts are unaffected.
+
+#### Acceptance criteria
+
+- All three views reviewed for visual hierarchy, spacing, and typography consistency
+- Accessibility check: sufficient contrast, visible focus states, keyboard-navigable forms
+- Responsive behaviour verified at common breakpoints (mobile, tablet, desktop)
+- Loading, error, and empty states have clear, consistent visual treatment
+- No functional regression: all existing frontend tests (TEST-003) still pass
+- No new i18n keys required unless a genuinely new UI string is introduced
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CHORE-008] Security hardening audit — OWASP Top 10 review
+
+- **type:** chore
+- **id:** CHORE-008
+- **milestone:** v2
+- **status:** backlog
+- **priority:** high
+- **domain:** security
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** FEAT-011, FEAT-012, FEAT-013, FEAT-021, REFACTOR-001
+- **learning:** [OWASP Top 10:2025, input validation boundaries, rate limiting, secure header configuration, dependency vulnerability scanning]
+- **labels:** [chore, domain:security, priority:high, milestone:v2]
+
+#### Description
+
+Full security review of the API surface and authentication flow once all v1 endpoints
+and the FEAT-021 auth/registration flow exist, run before any real (non-`.local`)
+exposure of the deployed stack. Covers injection risks, broken access control, auth/session
+handling (JWT + verification tokens), rate limiting on public endpoints (registration,
+login, resend-verification), sensitive data exposure, security headers, and dependency
+vulnerabilities. Findings are triaged and fixed inline; anything deferred is logged as a
+new backlog item rather than silently dropped.
+
+#### Acceptance criteria
+
+- Every finding is classified by severity and either fixed or turned into a tracked
+  backlog item with a rationale for deferring it
+- Rate limiting is verified in place for registration, login, and resend-verification
+- JWT and verification-token handling reviewed against OWASP session management guidance
+- No secrets or sensitive data found logged, exposed in error responses, or committed
+- Dependency audit (`npm audit` or equivalent) run on both backend and frontend, with
+  high/critical findings addressed or explicitly deferred with rationale
 <!-- ITEM:END -->

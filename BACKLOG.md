@@ -435,7 +435,7 @@ The codec must expose:
 - **type:** feat
 - **id:** FEAT-005
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** reading-order
 - **complexity:** M

@@ -1,4 +1,4 @@
-import { MockAlphabet } from './mock-alphabet';
+import { MockAlphabet } from '../../../test/utils/mock-alphabet';
 
 describe('VisualAlphabet contract (dimension-agnostic, via MockAlphabet)', () => {
   let alphabet: MockAlphabet;

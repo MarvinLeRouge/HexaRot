@@ -1,5 +1,5 @@
-import { VisualAlphabet, ColorGrid } from '../types';
-import { UnsupportedCharacterError } from '../../alphabet/errors/unsupported-character.error';
+import { VisualAlphabet, ColorGrid } from '../../src/shared/types';
+import { UnsupportedCharacterError } from '../../src/alphabet/errors/unsupported-character.error';
 
 /**
  * Minimal, self-contained VisualAlphabet double for tests.

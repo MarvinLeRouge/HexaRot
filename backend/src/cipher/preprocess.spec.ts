@@ -1,6 +1,6 @@
 import { preprocess } from './preprocess';
 import { VisualAlphabet } from '../shared/types';
-import { MockAlphabet } from '../shared/testing/mock-alphabet';
+import { MockAlphabet } from '../../test/utils/mock-alphabet';
 
 // ---------------------------------------------------------------------------
 // Mock alphabet — Hexahue supported character set, no database required

@@ -32,6 +32,54 @@ describe('BtLrStrategy', () => {
     );
   });
 
+  it('starts at (0, gridHeight-1)', () => {
+    const result = new BtLrStrategy().getBlockOrder(
+      GRID_3x3.width,
+      GRID_3x3.height,
+    );
+    expect(result[0]).toEqual({ x: 0, y: GRID_3x3.height - 1 });
+  });
+
+  it('traverses column 0 bottom to top before moving to column 1', () => {
+    const result = new BtLrStrategy().getBlockOrder(
+      GRID_3x3.width,
+      GRID_3x3.height,
+    );
+    expect(result.slice(0, 3)).toEqual([
+      { x: 0, y: 2 },
+      { x: 0, y: 1 },
+      { x: 0, y: 0 },
+    ]);
+  });
+
+  it('ends at (gridWidth-1, 0) for a 3x3 grid', () => {
+    const result = new BtLrStrategy().getBlockOrder(
+      GRID_3x3.width,
+      GRID_3x3.height,
+    );
+    expect(result[result.length - 1]).toEqual({
+      x: GRID_3x3.width - 1,
+      y: 0,
+    });
+  });
+
+  it('reverses direction on column 1: column 0 goes bottom to top, column 1 goes top to bottom', () => {
+    const result = new BtLrStrategy(true).getBlockOrder(
+      GRID_3x3.width,
+      GRID_3x3.height,
+    );
+    expect(result.slice(0, 3)).toEqual([
+      { x: 0, y: 2 },
+      { x: 0, y: 1 },
+      { x: 0, y: 0 },
+    ]);
+    expect(result.slice(3, 6)).toEqual([
+      { x: 1, y: 0 },
+      { x: 1, y: 1 },
+      { x: 1, y: 2 },
+    ]);
+  });
+
   it('handles a 1-wide, 4-tall grid (1xN)', () => {
     const strategy = new BtLrStrategy();
     expect(strategy.getBlockOrder(1, 4)).toEqual([

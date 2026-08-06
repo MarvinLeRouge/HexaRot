@@ -32,6 +32,77 @@ describe('LrTbStrategy', () => {
     );
   });
 
+  it('starts at (0, 0)', () => {
+    const result = new LrTbStrategy().getBlockOrder(
+      GRID_3x3.width,
+      GRID_3x3.height,
+    );
+    expect(result[0]).toEqual({ x: 0, y: 0 });
+  });
+
+  it('traverses row 0 left to right before moving to row 1', () => {
+    const result = new LrTbStrategy().getBlockOrder(
+      GRID_3x3.width,
+      GRID_3x3.height,
+    );
+    expect(result.slice(0, 3)).toEqual([
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+    ]);
+  });
+
+  it('ends at (gridWidth-1, gridHeight-1) for a 3x3 grid', () => {
+    const result = new LrTbStrategy().getBlockOrder(
+      GRID_3x3.width,
+      GRID_3x3.height,
+    );
+    expect(result[result.length - 1]).toEqual({
+      x: GRID_3x3.width - 1,
+      y: GRID_3x3.height - 1,
+    });
+  });
+
+  it('reverses direction on row 1: row 0 goes left to right, row 1 goes right to left', () => {
+    const result = new LrTbStrategy(true).getBlockOrder(
+      GRID_3x3.width,
+      GRID_3x3.height,
+    );
+    expect(result.slice(0, 3)).toEqual([
+      { x: 0, y: 0 },
+      { x: 1, y: 0 },
+      { x: 2, y: 0 },
+    ]);
+    expect(result.slice(3, 6)).toEqual([
+      { x: 2, y: 1 },
+      { x: 1, y: 1 },
+      { x: 0, y: 1 },
+    ]);
+  });
+
+  it('reverses again on row 2: row 2 goes left to right', () => {
+    const result = new LrTbStrategy(true).getBlockOrder(
+      GRID_3x3.width,
+      GRID_3x3.height,
+    );
+    expect(result.slice(6, 9)).toEqual([
+      { x: 0, y: 2 },
+      { x: 1, y: 2 },
+      { x: 2, y: 2 },
+    ]);
+  });
+
+  it('returns the last position in the sequence as the start of the padding zone (no padding needed on a perfectly sized 3x3 grid, but the end position must be deterministic)', () => {
+    const result = new LrTbStrategy().getBlockOrder(
+      GRID_3x3.width,
+      GRID_3x3.height,
+    );
+    expect(result[result.length - 1]).toEqual({
+      x: GRID_3x3.width - 1,
+      y: GRID_3x3.height - 1,
+    });
+  });
+
   it('handles a 1-wide, 4-tall grid (1xN)', () => {
     const strategy = new LrTbStrategy();
     expect(strategy.getBlockOrder(1, 4)).toEqual([

@@ -1,17 +1,6 @@
-/**
- * V1 reading orders supported by the HexaRot cipher.
- * The `-ALT` suffix denotes the alternate modifier, which reverses the
- * traversal direction at each new row or column.
- */
-export type ReadingOrder =
-  | 'LR-TB'
-  | 'RL-TB'
-  | 'TB-LR'
-  | 'BT-LR'
-  | 'LR-TB-ALT'
-  | 'RL-TB-ALT'
-  | 'TB-LR-ALT'
-  | 'BT-LR-ALT';
+import type { ReadingOrder } from '../reading-order/reading-order-strategy.interface';
+
+export type { ReadingOrder };
 
 /**
  * A permutation of the four rotation angles [0°, 90°, 180°, 270°],

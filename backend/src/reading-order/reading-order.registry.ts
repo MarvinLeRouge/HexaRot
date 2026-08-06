@@ -9,8 +9,8 @@ import { TbLrStrategy } from './strategies/tb-lr.strategy';
 import { BtLrStrategy } from './strategies/bt-lr.strategy';
 
 /**
- * Resolves a key-codec ReadingOrder value to its concrete
- * ReadingOrderStrategy implementation.
+ * Resolves a ReadingOrder value to its concrete ReadingOrderStrategy
+ * implementation.
  */
 @Injectable()
 export class ReadingOrderRegistry {

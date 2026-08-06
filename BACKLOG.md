@@ -935,7 +935,7 @@ can query dimensions without knowing the concrete implementation.
 - **domain:** cipher
 - **complexity:** M
 - **parent:** ~
-- **depends-on:** FEAT-002, FEAT-004, FEAT-006, FEAT-007, FEAT-008
+- **depends-on:** FEAT-002, FEAT-004, FEAT-005, FEAT-006, FEAT-007, FEAT-008
 - **learning:** [Jest test structure, describe/it/expect patterns, test coverage configuration in Jest, mocking dependencies in NestJS tests]
 - **labels:** [test, domain:cipher, priority:high, milestone:v1]
 

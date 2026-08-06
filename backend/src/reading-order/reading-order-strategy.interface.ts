@@ -22,10 +22,12 @@ export interface BlockCoordinate {
 /**
  * Produces the traversal order of pivot blocks across a block grid.
  *
- * Implementations cover every block in the grid exactly once. Padding
- * blocks (added during grid construction) always occupy the trailing
- * positions of whichever block ends up last in the returned sequence -
- * there is no separate padding concept at this layer.
+ * Implementations cover every block in the grid exactly once. The
+ * returned sequence is the complete linear traversal order - grid
+ * construction fills it with message content from the start, and
+ * whatever positions remain at the tail become padding (which can span
+ * several trailing blocks, not just the last one). Padding placement
+ * itself is not modelled at this layer.
  */
 export interface ReadingOrderStrategy {
   /** The reading order this strategy implements. */
@@ -34,8 +36,8 @@ export interface ReadingOrderStrategy {
   /**
    * Returns every block coordinate in this strategy's traversal order.
    *
-   * @param widthInBlocks - Grid width, in pivot blocks (not cases).
-   * @param heightInBlocks - Grid height, in pivot blocks (not cases).
+   * @param widthInBlocks - Grid width, in pivot blocks (not cases). Must be a positive integer.
+   * @param heightInBlocks - Grid height, in pivot blocks (not cases). Must be a positive integer.
    */
   getBlockOrder(
     widthInBlocks: number,

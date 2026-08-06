@@ -473,7 +473,7 @@ where "end" is.
 - **type:** feat
 - **id:** FEAT-006
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** critical
 - **domain:** cipher
 - **complexity:** L
@@ -1118,7 +1118,7 @@ encode view.
 - **type:** feat
 - **id:** FEAT-019
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** low
 - **domain:** reading-order
 - **complexity:** L

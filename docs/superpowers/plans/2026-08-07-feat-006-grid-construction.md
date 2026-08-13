@@ -45,7 +45,7 @@ No existing files are modified.
 - Consumes: `VisualAlphabet`, `ColorGrid` from `../../shared/types`.
 - Produces: `VALID_PIVOT_SIZES: number[]`, `WEAK_PIVOT_SIZES_MOCK: number[]`, `SAMPLE_MESSAGES: { allSupportedChars: string; empty: string; singleChar: string; withUnsupportedChars: string }`, `MOCK_ALPHABET_PALETTE: string[]`, `extractRegion(grid: ColorGrid, x: number, y: number, width: number, height: number): ColorGrid`, `expectPaddingOnlyAfterMessage(grid: ColorGrid, message: string, alphabet: VisualAlphabet, palette: string[]): void`.
 
-- [ ] **Step 1: Create the fixtures file**
+- [x] **Step 1: Create the fixtures file**
 
 ```typescript
 // backend/src/cipher/__fixtures__/cipher.fixtures.ts
@@ -149,12 +149,12 @@ export function expectPaddingOnlyAfterMessage(
 }
 ```
 
-- [ ] **Step 2: Verify the file compiles**
+- [x] **Step 2: Verify the file compiles**
 
 Run: `cd backend && npx tsc --noEmit`
 Expected: no new errors introduced by this file (pre-existing unrelated errors elsewhere, if any, are not your concern).
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add backend/src/cipher/__fixtures__/cipher.fixtures.ts
@@ -179,7 +179,7 @@ EOF
 - Consumes: `VisualAlphabet`, `ColorGrid` from `../shared/types`; `gcd` from `../validation/validate-params`; everything produced by Task 1's fixtures file.
 - Produces: `export function buildGrid(processedString: string, alphabet: VisualAlphabet, pivotBlockSize: number): ColorGrid`. This is what FEAT-007 (rotation engine) and FEAT-011 (encode endpoint) will call next.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 ```typescript
 // backend/src/cipher/build-grid.spec.ts
@@ -356,12 +356,12 @@ describe('buildGrid', () => {
 });
 ```
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd backend && npx jest cipher/build-grid.spec.ts`
 Expected: FAIL - `Cannot find module './build-grid'`
 
-- [ ] **Step 3: Write the implementation**
+- [x] **Step 3: Write the implementation**
 
 ```typescript
 // backend/src/cipher/build-grid.ts
@@ -449,17 +449,17 @@ function getPalette(alphabet: VisualAlphabet): string[] {
 }
 ```
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `cd backend && npx jest cipher/build-grid.spec.ts`
 Expected: PASS (13 tests)
 
-- [ ] **Step 5: Run the full backend suite**
+- [x] **Step 5: Run the full backend suite**
 
 Run: `cd backend && npm run test`
 Expected: PASS, all suites including the new one, no regressions (168 pre-existing + 13 new = 181).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add backend/src/cipher/build-grid.ts backend/src/cipher/build-grid.spec.ts
@@ -469,6 +469,231 @@ feat(cipher): implement buildGrid for symbol layout and random padding
 Modified files:
 - backend/src/cipher/build-grid.ts - lays a pre-processed message into a colour-case grid sized to lcm(pivotBlockSize, symbolWidth) wide and the next multiple of pivotBlockSize tall, padding remaining cases with random colours from the alphabet's palette
 - backend/src/cipher/build-grid.spec.ts - 13 tests matching docs/tests/cipher.md section 4 one-to-one (dimensions, symbol layout, padding, edge cases)
+EOF
+)"
+```
+
+---
+
+## Post-review addendum (final whole-branch review)
+
+Tasks 1-2 above were implemented, task-reviewed, and passed a final whole-branch review. That
+review found two Important gaps closed in a fix wave already on this branch (a missing
+`pivotBlockSize` guard, and missing T=6 test coverage per `BACKLOG.md`'s own acceptance
+criterion) - both done, re-reviewed clean, not this addendum's concern.
+
+The same review also found a real architectural problem, deliberately left unfixed on the
+branch pending a decision: `gridWidthInCases = lcm(pivotBlockSize, symbolWidth)` is the
+*smallest* width satisfying both alignment constraints, and for the real Hexahue alphabet
+(`symbolWidth = 2`) that smallest width is only 1 pivot-block column wide for even T, or 2
+columns for odd T - regardless of message length. Long messages then grow arbitrarily tall
+and narrow instead of roughly square (measured: a 500-character message at T=7 produces a
+14x217 grid). Worse, with only 1-2 pivot-block columns, `ReadingOrderRegistry`'s 8 strategies
+(FEAT-005) become visually near-identical, undermining the whole point of a configurable
+reading order.
+
+The user's decision (2026-08-14): widen the grid. Task 3 below makes the grid's width
+adaptive - still always a multiple of both `pivotBlockSize` and `symbolWidth` (the two
+existing acceptance criteria are untouched), but scaled up by an integer multiplier chosen to
+bring the grid close to square for the actual message length, instead of always using the
+bare minimum multiplier of 1.
+
+**Why this needs no test rewrites:** the multiplier only exceeds 1 once the message is long
+relative to the base unit (`lcm(pivotBlockSize, symbolWidth)`). Every message used in Tasks
+1-2's existing 17 tests is short enough (longest is 25 characters) that the multiplier stays
+at 1 for all of them - verified by hand for every existing test's exact (message length, T)
+pair before writing this task. All 17 existing tests keep passing unchanged; Task 3 only adds
+new tests proving the widening behaviour itself.
+
+### Task 3: Adaptive grid width (square-ish grids for long messages)
+
+**Files:**
+- Modify: `backend/src/cipher/build-grid.ts`
+- Modify: `backend/src/cipher/build-grid.spec.ts`
+
+**Interfaces:**
+- `buildGrid`'s exported signature is unchanged (`buildGrid(processedString, alphabet, pivotBlockSize): ColorGrid`). Only its internal width computation changes.
+
+- [ ] **Step 1: Write the failing tests**
+
+Add this new `describe` block to `backend/src/cipher/build-grid.spec.ts`, as a sibling of the
+existing `dimensions`/`symbol layout`/`padding`/`edge cases`/`input validation` blocks, inside
+the outer `describe('buildGrid', ...)`:
+
+```typescript
+  describe('adaptive width for long messages', () => {
+    it('widens the grid for a long message instead of only growing taller', () => {
+      const alphabet = new MockAlphabet();
+      const message = 'A'.repeat(90);
+      const grid = buildGrid(message, alphabet, 5);
+      expect(grid[0].length).toBe(30);
+      expect(grid.length).toBe(20);
+    });
+
+    it('places symbols and padding correctly once the grid has widened', () => {
+      const alphabet = new MockAlphabet();
+      const message = 'A'.repeat(90);
+      const grid = buildGrid(message, alphabet, 5);
+      expectPaddingOnlyAfterMessage(
+        grid,
+        message,
+        alphabet,
+        MOCK_ALPHABET_PALETTE,
+      );
+    });
+
+    it('keeps the grid roughly square for a very long message instead of growing arbitrarily tall', () => {
+      const alphabet = new MockAlphabet();
+      const message = 'A'.repeat(200);
+      const grid = buildGrid(message, alphabet, 7);
+      expect(grid[0].length).toBe(42);
+      expect(grid.length).toBe(35);
+    });
+
+    it('still produces a width and height that are both multiples of pivotBlockSize once widened', () => {
+      const alphabet = new MockAlphabet();
+      const message = 'A'.repeat(200);
+      const grid = buildGrid(message, alphabet, 7);
+      expect(grid[0].length % 7).toBe(0);
+      expect(grid.length % 7).toBe(0);
+    });
+  });
+```
+
+(Expected values derived by hand: for `pivotBlockSize=5`, `MockAlphabet` (`symbolWidth=3`,
+`symbolHeight=2`), 90 characters: base unit `lcm(5,3)=15`, ideal width
+`sqrt(90*3*2)=sqrt(540)=~23.24`, multiplier `round(23.24/15)=2`, so
+`gridWidthInCases=30`, `symbolsPerRow=10`, `numRows=ceil(90/10)=9`, `neededHeight=18`,
+`gridHeightInCases=ceil(18/5)*5=20`. For `pivotBlockSize=7`, 200 characters: base unit
+`lcm(7,3)=21`, ideal width `sqrt(200*3*2)=sqrt(1200)=~34.64`, multiplier
+`round(34.64/21)=2`, `gridWidthInCases=42`, `symbolsPerRow=14`,
+`numRows=ceil(200/14)=15`, `neededHeight=30`, `gridHeightInCases=ceil(30/7)*7=35`.)
+
+- [ ] **Step 2: Run tests to verify they fail**
+
+Run: `cd backend && npx jest cipher/build-grid.spec.ts -t "adaptive width"`
+Expected: FAIL - the two dimension assertions in the first and third tests get the old
+(narrower) values instead of the new ones (`grid[0].length` would be 15 not 30, and 21 not 42).
+
+- [ ] **Step 3: Change the width computation**
+
+In `backend/src/cipher/build-grid.ts`, replace the JSDoc block and the width-computation lines:
+
+```typescript
+/**
+ * Builds the colour-case grid for a pre-processed message: lays symbols out
+ * row by row (left to right, top to bottom) at a fixed width aligned to
+ * both the pivot block size and the alphabet's symbol width, then fills
+ * every remaining case with random padding drawn from the alphabet's own
+ * colour palette.
+ *
+ * Symbol layout here is always this fixed row-major raster, independent of
+ * the key's reading order - reading order governs which pivot block gets
+ * which rotation later, not how symbols are initially placed.
+ *
+ * @param processedString - Message text already filtered to the alphabet's
+ *   supported characters (see preprocess()). Every character must be
+ *   resolvable via alphabet.getBlock.
+ * @param alphabet - Supplies symbol dimensions and per-character colour grids.
+ * @param pivotBlockSize - T: both grid dimensions, in cases, are multiples of this.
+ */
+export function buildGrid(
+  processedString: string,
+  alphabet: VisualAlphabet,
+  pivotBlockSize: number,
+): ColorGrid {
+  if (!Number.isInteger(pivotBlockSize) || pivotBlockSize < 1) {
+    throw new RangeError(
+      `pivotBlockSize must be a positive integer, got ${pivotBlockSize}`,
+    );
+  }
+
+  const { symbolWidth, symbolHeight } = alphabet;
+
+  const gridWidthInCases = lcm(pivotBlockSize, symbolWidth);
+  const symbolsPerRow = gridWidthInCases / symbolWidth;
+```
+
+with:
+
+```typescript
+/**
+ * Builds the colour-case grid for a pre-processed message: lays symbols out
+ * row by row (left to right, top to bottom), then fills every remaining
+ * case with random padding drawn from the alphabet's own colour palette.
+ *
+ * Grid width is chosen adaptively to keep the grid roughly square rather
+ * than growing arbitrarily tall for long messages: the width is the
+ * multiple of lcm(pivotBlockSize, symbolWidth) (the base unit satisfying
+ * both the block-alignment and symbol-alignment constraints) closest to
+ * sqrt(messageLength * symbolWidth * symbolHeight) - the width a perfectly
+ * square layout of the message would need. Short messages naturally land
+ * on a multiplier of 1 (a single base unit wide); only long messages widen
+ * further.
+ *
+ * Symbol layout here is always this row-major raster, independent of
+ * the key's reading order - reading order governs which pivot block gets
+ * which rotation later, not how symbols are initially placed.
+ *
+ * @param processedString - Message text already filtered to the alphabet's
+ *   supported characters (see preprocess()). Every character must be
+ *   resolvable via alphabet.getBlock.
+ * @param alphabet - Supplies symbol dimensions and per-character colour grids.
+ * @param pivotBlockSize - T: both grid dimensions, in cases, are multiples of this.
+ */
+export function buildGrid(
+  processedString: string,
+  alphabet: VisualAlphabet,
+  pivotBlockSize: number,
+): ColorGrid {
+  if (!Number.isInteger(pivotBlockSize) || pivotBlockSize < 1) {
+    throw new RangeError(
+      `pivotBlockSize must be a positive integer, got ${pivotBlockSize}`,
+    );
+  }
+
+  const { symbolWidth, symbolHeight } = alphabet;
+
+  const baseWidthUnit = lcm(pivotBlockSize, symbolWidth);
+  const baseSymbolsPerRow = baseWidthUnit / symbolWidth;
+
+  const idealWidthInCases = Math.sqrt(
+    processedString.length * symbolWidth * symbolHeight,
+  );
+  const widthMultiplier = Math.max(
+    1,
+    Math.round(idealWidthInCases / baseWidthUnit),
+  );
+
+  const gridWidthInCases = widthMultiplier * baseWidthUnit;
+  const symbolsPerRow = widthMultiplier * baseSymbolsPerRow;
+```
+
+Do not change anything else in the function - the height computation, the symbol-placement
+loop, and the padding loop are all unaffected and stay exactly as they are (they already
+consume `gridWidthInCases` and `symbolsPerRow` generically, not the old formula directly).
+
+- [ ] **Step 4: Run tests to verify they pass**
+
+Run: `cd backend && npx jest cipher/build-grid.spec.ts`
+Expected: PASS, all tests in the file (the 17 pre-existing tests unaffected, plus the 4 new
+ones from Step 1) = 21 tests in this file.
+
+- [ ] **Step 5: Run the full backend suite**
+
+Run: `cd backend && npm run test`
+Expected: PASS, all suites, no regressions (185 pre-existing + 4 new = 189).
+
+- [ ] **Step 6: Commit**
+
+```bash
+git add backend/src/cipher/build-grid.ts backend/src/cipher/build-grid.spec.ts
+git commit -m "$(cat <<'EOF'
+fix(cipher): widen the grid adaptively instead of always using the minimum width
+
+Modified files:
+- backend/src/cipher/build-grid.ts - grid width is now a multiple of lcm(pivotBlockSize, symbolWidth) chosen to bring the grid close to square for the actual message length, instead of always the bare minimum multiplier of 1 (which collapsed to 1-2 pivot-block columns for Hexahue's real symbolWidth=2, undermining FEAT-005's reading-order strategies and producing extreme aspect ratios for long messages)
+- backend/src/cipher/build-grid.spec.ts - add tests proving the widening behaviour: a moderately long message widens instead of only growing taller, symbol/padding placement remains correct once widened, a long message stays roughly square, and both dimensions remain multiples of pivotBlockSize after widening
 EOF
 )"
 ```

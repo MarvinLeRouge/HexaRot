@@ -1,4 +1,4 @@
-import { MockAlphabet } from './mock-alphabet';
+import { MockAlphabet } from '../../../test/utils/mock-alphabet';
 import { UnsupportedCharacterError } from '../../alphabet/errors/unsupported-character.error';
 
 describe('MockAlphabet', () => {

@@ -89,8 +89,19 @@ describe('buildGrid', () => {
     it('places no message symbol in the padding area', () => {
       const alphabet = new MockAlphabet();
       const grid = buildGrid(SAMPLE_MESSAGES.singleChar, alphabet, 5);
-      const paddingCellRightAfterMessage = grid[0][alphabet.symbolWidth];
-      expect(MOCK_ALPHABET_PALETTE).toContain(paddingCellRightAfterMessage);
+      const paddingRegion = extractRegion(
+        grid,
+        alphabet.symbolWidth,
+        0,
+        alphabet.symbolWidth,
+        alphabet.symbolHeight,
+      );
+      expect(paddingRegion).not.toEqual(alphabet.getBlock('A'));
+      expect(
+        paddingRegion
+          .flat()
+          .every((color) => MOCK_ALPHABET_PALETTE.includes(color)),
+      ).toBe(true);
     });
   });
 

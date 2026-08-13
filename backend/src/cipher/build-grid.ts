@@ -23,6 +23,12 @@ export function buildGrid(
   alphabet: VisualAlphabet,
   pivotBlockSize: number,
 ): ColorGrid {
+  if (!Number.isInteger(pivotBlockSize) || pivotBlockSize < 1) {
+    throw new RangeError(
+      `pivotBlockSize must be a positive integer, got ${pivotBlockSize}`,
+    );
+  }
+
   const { symbolWidth, symbolHeight } = alphabet;
 
   const gridWidthInCases = lcm(pivotBlockSize, symbolWidth);

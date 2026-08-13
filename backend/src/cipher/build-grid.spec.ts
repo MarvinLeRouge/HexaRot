@@ -30,6 +30,20 @@ describe('buildGrid', () => {
       });
       expect(results).toEqual(VALID_PIVOT_SIZES.map(() => true));
     });
+
+    it('produces a structurally correct grid for T=6 (a weak pivot size, sharing a factor with both alphabet dimensions)', () => {
+      const alphabet = new MockAlphabet();
+      const message = SAMPLE_MESSAGES.allSupportedChars;
+      const grid = buildGrid(message, alphabet, 6);
+      expect(grid[0].length % 6).toBe(0);
+      expect(grid.length % 6).toBe(0);
+      expectPaddingOnlyAfterMessage(
+        grid,
+        message,
+        alphabet,
+        MOCK_ALPHABET_PALETTE,
+      );
+    });
   });
 
   describe('symbol layout', () => {
@@ -177,6 +191,29 @@ describe('buildGrid', () => {
       expect(
         grid.flat().every((color) => MOCK_ALPHABET_PALETTE.includes(color)),
       ).toBe(true);
+    });
+  });
+
+  describe('input validation', () => {
+    it('throws a RangeError for pivotBlockSize=0', () => {
+      const alphabet = new MockAlphabet();
+      expect(() => buildGrid(SAMPLE_MESSAGES.singleChar, alphabet, 0)).toThrow(
+        RangeError,
+      );
+    });
+
+    it('throws a RangeError for a negative pivotBlockSize', () => {
+      const alphabet = new MockAlphabet();
+      expect(() => buildGrid(SAMPLE_MESSAGES.singleChar, alphabet, -3)).toThrow(
+        RangeError,
+      );
+    });
+
+    it('throws a RangeError for a non-integer pivotBlockSize', () => {
+      const alphabet = new MockAlphabet();
+      expect(() =>
+        buildGrid(SAMPLE_MESSAGES.singleChar, alphabet, 2.5),
+      ).toThrow(RangeError);
     });
   });
 });

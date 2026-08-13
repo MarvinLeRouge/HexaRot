@@ -473,7 +473,7 @@ where "end" is.
 - **type:** feat
 - **id:** FEAT-006
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** cipher
 - **complexity:** L

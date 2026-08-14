@@ -216,4 +216,42 @@ describe('buildGrid', () => {
       ).toThrow(RangeError);
     });
   });
+
+  describe('adaptive width for long messages', () => {
+    it('widens the grid for a long message instead of only growing taller', () => {
+      const alphabet = new MockAlphabet();
+      const message = 'A'.repeat(90);
+      const grid = buildGrid(message, alphabet, 5);
+      expect(grid[0].length).toBe(30);
+      expect(grid.length).toBe(20);
+    });
+
+    it('places symbols and padding correctly once the grid has widened', () => {
+      const alphabet = new MockAlphabet();
+      const message = 'A'.repeat(90);
+      const grid = buildGrid(message, alphabet, 5);
+      expectPaddingOnlyAfterMessage(
+        grid,
+        message,
+        alphabet,
+        MOCK_ALPHABET_PALETTE,
+      );
+    });
+
+    it('keeps the grid roughly square for a very long message instead of growing arbitrarily tall', () => {
+      const alphabet = new MockAlphabet();
+      const message = 'A'.repeat(200);
+      const grid = buildGrid(message, alphabet, 7);
+      expect(grid[0].length).toBe(42);
+      expect(grid.length).toBe(35);
+    });
+
+    it('still produces a width and height that are both multiples of pivotBlockSize once widened', () => {
+      const alphabet = new MockAlphabet();
+      const message = 'A'.repeat(200);
+      const grid = buildGrid(message, alphabet, 7);
+      expect(grid[0].length % 7).toBe(0);
+      expect(grid.length % 7).toBe(0);
+    });
+  });
 });

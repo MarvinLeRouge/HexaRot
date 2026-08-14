@@ -3,12 +3,19 @@ import { gcd } from '../validation/validate-params';
 
 /**
  * Builds the colour-case grid for a pre-processed message: lays symbols out
- * row by row (left to right, top to bottom) at a fixed width aligned to
- * both the pivot block size and the alphabet's symbol width, then fills
- * every remaining case with random padding drawn from the alphabet's own
- * colour palette.
+ * row by row (left to right, top to bottom), then fills every remaining
+ * case with random padding drawn from the alphabet's own colour palette.
  *
- * Symbol layout here is always this fixed row-major raster, independent of
+ * Grid width is chosen adaptively to keep the grid roughly square rather
+ * than growing arbitrarily tall for long messages: the width is the
+ * multiple of lcm(pivotBlockSize, symbolWidth) (the base unit satisfying
+ * both the block-alignment and symbol-alignment constraints) closest to
+ * sqrt(messageLength * symbolWidth * symbolHeight) - the width a perfectly
+ * square layout of the message would need. Short messages naturally land
+ * on a multiplier of 1 (a single base unit wide); only long messages widen
+ * further.
+ *
+ * Symbol layout here is always this row-major raster, independent of
  * the key's reading order - reading order governs which pivot block gets
  * which rotation later, not how symbols are initially placed.
  *
@@ -31,8 +38,19 @@ export function buildGrid(
 
   const { symbolWidth, symbolHeight } = alphabet;
 
-  const gridWidthInCases = lcm(pivotBlockSize, symbolWidth);
-  const symbolsPerRow = gridWidthInCases / symbolWidth;
+  const baseWidthUnit = lcm(pivotBlockSize, symbolWidth);
+  const baseSymbolsPerRow = baseWidthUnit / symbolWidth;
+
+  const idealWidthInCases = Math.sqrt(
+    processedString.length * symbolWidth * symbolHeight,
+  );
+  const widthMultiplier = Math.max(
+    1,
+    Math.round(idealWidthInCases / baseWidthUnit),
+  );
+
+  const gridWidthInCases = widthMultiplier * baseWidthUnit;
+  const symbolsPerRow = widthMultiplier * baseSymbolsPerRow;
 
   const numRows = Math.ceil(processedString.length / symbolsPerRow);
   const neededHeightInCases = Math.max(symbolHeight, numRows * symbolHeight);

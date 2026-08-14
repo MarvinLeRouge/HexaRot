@@ -510,7 +510,7 @@ The output is a typed 2D grid of colour cases, ready for the rotation step.
 - **type:** feat
 - **id:** FEAT-007
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** critical
 - **domain:** rotation
 - **complexity:** L
@@ -549,7 +549,7 @@ The engine must also support the inverse operation (for decoding).
 - **type:** feat
 - **id:** FEAT-008
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** high
 - **domain:** cipher
 - **complexity:** S

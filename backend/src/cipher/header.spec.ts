@@ -7,6 +7,10 @@ import {
 
 describe('encodeHeader / decodeHeader', () => {
   describe('round-trip', () => {
+    it('recovers messageLength=0 after encode-decode', () => {
+      expect(decodeHeader(encodeHeader(0))).toBe(0);
+    });
+
     it('recovers messageLength=1 after encode-decode', () => {
       expect(decodeHeader(encodeHeader(1))).toBe(1);
     });

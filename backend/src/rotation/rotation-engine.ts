@@ -64,6 +64,20 @@ export class RotationEngine {
     readingOrder: ReadingOrder,
     inverse: boolean,
   ): ColorGrid {
+    if (!Number.isInteger(pivotBlockSize) || pivotBlockSize < 1) {
+      throw new Error(
+        `pivotBlockSize must be a positive integer, got ${pivotBlockSize}`,
+      );
+    }
+
+    for (const entry of rotationSequence) {
+      if (!Number.isInteger(entry) || entry < 0 || entry > 3) {
+        throw new Error(
+          `rotationSequence entries must be integers 0-3 (angle indices), got ${entry}`,
+        );
+      }
+    }
+
     const widthInBlocks = grid[0].length / pivotBlockSize;
     const heightInBlocks = grid.length / pivotBlockSize;
     const strategy = this.readingOrderRegistry.getStrategy(readingOrder);
@@ -76,8 +90,16 @@ export class RotationEngine {
         : 'cw'
       : direction;
 
+    // Iterating in reverse for decode matches docs/tests/rotation.md's literal
+    // wording ("applies the inverse rotation sequence in reverse block order").
+    // It does not change the result: each block's angle is derived from its
+    // index i in blockOrder (not from iteration position), blocks are
+    // pairwise-disjoint regions, and every block is read from the untouched
+    // input grid and written into a separate result grid. Iteration order is
+    // therefore inert; this follows the spec's stated order anyway rather
+    // than relying on that invariant silently.
     const indices = [...blockOrder.keys()];
-    const orderedIndices = inverse ? indices.reverse() : indices;
+    const orderedIndices = inverse ? indices.toReversed() : indices;
 
     for (const i of orderedIndices) {
       const { x, y } = blockOrder[i];

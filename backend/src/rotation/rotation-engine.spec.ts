@@ -153,9 +153,9 @@ describe('RotationEngine.decode', () => {
       5,
       [0, 1, 2, 3],
       'cw',
-      'LR-TB',
+      'RL-TB',
     );
-    const decoded = engine.decode(encoded, 5, [0, 1, 2, 3], 'cw', 'LR-TB');
+    const decoded = engine.decode(encoded, 5, [0, 1, 2, 3], 'cw', 'RL-TB');
     expect(decoded).toEqual(SAMPLE_FULL_GRID);
   });
 
@@ -192,9 +192,9 @@ describe('RotationEngine round-trip (encode then decode)', () => {
       5,
       [1, 2, 3, 0],
       'cw',
-      'LR-TB',
+      'TB-LR',
     );
-    const decoded = engine.decode(encoded, 5, [1, 2, 3, 0], 'cw', 'LR-TB');
+    const decoded = engine.decode(encoded, 5, [1, 2, 3, 0], 'cw', 'TB-LR');
     expect(decoded).toEqual(SAMPLE_FULL_GRID);
   });
 
@@ -236,5 +236,42 @@ describe('RotationEngine round-trip (encode then decode)', () => {
     const encoded = engine.encode(grid, 5, [0, 1, 2, 3], 'cw', 'LR-TB');
     const decoded = engine.decode(encoded, 5, [0, 1, 2, 3], 'cw', 'LR-TB');
     expect(decoded).toEqual(grid);
+  });
+});
+
+describe('RotationEngine input validation', () => {
+  it('throws for a pivotBlockSize of 0', () => {
+    const engine = new RotationEngine(new ReadingOrderRegistry());
+    expect(() =>
+      engine.encode(SAMPLE_FULL_GRID, 0, [0, 1, 2, 3], 'cw', 'LR-TB'),
+    ).toThrow();
+  });
+
+  it('throws for a negative pivotBlockSize', () => {
+    const engine = new RotationEngine(new ReadingOrderRegistry());
+    expect(() =>
+      engine.encode(SAMPLE_FULL_GRID, -5, [0, 1, 2, 3], 'cw', 'LR-TB'),
+    ).toThrow();
+  });
+
+  it('throws for a non-integer pivotBlockSize', () => {
+    const engine = new RotationEngine(new ReadingOrderRegistry());
+    expect(() =>
+      engine.encode(SAMPLE_FULL_GRID, 2.5, [0, 1, 2, 3], 'cw', 'LR-TB'),
+    ).toThrow();
+  });
+
+  it('applies the same guard to decode', () => {
+    const engine = new RotationEngine(new ReadingOrderRegistry());
+    expect(() =>
+      engine.decode(SAMPLE_FULL_GRID, 0, [0, 1, 2, 3], 'cw', 'LR-TB'),
+    ).toThrow();
+  });
+
+  it('throws for a rotation sequence entry outside 0-3', () => {
+    const engine = new RotationEngine(new ReadingOrderRegistry());
+    expect(() =>
+      engine.encode(SAMPLE_FULL_GRID, 5, [4, 0, 0, 0], 'cw', 'LR-TB'),
+    ).toThrow();
   });
 });

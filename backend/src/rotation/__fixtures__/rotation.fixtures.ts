@@ -2,6 +2,11 @@
 import { ColorGrid } from '../../shared/types';
 import { RotationSequence } from '../../key/key-codec';
 
+// Note: 270-degree outputs are deliberately not stored here. They are
+// proven by composition against the 90-degree primitive in rotate-block.spec.ts
+// (three successive 90CW rotations, or one 90CCW rotation), which is a
+// stronger check than a hand-typed 270-degree literal would be.
+
 /**
  * A 2x2 block with four distinct cell values, so rotation correctness can
  * be verified by cell position. Expected outputs hand-derived from the
@@ -91,6 +96,12 @@ export const SAMPLE_FULL_GRID: ColorGrid = Array.from(
 /**
  * A representative subset of rotation sequences. Entries are angle
  * indices (0=0deg, 1=90deg, 2=180deg, 3=270deg), not degrees.
+ *
+ * Not imported by name anywhere: docs/tests/rotation.md's Fixtures section
+ * requires defining this set, but every RotationEngine test needs one
+ * specific sequence matching a specific spec bullet's stated values, not an
+ * arbitrary member of a representative subset. Kept here to satisfy the
+ * spec's literal Fixtures list.
  */
 export const ALL_ROTATION_SEQUENCES: RotationSequence[] = [
   [0, 0, 0, 0],

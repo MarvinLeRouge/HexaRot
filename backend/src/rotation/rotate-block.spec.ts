@@ -117,24 +117,24 @@ describe('rotateBlock', () => {
       expect(result).not.toBe(KNOWN_3x3_BLOCK.grid);
     });
   });
+});
 
-  describe('rotateBlock - direction symmetry', () => {
-    it('produces different results for CW vs CCW at 90 degrees for a non-uniform block', () => {
-      const cw = rotateBlock(KNOWN_3x3_BLOCK.grid, 90, 'cw');
-      const ccw = rotateBlock(KNOWN_3x3_BLOCK.grid, 90, 'ccw');
-      expect(cw).not.toEqual(ccw);
-    });
+describe('rotateBlock - direction symmetry', () => {
+  it('produces different results for CW vs CCW at 90 degrees for a non-uniform block', () => {
+    const cw = rotateBlock(KNOWN_3x3_BLOCK.grid, 90, 'cw');
+    const ccw = rotateBlock(KNOWN_3x3_BLOCK.grid, 90, 'ccw');
+    expect(cw).not.toEqual(ccw);
+  });
 
-    it('produces the same result for CW vs CCW at 0 degrees', () => {
-      expect(rotateBlock(KNOWN_3x3_BLOCK.grid, 0, 'cw')).toEqual(
-        rotateBlock(KNOWN_3x3_BLOCK.grid, 0, 'ccw'),
-      );
-    });
+  it('produces the same result for CW vs CCW at 0 degrees', () => {
+    expect(rotateBlock(KNOWN_3x3_BLOCK.grid, 0, 'cw')).toEqual(
+      rotateBlock(KNOWN_3x3_BLOCK.grid, 0, 'ccw'),
+    );
+  });
 
-    it('produces the same result for CW vs CCW at 180 degrees', () => {
-      expect(rotateBlock(KNOWN_3x3_BLOCK.grid, 180, 'cw')).toEqual(
-        rotateBlock(KNOWN_3x3_BLOCK.grid, 180, 'ccw'),
-      );
-    });
+  it('produces the same result for CW vs CCW at 180 degrees', () => {
+    expect(rotateBlock(KNOWN_3x3_BLOCK.grid, 180, 'cw')).toEqual(
+      rotateBlock(KNOWN_3x3_BLOCK.grid, 180, 'ccw'),
+    );
   });
 });

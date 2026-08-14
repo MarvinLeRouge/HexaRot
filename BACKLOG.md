@@ -510,7 +510,7 @@ The output is a typed 2D grid of colour cases, ready for the rotation step.
 - **type:** feat
 - **id:** FEAT-007
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** rotation
 - **complexity:** L

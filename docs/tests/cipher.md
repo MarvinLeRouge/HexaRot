@@ -201,6 +201,7 @@ describe('encodeHeader / decodeHeader')
 ```
 
 **Round-trip**
+- it recovers messageLength=0 after encode→decode
 - it recovers messageLength=1 after encode→decode
 - it recovers messageLength=100 after encode→decode
 - it recovers the maximum supported message length after encode→decode
@@ -213,6 +214,12 @@ describe('encodeHeader / decodeHeader')
 **decodeHeader**
 - it throws or returns an error for a malformed header input
 - it throws or returns an error for a truncated header input
+
+**Input validation**
+
+- it throws a RangeError for a negative messageLength
+- it throws a RangeError for a messageLength exceeding the maximum supported length
+- it throws a RangeError for a non-integer messageLength
 
 ---
 

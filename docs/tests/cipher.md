@@ -182,6 +182,7 @@ fixed-minimum behaviour; only long messages widen further.
 - it places symbols and padding correctly once the grid has widened
 - it keeps the grid roughly square for a very long message instead of growing arbitrarily tall
 - it still produces a width and height that are both multiples of pivotBlockSize once widened
+- it keeps multiple pivot-block columns for a narrow-symbol alphabet on a long message (the case that motivated this fix)
 
 **Input validation**
 

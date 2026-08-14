@@ -549,7 +549,7 @@ The engine must also support the inverse operation (for decoding).
 - **type:** feat
 - **id:** FEAT-008
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** cipher
 - **complexity:** S

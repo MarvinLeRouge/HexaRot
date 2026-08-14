@@ -583,7 +583,7 @@ implement `encodeHeader` and `decodeHeader` functions.
 - **type:** feat
 - **id:** FEAT-009
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** critical
 - **domain:** renderer
 - **complexity:** M
@@ -622,7 +622,7 @@ The header row is rendered above the grid. The Hexahue standard colour palette i
 - **type:** feat
 - **id:** FEAT-010
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** critical
 - **domain:** renderer
 - **complexity:** M
@@ -930,7 +930,7 @@ can query dimensions without knowing the concrete implementation.
 - **type:** test
 - **id:** TEST-001
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** high
 - **domain:** cipher
 - **complexity:** M

@@ -152,6 +152,7 @@ describe('buildGrid')
 - it produces a grid whose width in cases is a multiple of pivotBlockSize
 - it produces a grid whose height in cases is a multiple of pivotBlockSize
 - it satisfies both dimension constraints for T=5, T=7, T=11
+- it produces a structurally correct grid for T=6 (a weak pivot size, sharing a factor with both alphabet dimensions)
 
 **Symbol layout**
 - it places the first symbol of the message at position (0,0)
@@ -168,6 +169,25 @@ describe('buildGrid')
 - it handles a message that fills the grid exactly (zero padding needed)
 - it handles a single-character message
 - it handles an empty string (grid contains only padding)
+
+**Adaptive width**
+
+Grid width is not fixed at the minimum valid value. It scales up to keep the grid roughly
+square for the actual message length: the width is the multiple of `lcm(pivotBlockSize,
+symbolWidth)` nearest to `sqrt(messageLength * symbolWidth * symbolHeight)` (minimum one
+multiple). Short messages naturally land on a multiplier of 1, identical to the old
+fixed-minimum behaviour; only long messages widen further.
+
+- it widens the grid for a long message instead of only growing taller
+- it places symbols and padding correctly once the grid has widened
+- it keeps the grid roughly square for a very long message instead of growing arbitrarily tall
+- it still produces a width and height that are both multiples of pivotBlockSize once widened
+
+**Input validation**
+
+- it throws a RangeError for pivotBlockSize=0
+- it throws a RangeError for a negative pivotBlockSize
+- it throws a RangeError for a non-integer pivotBlockSize
 
 ---
 

@@ -4,7 +4,7 @@
 
 **Goal:** Implement `buildGrid(processedString, alphabet, pivotBlockSize)`, which lays a pre-processed message out symbol by symbol into a colour-case grid sized to be a multiple of both the pivot block size and the alphabet's symbol dimensions, then fills every remaining case with random padding drawn from the alphabet's own colour palette.
 
-**Architecture:** A single pure function in the `cipher` module. Grid width in cases is `lcm(pivotBlockSize, symbolWidth)` (the smallest width satisfying both the block-alignment and symbol-alignment constraints at once); symbols are laid out row-major (left to right, top to bottom) at that fixed width, independent of message length. Grid height in cases is the number of symbol-rows needed, rounded up to the next multiple of `pivotBlockSize`. This is unrelated to `ReadingOrderStrategy` (FEAT-005) - reading order governs which pivot block gets which *rotation* later (FEAT-007); symbol layout here is always the same fixed row-major raster, per the backlog description ("lay out symbols row by row") and `CONTEXT.md`'s architecture section.
+**Architecture:** A single pure function in the `cipher` module. Grid width in cases is an integer multiple of `lcm(pivotBlockSize, symbolWidth)` (the base unit satisfying both the block-alignment and symbol-alignment constraints at once), scaled up to keep the grid roughly square for the actual message length rather than fixed at that base unit; symbols are laid out row-major (left to right, top to bottom) at the resulting width. Grid height in cases is the number of symbol-rows needed, rounded up to the next multiple of `pivotBlockSize`. This is unrelated to `ReadingOrderStrategy` (FEAT-005) - reading order governs which pivot block gets which *rotation* later (FEAT-007); symbol layout here is always the same row-major raster, per the backlog description ("lay out symbols row by row") and `CONTEXT.md`'s architecture section. See Task 3 below for the adaptive-width derivation.
 
 **Tech Stack:** TypeScript (strict), Jest + ts-jest.
 
@@ -514,7 +514,7 @@ new tests proving the widening behaviour itself.
 **Interfaces:**
 - `buildGrid`'s exported signature is unchanged (`buildGrid(processedString, alphabet, pivotBlockSize): ColorGrid`). Only its internal width computation changes.
 
-- [ ] **Step 1: Write the failing tests**
+- [x] **Step 1: Write the failing tests**
 
 Add this new `describe` block to `backend/src/cipher/build-grid.spec.ts`, as a sibling of the
 existing `dimensions`/`symbol layout`/`padding`/`edge cases`/`input validation` blocks, inside
@@ -569,13 +569,13 @@ the outer `describe('buildGrid', ...)`:
 `round(34.64/21)=2`, `gridWidthInCases=42`, `symbolsPerRow=14`,
 `numRows=ceil(200/14)=15`, `neededHeight=30`, `gridHeightInCases=ceil(30/7)*7=35`.)
 
-- [ ] **Step 2: Run tests to verify they fail**
+- [x] **Step 2: Run tests to verify they fail**
 
 Run: `cd backend && npx jest cipher/build-grid.spec.ts -t "adaptive width"`
 Expected: FAIL - the two dimension assertions in the first and third tests get the old
 (narrower) values instead of the new ones (`grid[0].length` would be 15 not 30, and 21 not 42).
 
-- [ ] **Step 3: Change the width computation**
+- [x] **Step 3: Change the width computation**
 
 In `backend/src/cipher/build-grid.ts`, replace the JSDoc block and the width-computation lines:
 
@@ -673,18 +673,18 @@ Do not change anything else in the function - the height computation, the symbol
 loop, and the padding loop are all unaffected and stay exactly as they are (they already
 consume `gridWidthInCases` and `symbolsPerRow` generically, not the old formula directly).
 
-- [ ] **Step 4: Run tests to verify they pass**
+- [x] **Step 4: Run tests to verify they pass**
 
 Run: `cd backend && npx jest cipher/build-grid.spec.ts`
 Expected: PASS, all tests in the file (the 17 pre-existing tests unaffected, plus the 4 new
 ones from Step 1) = 21 tests in this file.
 
-- [ ] **Step 5: Run the full backend suite**
+- [x] **Step 5: Run the full backend suite**
 
 Run: `cd backend && npm run test`
 Expected: PASS, all suites, no regressions (185 pre-existing + 4 new = 189).
 
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ```bash
 git add backend/src/cipher/build-grid.ts backend/src/cipher/build-grid.spec.ts

@@ -1,4 +1,5 @@
 import { buildGrid } from './build-grid';
+import { VisualAlphabet } from '../shared/types';
 import { MockAlphabet } from '../../test/utils/mock-alphabet';
 import {
   VALID_PIVOT_SIZES,
@@ -58,7 +59,7 @@ describe('buildGrid', () => {
     it('lays out symbols left-to-right, top-to-bottom within the message area', () => {
       const alphabet = new MockAlphabet();
       const grid = buildGrid(SAMPLE_MESSAGES.allSupportedChars, alphabet, 5);
-      // symbolsPerRow = lcm(5,3)/3 = 15/3 = 5, so 'ABCDEF' wraps: row 0 = ABCDE, row 1 = F
+      // symbolsPerRow = widthMultiplier(1) * lcm(5,3)/3 = 5, so 'ABCDEF' wraps: row 0 = ABCDE, row 1 = F
       expect(
         extractRegion(
           grid,
@@ -252,6 +253,22 @@ describe('buildGrid', () => {
       const grid = buildGrid(message, alphabet, 7);
       expect(grid[0].length % 7).toBe(0);
       expect(grid.length % 7).toBe(0);
+    });
+
+    it('keeps multiple pivot-block columns for a narrow-symbol alphabet on a long message (the case that motivated this fix)', () => {
+      const narrowAlphabet: VisualAlphabet = {
+        symbolWidth: 2,
+        symbolHeight: 3,
+        getBlock: () => [
+          ['red', 'green'],
+          ['blue', 'yellow'],
+          ['purple', 'cyan'],
+        ],
+        getSupportedChars: () => ['A'],
+      };
+      const grid = buildGrid('A'.repeat(500), narrowAlphabet, 7);
+      const pivotBlockColumns = grid[0].length / 7;
+      expect(pivotBlockColumns).toBeGreaterThanOrEqual(4);
     });
   });
 });

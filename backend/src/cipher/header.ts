@@ -12,6 +12,7 @@ export const MAX_MESSAGE_LENGTH = 0xffff;
  * colour cases for the rendered cryptogram is the renderer's job, not
  * this function's.
  *
+ * @param messageLength - Count of symbols in the pre-processed message (preprocess(input, alphabet).text.length, the same count buildGrid lays into the grid), not the raw input string length.
  * @throws {RangeError} If messageLength is not an integer in [0, MAX_MESSAGE_LENGTH].
  */
 export function encodeHeader(messageLength: number): Buffer {

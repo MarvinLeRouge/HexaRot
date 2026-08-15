@@ -623,7 +623,7 @@ docs/tests/renderer.md, "Design note: no visual header row").
 - **type:** feat
 - **id:** FEAT-010
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** renderer
 - **complexity:** M

@@ -73,7 +73,13 @@ describe('SvgRenderer')
 - it sets `x`, `y`, `width`, `height` attributes on every `<rect>`
 
 **Colour accuracy**
-- it maps each Hexahue palette colour to the correct hex colour string (e.g. '#FF0000')
+- it maps each Hexahue palette colour to the correct hex colour string (e.g. '#ff0000')
+
+**Input validation**
+- it throws for an empty grid (zero rows)
+- it throws for a grid with a zero-length row
+- it throws for a grid with inconsistent row lengths (not rectangular)
+- it throws for an invalid size value
 
 ---
 

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
 import { ColorGrid, CaseSize, Renderer } from '../shared/types';
-import { CASE_PIXELS, colorNameToRgb } from './palette';
+import { getCasePixels, colorNameToRgb } from './palette';
 
 const CHANNELS = 3; // RGB, no alpha
 
@@ -29,12 +29,7 @@ export class PngRenderer implements Renderer<Buffer> {
       }
     }
 
-    const casePixels = CASE_PIXELS[size];
-    if (casePixels === undefined) {
-      throw new RangeError(
-        `size must be one of: ${Object.keys(CASE_PIXELS).join(', ')}, got "${size}"`,
-      );
-    }
+    const casePixels = getCasePixels(size);
     const widthPx = gridWidthInCases * casePixels;
     const heightPx = gridHeightInCases * casePixels;
 

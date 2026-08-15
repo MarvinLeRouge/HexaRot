@@ -111,7 +111,7 @@ The following shared fixtures must be defined in `__fixtures__/renderer.fixtures
   known palette colours), representing a pre-rotated grid ready for rendering.
 - `HEXAHUE_PALETTE_MAP` — map of colour name → expected RGB tuple and hex string,
   covering all colours in the Hexahue palette.
-- `EXPECTED_PNG_DIMENSIONS` — map of size option → `{ casePixels }` for computing
+- `EXPECTED_PNG_DIMENSIONS` - map of size option → `{ casePixels }` for computing
   expected output dimensions.
 
 ---

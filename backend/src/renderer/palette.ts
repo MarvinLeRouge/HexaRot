@@ -5,24 +5,25 @@ import { CaseSize } from '../shared/types';
  * hex RGB string. V1 renders only this fixed palette (see CONTEXT.md,
  * "Colour Palette" - alternate themes are out of scope).
  */
-export const HEXAHUE_COLOR_HEX: Readonly<Record<string, string>> = {
-  purple: '#ff00ff',
-  red: '#ff0000',
-  green: '#66ff00',
-  yellow: '#ffff00',
-  blue: '#0000ff',
-  cyan: '#00ffff',
-  white: '#ffffff',
-  black: '#000000',
-  gray: '#888888',
-};
+export const HEXAHUE_COLOR_HEX: Readonly<Record<string, string>> =
+  Object.freeze({
+    purple: '#ff00ff',
+    red: '#ff0000',
+    green: '#66ff00',
+    yellow: '#ffff00',
+    blue: '#0000ff',
+    cyan: '#00ffff',
+    white: '#ffffff',
+    black: '#000000',
+    gray: '#888888',
+  });
 
 /** Pixel size (width and height) of a single colour case, per case-size option. */
-export const CASE_PIXELS: Readonly<Record<CaseSize, number>> = {
+export const CASE_PIXELS: Readonly<Record<CaseSize, number>> = Object.freeze({
   small: 8,
   medium: 16,
   large: 32,
-};
+});
 
 /**
  * Resolves a Hexahue colour name to its RGB triple.

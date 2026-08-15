@@ -14,9 +14,10 @@ import {
  * render) for a known short message, as required by
  * docs/tests/renderer.md section 3.
  *
- * T=5, LR-TB, sequence [0,90,180,270] (index sequence [0,1,2,3] - see this
- * plan's Global Constraints for why), CW, size medium. No header anywhere
- * in this pipeline - see this plan's "Design decision" note.
+ * T=5, LR-TB, sequence [0,90,180,270] (index sequence [0,1,2,3] - see
+ * docs/tests/renderer.md, "Design note: no visual header row", for why),
+ * CW, size medium. No header anywhere in this pipeline - see
+ * docs/tests/renderer.md, "Design note: no visual header row".
  */
 async function encodeAndRender(): Promise<Buffer> {
   const alphabet = MOCK_HEXAHUE_ALPHABET;
@@ -43,7 +44,7 @@ describe('PngRenderer - integration', () => {
     const buffer = await encodeAndRender();
     const meta = await sharp(buffer).metadata();
 
-    const expectedGridWidthInCases = 10; // lcm(pivotBlockSize=5, symbolWidth=2)
+    const expectedGridWidthInCases = 10; // widthMultiplier(1) * lcm(pivotBlockSize=5, symbolWidth=2)
     expect(meta.width).toBe(
       expectedGridWidthInCases * EXPECTED_PNG_DIMENSIONS.medium.casePixels,
     );

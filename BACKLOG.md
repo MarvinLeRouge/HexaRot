@@ -583,7 +583,7 @@ implement `encodeHeader` and `decodeHeader` functions.
 - **type:** feat
 - **id:** FEAT-009
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** renderer
 - **complexity:** M

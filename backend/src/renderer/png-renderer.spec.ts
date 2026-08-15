@@ -1,5 +1,5 @@
 import sharp from 'sharp';
-import { ColorGrid } from '../shared/types';
+import { CaseSize, ColorGrid } from '../shared/types';
 import { PngRenderer } from './png-renderer';
 import {
   MOCK_ROTATED_GRID_4x6,
@@ -134,6 +134,12 @@ describe('PngRenderer', () => {
       await expect(renderer.render(raggedGrid, 'small')).rejects.toThrow(
         RangeError,
       );
+    });
+
+    it('throws a RangeError for an invalid size value', async () => {
+      await expect(
+        renderer.render(MOCK_ROTATED_GRID_4x6, 'huge' as CaseSize),
+      ).rejects.toThrow(RangeError);
     });
   });
 });

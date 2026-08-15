@@ -30,6 +30,11 @@ export class PngRenderer implements Renderer<Buffer> {
     }
 
     const casePixels = CASE_PIXELS[size];
+    if (casePixels === undefined) {
+      throw new RangeError(
+        `size must be one of: ${Object.keys(CASE_PIXELS).join(', ')}, got "${size}"`,
+      );
+    }
     const widthPx = gridWidthInCases * casePixels;
     const heightPx = gridHeightInCases * casePixels;
 

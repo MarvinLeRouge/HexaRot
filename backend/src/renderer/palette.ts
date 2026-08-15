@@ -30,12 +30,12 @@ export const CASE_PIXELS: Readonly<Record<CaseSize, number>> = {
  * @throws {RangeError} If the colour name is not part of the Hexahue palette.
  */
 export function colorNameToRgb(colorName: string): [number, number, number] {
-  const hex = HEXAHUE_COLOR_HEX[colorName];
-  if (!hex) {
+  if (!Object.prototype.hasOwnProperty.call(HEXAHUE_COLOR_HEX, colorName)) {
     throw new RangeError(
       `Unknown colour "${colorName}", expected one of: ${Object.keys(HEXAHUE_COLOR_HEX).join(', ')}`,
     );
   }
+  const hex = HEXAHUE_COLOR_HEX[colorName];
   return [
     parseInt(hex.slice(1, 3), 16),
     parseInt(hex.slice(3, 5), 16),

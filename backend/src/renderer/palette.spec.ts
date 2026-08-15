@@ -39,4 +39,9 @@ describe('colorNameToRgb', () => {
     expect(() => colorNameToRgb('magenta')).toThrow(RangeError);
     expect(() => colorNameToRgb('')).toThrow(RangeError);
   });
+
+  it('throws a RangeError for colour names that match Object.prototype members', () => {
+    expect(() => colorNameToRgb('constructor')).toThrow(RangeError);
+    expect(() => colorNameToRgb('toString')).toThrow(RangeError);
+  });
 });

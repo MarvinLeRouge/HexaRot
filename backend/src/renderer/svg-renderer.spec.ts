@@ -67,6 +67,19 @@ describe('SvgRenderer', () => {
       expect(svg).not.toContain('src=');
       expect(svg).not.toContain('xlink');
     });
+
+    it('declares the SVG namespace on the root element', () => {
+      const svg = renderer.render(MOCK_ROTATED_GRID_4x6, 'small');
+      expect(svg).toContain('xmlns="http://www.w3.org/2000/svg"');
+    });
+
+    it('sets literal width and height attributes on the root for intrinsic sizing', () => {
+      const svg = renderer.render(MOCK_ROTATED_GRID_4x6, 'small');
+      const casePixels = EXPECTED_PNG_DIMENSIONS.small.casePixels;
+      expect(svg).toContain(
+        `width="${4 * casePixels}" height="${6 * casePixels}"`,
+      );
+    });
   });
 
   describe('viewBox', () => {

@@ -393,11 +393,10 @@ import { ColorGrid, CaseSize, Renderer } from '../shared/types';
 import { getCasePixels, colorNameToHex } from './palette';
 
 /**
- * Renders a fully assembled ColorGrid (header rows already stacked above
- * the message body) to a self-contained SVG string, using native string
- * templating (no DOM library). Each colour case is painted as one <rect>
- * element - there is no metadata header of any kind (see
- * docs/tests/renderer.md, "Design note: no visual header row", for why).
+ * Renders a ColorGrid (message symbols plus random padding, already
+ * rotated - no header of any kind) to a self-contained SVG string, using
+ * native string templating (no DOM library). Each colour case is painted
+ * as one <rect> element.
  */
 @Injectable()
 export class SvgRenderer implements Renderer<string> {

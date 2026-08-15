@@ -1,4 +1,10 @@
-import { HEXAHUE_COLOR_HEX, CASE_PIXELS, colorNameToRgb } from './palette';
+import {
+  HEXAHUE_COLOR_HEX,
+  CASE_PIXELS,
+  colorNameToRgb,
+  colorNameToHex,
+  getCasePixels,
+} from './palette';
 
 describe('HEXAHUE_COLOR_HEX', () => {
   it('maps all 9 Hexahue palette colours to their exact hex value', () => {
@@ -43,5 +49,43 @@ describe('colorNameToRgb', () => {
   it('throws a RangeError for colour names that match Object.prototype members', () => {
     expect(() => colorNameToRgb('constructor')).toThrow(RangeError);
     expect(() => colorNameToRgb('toString')).toThrow(RangeError);
+  });
+});
+
+describe('colorNameToHex', () => {
+  it('resolves each of the 9 palette colours to its exact hex string', () => {
+    expect(colorNameToHex('purple')).toBe('#ff00ff');
+    expect(colorNameToHex('red')).toBe('#ff0000');
+    expect(colorNameToHex('green')).toBe('#66ff00');
+    expect(colorNameToHex('yellow')).toBe('#ffff00');
+    expect(colorNameToHex('blue')).toBe('#0000ff');
+    expect(colorNameToHex('cyan')).toBe('#00ffff');
+    expect(colorNameToHex('white')).toBe('#ffffff');
+    expect(colorNameToHex('black')).toBe('#000000');
+    expect(colorNameToHex('gray')).toBe('#888888');
+  });
+
+  it('throws a RangeError for a colour name outside the Hexahue palette', () => {
+    expect(() => colorNameToHex('magenta')).toThrow(RangeError);
+    expect(() => colorNameToHex('')).toThrow(RangeError);
+  });
+
+  it('throws a RangeError for a colour name matching an Object.prototype member', () => {
+    expect(() => colorNameToHex('constructor')).toThrow(RangeError);
+    expect(() => colorNameToHex('toString')).toThrow(RangeError);
+  });
+});
+
+describe('getCasePixels', () => {
+  it('resolves each case size to its pixel-per-case value', () => {
+    expect(getCasePixels('small')).toBe(8);
+    expect(getCasePixels('medium')).toBe(16);
+    expect(getCasePixels('large')).toBe(32);
+  });
+
+  it('throws a RangeError for an invalid size value', () => {
+    expect(() =>
+      getCasePixels('huge' as unknown as Parameters<typeof getCasePixels>[0]),
+    ).toThrow(RangeError);
   });
 });

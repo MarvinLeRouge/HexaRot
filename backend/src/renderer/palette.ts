@@ -26,20 +26,44 @@ export const CASE_PIXELS: Readonly<Record<CaseSize, number>> = Object.freeze({
 });
 
 /**
- * Resolves a Hexahue colour name to its RGB triple.
+ * Resolves a Hexahue colour name to its hex string.
  *
  * @throws {RangeError} If the colour name is not part of the Hexahue palette.
  */
-export function colorNameToRgb(colorName: string): [number, number, number] {
+export function colorNameToHex(colorName: string): string {
   if (!Object.prototype.hasOwnProperty.call(HEXAHUE_COLOR_HEX, colorName)) {
     throw new RangeError(
       `Unknown colour "${colorName}", expected one of: ${Object.keys(HEXAHUE_COLOR_HEX).join(', ')}`,
     );
   }
-  const hex = HEXAHUE_COLOR_HEX[colorName];
+  return HEXAHUE_COLOR_HEX[colorName];
+}
+
+/**
+ * Resolves a Hexahue colour name to its RGB triple.
+ *
+ * @throws {RangeError} If the colour name is not part of the Hexahue palette.
+ */
+export function colorNameToRgb(colorName: string): [number, number, number] {
+  const hex = colorNameToHex(colorName);
   return [
     parseInt(hex.slice(1, 3), 16),
     parseInt(hex.slice(3, 5), 16),
     parseInt(hex.slice(5, 7), 16),
   ];
+}
+
+/**
+ * Resolves a case size to its pixel-per-case value.
+ *
+ * @throws {RangeError} If size is not a valid CaseSize value.
+ */
+export function getCasePixels(size: CaseSize): number {
+  const casePixels = CASE_PIXELS[size];
+  if (casePixels === undefined) {
+    throw new RangeError(
+      `size must be one of: ${Object.keys(CASE_PIXELS).join(', ')}, got "${size}"`,
+    );
+  }
+  return casePixels;
 }

@@ -118,8 +118,8 @@ The following shared fixtures must be defined in `__fixtures__/renderer.fixtures
 
 ## Design note: no visual header row (2026-08-14)
 
-The encoded grid is composed of the pre-processed message plus random padding only
-— no metadata header is rendered anywhere in the image, and none is planned as part
+The encoded grid is composed of the pre-processed message plus random padding only.
+No metadata header is rendered anywhere in the image, and none is planned as part
 of V1. Earlier designs considered a visual header row for the message length
 (FEAT-008's byte-level `encodeHeader`/`decodeHeader`, then a digit-prefix variant),
 but both were rejected: a header row sitting outside the rotation step leaks the
@@ -129,6 +129,6 @@ stream still leaks a known-plaintext-at-fixed-position weakness (anyone familiar
 with the tool's format knows the first N decoded symbols are always digits,
 regardless of the specific key), giving a cheap parameter-guessing oracle either
 way. `FEAT-008`'s `encodeHeader`/`decodeHeader` remain in the codebase, tested but
-currently unused by the real pipeline — a future evolution may revisit
+currently unused by the real pipeline. A future evolution may revisit
 message-length metadata (e.g. a properly key-dependent encoding, or decode-time
 boundary detection via symbol validity), but that is out of scope for V1.

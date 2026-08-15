@@ -583,12 +583,12 @@ implement `encodeHeader` and `decodeHeader` functions.
 - **type:** feat
 - **id:** FEAT-009
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** renderer
 - **complexity:** M
 - **parent:** ~
-- **depends-on:** FEAT-007, FEAT-008
+- **depends-on:** FEAT-007
 - **learning:** [Sharp library API, pixel buffer construction, image dimensions and DPI, colour space handling in Sharp]
 - **labels:** [feat, domain:renderer, priority:critical, milestone:v1]
 
@@ -603,14 +603,15 @@ Case sizes in pixels (to be confirmed, suggested values):
 - medium: 16px per case
 - large: 32px per case
 
-The header row is rendered above the grid. The Hexahue standard colour palette is used.
+The Hexahue standard colour palette is used. No metadata header is rendered - the
+encoded grid is the pre-processed message plus random padding only (see
+docs/tests/renderer.md, "Design note: no visual header row").
 
 #### Acceptance criteria
 
 - Output is a valid PNG binary buffer
 - All three case sizes produce images with correct pixel dimensions
 - Colours match the Hexahue standard palette values exactly
-- Header row is visible and correctly positioned above the grid
 - Renderer implements the `Renderer` interface
 - Integration test: encode a known short message, render to PNG, verify output
   dimensions match expected values
@@ -627,7 +628,7 @@ The header row is rendered above the grid. The Hexahue standard colour palette i
 - **domain:** renderer
 - **complexity:** M
 - **parent:** ~
-- **depends-on:** FEAT-007, FEAT-008
+- **depends-on:** FEAT-007
 - **learning:** [SVG coordinate system, SVG rect elements, native string-based SVG generation without DOM, SVG viewBox]
 - **labels:** [feat, domain:renderer, priority:critical, milestone:v1]
 
@@ -638,7 +639,9 @@ native SVG string generation (no DOM library). The renderer takes a fully rotate
 grid, a case size option, and outputs an SVG string.
 
 The SVG must be well-formed, self-contained, and renderable in a browser without
-additional assets. Case sizes follow the same pixel values as the PNG renderer.
+additional assets. Case sizes follow the same pixel values as the PNG renderer. No
+metadata header is rendered (see docs/tests/renderer.md, "Design note: no visual
+header row").
 
 #### Acceptance criteria
 
@@ -646,7 +649,6 @@ additional assets. Case sizes follow the same pixel values as the PNG renderer.
 - SVG is self-contained (no external references)
 - All three case sizes produce SVG with correct viewBox dimensions
 - Colours match the Hexahue standard palette values exactly
-- Header row is present and correctly positioned
 - Renderer implements the `Renderer` interface
 - Integration test: encode a known short message, render to SVG, verify viewBox
   dimensions and presence of correct number of `<rect>` elements
@@ -718,8 +720,10 @@ Response:
 #### Description
 
 Implement the `POST /decode` endpoint. The endpoint accepts a cryptogram (PNG or SVG)
-and a key, reads the metadata header to determine message length, applies inverse
-rotations, and returns the decoded plaintext.
+and a key, applies inverse rotations, and returns the decoded plaintext. There is no
+metadata header to determine message length (see docs/tests/renderer.md, "Design
+note: no visual header row") - message-boundary detection (message vs. random
+padding) is an open design question for this item, not yet resolved.
 
 Request body:
 - `cryptogram: string` — base64-encoded PNG or SVG string

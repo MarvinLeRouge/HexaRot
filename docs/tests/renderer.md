@@ -75,6 +75,12 @@ describe('SvgRenderer')
 **Colour accuracy**
 - it maps each Hexahue palette colour to the correct hex colour string (e.g. '#FF0000')
 
+**Input validation**
+- it throws for an empty grid (zero rows)
+- it throws for a grid with a zero-length row
+- it throws for a grid with inconsistent row lengths (not rectangular)
+- it throws for an invalid size value
+
 ---
 
 ## 3. Integration tests (both renderers)

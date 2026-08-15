@@ -660,7 +660,7 @@ header row").
 - **type:** feat
 - **id:** FEAT-011
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** critical
 - **domain:** api
 - **complexity:** M

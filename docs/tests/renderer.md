@@ -25,23 +25,24 @@ describe('PngRenderer')
 
 **Dimensions — case size: small (8px per case)**
 - it produces an image of width = gridWidthInCases × 8 for a known grid
-- it produces an image of height = (gridHeightInCases + headerRows) × 8 for a known grid
+- it produces an image of height = gridHeightInCases × 8 for a known grid
 
 **Dimensions — case size: medium (16px per case)**
 - it produces an image of width = gridWidthInCases × 16
-- it produces an image of height = (gridHeightInCases + headerRows) × 16
+- it produces an image of height = gridHeightInCases × 16
 
 **Dimensions — case size: large (32px per case)**
 - it produces an image of width = gridWidthInCases × 32
-- it produces an image of height = (gridHeightInCases + headerRows) × 32
+- it produces an image of height = gridHeightInCases × 32
 
 **Colour accuracy**
 - it maps each Hexahue palette colour to the correct RGB value
 - it does not introduce colours outside the Hexahue palette for non-padding cells
 
-**Header row**
-- it renders the header above the grid (not below, not overlapping)
-- it renders the header at the correct pixel height
+**Input validation**
+- it throws for an empty grid (zero rows)
+- it throws for a grid with a zero-length row
+- it throws for a grid with inconsistent row lengths (not rectangular)
 
 ---
 
@@ -62,13 +63,12 @@ describe('SvgRenderer')
 
 **viewBox**
 - it sets viewBox width = gridWidthInCases × caseSize for size: small
-- it sets viewBox height = (gridHeightInCases + headerRows) × caseSize for size: small
+- it sets viewBox height = gridHeightInCases × caseSize for size: small
 - it sets correct viewBox for size: medium
 - it sets correct viewBox for size: large
 
 **rect elements**
-- it produces exactly gridWidthInCases × gridHeightInCases `<rect>` elements for the grid
-- it produces the correct number of additional `<rect>` elements for the header
+- it produces exactly gridWidthInCases × gridHeightInCases `<rect>` elements
 - it sets the `fill` attribute of each `<rect>` to the correct Hexahue hex colour value
 - it sets `x`, `y`, `width`, `height` attributes on every `<rect>`
 
@@ -99,7 +99,7 @@ describe('SvgRenderer — integration')
 - it encodes the message 'AB' with T=5, LR-TB, sequence [0,90,180,270], CW, size medium
   and produces an SVG with the correct viewBox
 - it encodes the message 'AB' with the same params and produces an SVG with the
-  correct total number of `<rect>` elements (grid cells + header cells)
+  correct total number of `<rect>` elements (grid cells)
 
 ---
 
@@ -111,5 +111,24 @@ The following shared fixtures must be defined in `__fixtures__/renderer.fixtures
   known palette colours), representing a pre-rotated grid ready for rendering.
 - `HEXAHUE_PALETTE_MAP` — map of colour name → expected RGB tuple and hex string,
   covering all colours in the Hexahue palette.
-- `EXPECTED_PNG_DIMENSIONS` — map of size option → `{ casePixels, headerRows }` for
-  computing expected output dimensions.
+- `EXPECTED_PNG_DIMENSIONS` — map of size option → `{ casePixels }` for computing
+  expected output dimensions.
+
+---
+
+## Design note: no visual header row (2026-08-14)
+
+The encoded grid is composed of the pre-processed message plus random padding only
+— no metadata header is rendered anywhere in the image, and none is planned as part
+of V1. Earlier designs considered a visual header row for the message length
+(FEAT-008's byte-level `encodeHeader`/`decodeHeader`, then a digit-prefix variant),
+but both were rejected: a header row sitting outside the rotation step leaks the
+message length in the clear (the Hexahue alphabet is public, so anyone can read an
+unrotated header without the key); a header prefixed into the rotated message
+stream still leaks a known-plaintext-at-fixed-position weakness (anyone familiar
+with the tool's format knows the first N decoded symbols are always digits,
+regardless of the specific key), giving a cheap parameter-guessing oracle either
+way. `FEAT-008`'s `encodeHeader`/`decodeHeader` remain in the codebase, tested but
+currently unused by the real pipeline — a future evolution may revisit
+message-length metadata (e.g. a properly key-dependent encoding, or decode-time
+boundary detection via symbol validity), but that is out of scope for V1.

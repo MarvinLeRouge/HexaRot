@@ -1,4 +1,4 @@
-import { ColorGrid, CaseSize } from '../../shared/types';
+import { ColorGrid, CaseSize, VisualAlphabet } from '../../shared/types';
 
 /** A hardcoded 4-column x 6-row pre-rotated grid, ready for rendering. */
 export const MOCK_ROTATED_GRID_4x6: ColorGrid = [
@@ -33,3 +33,36 @@ export const EXPECTED_PNG_DIMENSIONS: Record<CaseSize, { casePixels: number }> =
     medium: { casePixels: 16 },
     large: { casePixels: 32 },
   };
+
+/**
+ * Minimal in-memory VisualAlphabet double with real Hexahue dimensions
+ * (2 wide x 3 tall), supporting 'A' and 'B' - enough to run the full
+ * pipeline end-to-end without a real database, per docs/tests/renderer.md
+ * section 3's explicit allowance for "a complete in-memory fixture".
+ */
+export const MOCK_HEXAHUE_ALPHABET: VisualAlphabet = {
+  symbolWidth: 2,
+  symbolHeight: 3,
+  getBlock(char: string) {
+    const blocks: Record<string, string[][]> = {
+      A: [
+        ['red', 'green'],
+        ['blue', 'yellow'],
+        ['cyan', 'purple'],
+      ],
+      B: [
+        ['green', 'red'],
+        ['yellow', 'blue'],
+        ['purple', 'cyan'],
+      ],
+    };
+    const grid = blocks[char];
+    if (!grid) {
+      throw new Error(`unsupported character: ${char}`);
+    }
+    return grid;
+  },
+  getSupportedChars() {
+    return ['A', 'B'];
+  },
+};

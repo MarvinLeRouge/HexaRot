@@ -213,6 +213,13 @@ describe('POST /api/encode (e2e)', () => {
       },
     );
 
+    it('returns 400 when pivotBlockSize exceeds 255', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({ ...VALID_ENCODE_BODY, pivotBlockSize: 256 });
+      expect(res.status).toBe(400);
+    });
+
     it('returns 400 when rotationDirection is not cw or ccw', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/encode')

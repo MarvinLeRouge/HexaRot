@@ -23,7 +23,7 @@ describe('EncodeRequestDto', () => {
     });
 
     it('passes with only message and key (individual params omitted)', async () => {
-      const errors = await validateBody({ message: 'ABC', key: 'HR1.0000' });
+      const errors = await validateBody({ message: 'ABC', key: 'HR1·0000' });
       expect(errors).toHaveLength(0);
     });
 
@@ -68,8 +68,16 @@ describe('EncodeRequestDto', () => {
     });
 
     it('does not require pivotBlockSize when key is provided', async () => {
-      const errors = await validateBody({ message: 'ABC', key: 'HR1.0000' });
+      const errors = await validateBody({ message: 'ABC', key: 'HR1·0000' });
       expect(errors.some((e) => e.property === 'pivotBlockSize')).toBe(false);
+    });
+
+    it('fails when pivotBlockSize exceeds 255', async () => {
+      const errors = await validateBody({
+        ...VALID_PARAMS_BODY,
+        pivotBlockSize: 256,
+      });
+      expect(errors.some((e) => e.property === 'pivotBlockSize')).toBe(true);
     });
 
     it('fails when rotationDirection is not cw or ccw (no key provided)', async () => {
@@ -83,7 +91,7 @@ describe('EncodeRequestDto', () => {
     it('does not validate rotationDirection when key is provided', async () => {
       const errors = await validateBody({
         message: 'ABC',
-        key: 'HR1.0000',
+        key: 'HR1·0000',
         rotationDirection: 'sideways',
       });
       expect(errors.some((e) => e.property === 'rotationDirection')).toBe(

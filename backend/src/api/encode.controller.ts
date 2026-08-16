@@ -1,7 +1,6 @@
 import { Controller, Post, Body, HttpCode } from '@nestjs/common';
-import { EncodeService } from './encode.service';
+import { EncodeService, EncodeResult } from './encode.service';
 import { EncodeRequestDto } from './dto/encode-request.dto';
-import { EncodeResult } from './encode.service';
 
 /** Handles POST /encode - encodes a message into a Hexahue rotation cryptogram. */
 @Controller('encode')

@@ -42,6 +42,7 @@ export class EncodeRequestDto {
   @ValidateIf((o: EncodeRequestDto) => !o.key)
   @IsInt()
   @Min(1)
+  @Max(255)
   pivotBlockSize?: number;
 
   @ValidateIf((o: EncodeRequestDto) => !o.key)

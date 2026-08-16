@@ -147,5 +147,11 @@ describe('EncodeService', () => {
       const dto = { message: 'ABC', key: 'HR1·ZZZZ' } as EncodeRequestDto;
       await expect(service.encode(dto)).rejects.toThrow(BadRequestException);
     });
+
+    it('throws BadRequestException when key unpacks to pivotBlockSize=0', async () => {
+      const service = makeService();
+      const dto = { message: 'ABC', key: 'HR1·0000' } as EncodeRequestDto;
+      await expect(service.encode(dto)).rejects.toThrow(BadRequestException);
+    });
   });
 });

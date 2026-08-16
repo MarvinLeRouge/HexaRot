@@ -87,6 +87,6 @@ These thresholds are enforced in CI (Jest `--coverage` with `coverageThreshold` 
 ## 6. Open Points
 
 - **PostgreSQL in CI**: TEST-002 requires a live database in the CI environment.
-  CI-001 is `done` but it is not confirmed whether a PostgreSQL service is provisioned.
-  If not, a CI amendment or a new CI item is required before TEST-002 can run.
-  → **Pending confirmation from project owner.**
+  CI-001 is `done`, and CI-003 (`status: done`) confirms a real `postgres:16` service is
+  provisioned in `.github/workflows/ci.yml`, with migrations and seeding run before the
+  test step. This open point is resolved.

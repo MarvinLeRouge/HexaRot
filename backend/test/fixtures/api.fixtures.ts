@@ -23,7 +23,7 @@ export const VALID_ENCODE_BODY_WITH_KEY = {
 
 export const WEAK_ENCODE_BODY = {
   message: 'ABC',
-  pivotBlockSize: 3,
+  pivotBlockSize: 2,
   rotationSequence: [0, 1, 2, 3],
   rotationDirection: 'cw',
   readingOrder: 'LR-TB',
@@ -44,4 +44,5 @@ export const MALFORMED_KEY_STRINGS = [
   'HR1-0000',
   'HR1.ABC',
   'HR1·ZZZZ', // structurally valid, but unpacks to an out-of-range rotation sequence index (26, only 0-23 exist)
+  'HR1·0000', // structurally valid, but unpacks to pivotBlockSize=0, which buildGrid rejects
 ];

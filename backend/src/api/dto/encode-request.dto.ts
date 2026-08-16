@@ -12,17 +12,7 @@ import {
   IsBoolean,
   ValidateIf,
 } from 'class-validator';
-
-const READING_ORDERS = [
-  'LR-TB',
-  'RL-TB',
-  'TB-LR',
-  'BT-LR',
-  'LR-TB-ALT',
-  'RL-TB-ALT',
-  'TB-LR-ALT',
-  'BT-LR-ALT',
-];
+import { READING_ORDERS } from '../../key/key-codec';
 
 /**
  * Request body for POST /encode. Either `key` is provided (individual

@@ -35,7 +35,7 @@ const PAYLOAD_LENGTH = 4;
 const PAYLOAD_RADIX = 36;
 
 /** All 8 V1 reading orders, indexed 0-7. */
-const READING_ORDERS: ReadingOrder[] = [
+export const READING_ORDERS: ReadingOrder[] = [
   'LR-TB',
   'RL-TB',
   'TB-LR',
@@ -151,6 +151,7 @@ export class KeyCodec {
    * Deserialises a key string to its parameters.
    *
    * @throws {Error} If the key string is malformed or has an unknown version.
+   * @throws {Error} If the key unpacks to a semantically invalid pivotBlockSize or rotation sequence index.
    */
   static decode(key: string): KeyParams {
     if (!KeyCodec.validate(key)) {
@@ -160,8 +161,20 @@ export class KeyCodec {
     const separatorIndex = key.indexOf(KEY_SEPARATOR);
     const payloadStr = key.slice(separatorIndex + KEY_SEPARATOR.length);
     const payload = parseInt(payloadStr, PAYLOAD_RADIX);
+    const unpacked = unpack(payload);
 
-    return { version: 1, ...unpack(payload) };
+    if (unpacked.pivotBlockSize < 1) {
+      throw new Error(
+        `Invalid key format: "${key}" (unpacks to pivotBlockSize=${unpacked.pivotBlockSize}, must be positive)`,
+      );
+    }
+    if (!unpacked.rotationSequence) {
+      throw new Error(
+        `Invalid key format: "${key}" (unpacks to an out-of-range rotation sequence index)`,
+      );
+    }
+
+    return { version: 1, ...unpacked };
   }
 
   /**

@@ -708,7 +708,7 @@ Response:
 - **type:** feat
 - **id:** FEAT-012
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** critical
 - **domain:** api
 - **complexity:** M
@@ -782,7 +782,7 @@ decoded parameters as a structured object.
 - **type:** feat
 - **id:** FEAT-014
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** critical
 - **domain:** frontend
 - **complexity:** L

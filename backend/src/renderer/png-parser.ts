@@ -32,7 +32,13 @@ export async function parsePng(
   let channels: number;
 
   try {
-    const raw = await sharp(buffer).raw().toBuffer({ resolveWithObject: true });
+    // Bound the maximum decoded pixel count: HexaRot images are small
+    // colour-block grids, not photographs, so 16000x16000 is more than
+    // enough headroom while closing off unbounded decompression
+    // amplification from arbitrary caller-supplied PNG input.
+    const raw = await sharp(buffer, { limitInputPixels: 16000 * 16000 })
+      .raw()
+      .toBuffer({ resolveWithObject: true });
     data = raw.data;
     width = raw.info.width;
     height = raw.info.height;

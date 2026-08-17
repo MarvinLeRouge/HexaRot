@@ -857,7 +857,7 @@ All UI strings are routed through vue-i18n keys.
 - **type:** feat
 - **id:** FEAT-016
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** S

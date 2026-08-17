@@ -723,7 +723,9 @@ Implement the `POST /decode` endpoint. The endpoint accepts a cryptogram (PNG or
 and a key, applies inverse rotations, and returns the decoded plaintext. There is no
 metadata header to determine message length (see docs/tests/renderer.md, "Design
 note: no visual header row") - message-boundary detection (message vs. random
-padding) is an open design question for this item, not yet resolved.
+padding) was resolved as: decode everything unconditionally, `?` placeholder for
+unrecognized blocks, no truncation (see
+docs/superpowers/specs/2026-08-17-decode-api-endpoint-design.md, "Decision 2").
 
 Request body:
 - `cryptogram: string` — base64-encoded PNG or SVG string
@@ -738,7 +740,8 @@ Response:
 
 - Endpoint correctly decodes a cryptogram produced by the encode endpoint
 - Round-trip test: encode a message, decode the output, verify original message is
-  recovered
+  recovered (meaning the decoded output starts with the original message, a prefix
+  match, not exact equality - see Decision 2 in the design spec above)
 - Malformed key returns 400 with a descriptive error
 - Malformed cryptogram returns 400 with a descriptive error
 - Missing required fields return 400

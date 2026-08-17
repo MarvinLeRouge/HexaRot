@@ -827,7 +827,7 @@ vue-i18n keys (English only in V1, keys must be structured for future French add
 - **type:** feat
 - **id:** FEAT-015
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** critical
 - **domain:** frontend
 - **complexity:** M
@@ -1030,7 +1030,7 @@ transitions, and API call mocking.
 - **type:** docs
 - **id:** DOCS-001
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** docs
 - **complexity:** M

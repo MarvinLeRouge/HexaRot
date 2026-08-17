@@ -64,6 +64,9 @@ describe('POST /decode')
 - it recovers the message for all four reading orders
 - it recovers the message for both rotation directions
 - it recovers the message for a multi-word message with spaces (if supported by alphabet)
+  (skipped in the current suite: the test alphabet, MockAlphabet, has no space
+  character, and this bullet's own wording already hedges with "if supported by
+  alphabet")
 
 **Validation errors**
 - it returns 400 when `cryptogram` is missing
@@ -72,6 +75,10 @@ describe('POST /decode')
 - it returns 400 when `format` is not 'png' or 'svg'
 - it returns 400 when `cryptogram` is not valid base64 (for PNG format)
 - it returns 400 when `cryptogram` is not valid SVG (for SVG format)
+
+**Size validation**
+- it returns 400 when `size` is missing
+- it returns 400 when `size` is not 'small', 'medium', or 'large'
 
 ---
 

@@ -73,6 +73,10 @@ describe('POST /decode')
 - it returns 400 when `cryptogram` is not valid base64 (for PNG format)
 - it returns 400 when `cryptogram` is not valid SVG (for SVG format)
 
+**Size validation**
+- it returns 400 when `size` is missing
+- it returns 400 when `size` is not 'small', 'medium', or 'large'
+
 ---
 
 ## 3. POST /key/generate (FEAT-013)

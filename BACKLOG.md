@@ -729,6 +729,7 @@ Request body:
 - `cryptogram: string` — base64-encoded PNG or SVG string
 - `format: 'png' | 'svg'`
 - `key: string` — the HR key
+- `size: 'small' | 'medium' | 'large'`
 
 Response:
 - `message: string` — the decoded plaintext

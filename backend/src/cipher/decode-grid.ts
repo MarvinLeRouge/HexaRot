@@ -27,6 +27,7 @@ export function decodeGrid(grid: ColorGrid, alphabet: VisualAlphabet): string {
   const gridHeightInCases = grid.length;
   const gridWidthInCases = gridHeightInCases > 0 ? grid[0].length : 0;
 
+  // Flooring here can legitimately drop trailing padding-only content when grid dimensions are not exact multiples of the symbol dimensions; never drops real message content.
   const symbolsPerRow = Math.floor(gridWidthInCases / symbolWidth);
   const symbolRows = Math.floor(gridHeightInCases / symbolHeight);
 

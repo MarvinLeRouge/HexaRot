@@ -3,16 +3,23 @@ import { KeyCodec, KeyParams, RotationSequence } from '../key/key-codec';
 import { KeyGenerateRequestDto } from './dto/key-generate-request.dto';
 
 const DEFAULT_PIVOT_BLOCK_SIZE = 5;
-const DEFAULT_ROTATION_SEQUENCE: RotationSequence = [0, 1, 2, 3];
+const DEFAULT_ROTATION_SEQUENCE: RotationSequence = Object.freeze([
+  0, 1, 2, 3,
+]) as unknown as RotationSequence;
 const DEFAULT_ROTATION_DIRECTION: 'cw' | 'ccw' = 'cw';
 const DEFAULT_READING_ORDER: KeyParams['readingOrder'] = 'LR-TB';
 
 /** Response shape for GET /key/parse. */
 export interface KeyParseResult {
   pivotBlockSize: number;
+  /**
+   * Rotation angles in degrees (e.g. [0, 90, 180, 270]), NOT permutation
+   * indices - contrast with POST /key/generate's request field of the same
+   * name, which takes indices (0-3).
+   */
   rotationSequence: number[];
   rotationDirection: 'cw' | 'ccw';
-  readingOrder: string;
+  readingOrder: KeyParams['readingOrder'];
 }
 
 @Injectable()

@@ -23,6 +23,11 @@ export class KeyGenerateRequestDto {
   @Max(255)
   pivotBlockSize?: number;
 
+  /**
+   * Permutation indices (0-3), NOT angles - each index maps to
+   * [0, 90, 180, 270] degrees respectively. Contrast with GET /key/parse's
+   * response, which returns this same concept as literal angle values.
+   */
   @IsOptional()
   @IsArray()
   @ArrayMinSize(4)

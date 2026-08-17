@@ -18,7 +18,7 @@ import { READING_ORDERS } from '../../key/key-codec';
  * Request body for POST /encode. Either `key` is provided (individual
  * params below are ignored), or all four individual params are provided
  * (there is no "sensible defaults" fallback for this endpoint - that is
- * POST /key/generate's job, not implemented yet).
+ * POST /key/generate's job).
  */
 export class EncodeRequestDto {
   @IsString()

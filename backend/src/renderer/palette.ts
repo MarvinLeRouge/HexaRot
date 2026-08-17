@@ -67,3 +67,29 @@ export function getCasePixels(size: CaseSize): number {
   }
   return casePixels;
 }
+
+/**
+ * Resolves a hex colour string back to its Hexahue colour name.
+ *
+ * @throws {RangeError} If the hex value is not part of the Hexahue palette.
+ */
+export function hexToColorName(hex: string): string {
+  for (const [name, value] of Object.entries(HEXAHUE_COLOR_HEX)) {
+    if (value === hex) {
+      return name;
+    }
+  }
+  throw new RangeError(
+    `Unknown colour hex "${hex}", expected one of: ${Object.values(HEXAHUE_COLOR_HEX).join(', ')}`,
+  );
+}
+
+/**
+ * Resolves an RGB triple back to its Hexahue colour name.
+ *
+ * @throws {RangeError} If the RGB triple is not part of the Hexahue palette.
+ */
+export function rgbToColorName(r: number, g: number, b: number): string {
+  const hex = `#${[r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('')}`;
+  return hexToColorName(hex);
+}

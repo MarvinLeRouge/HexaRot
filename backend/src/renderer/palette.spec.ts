@@ -4,6 +4,8 @@ import {
   colorNameToRgb,
   colorNameToHex,
   getCasePixels,
+  hexToColorName,
+  rgbToColorName,
 } from './palette';
 
 describe('HEXAHUE_COLOR_HEX', () => {
@@ -87,5 +89,41 @@ describe('getCasePixels', () => {
     expect(() =>
       getCasePixels('huge' as unknown as Parameters<typeof getCasePixels>[0]),
     ).toThrow(RangeError);
+  });
+});
+
+describe('hexToColorName', () => {
+  it('resolves each of the 9 palette hex values back to its colour name', () => {
+    expect(hexToColorName('#ff00ff')).toBe('purple');
+    expect(hexToColorName('#ff0000')).toBe('red');
+    expect(hexToColorName('#66ff00')).toBe('green');
+    expect(hexToColorName('#ffff00')).toBe('yellow');
+    expect(hexToColorName('#0000ff')).toBe('blue');
+    expect(hexToColorName('#00ffff')).toBe('cyan');
+    expect(hexToColorName('#ffffff')).toBe('white');
+    expect(hexToColorName('#000000')).toBe('black');
+    expect(hexToColorName('#888888')).toBe('gray');
+  });
+
+  it('throws a RangeError for a hex value outside the Hexahue palette', () => {
+    expect(() => hexToColorName('#123456')).toThrow(RangeError);
+  });
+});
+
+describe('rgbToColorName', () => {
+  it('resolves each of the 9 palette RGB triples back to its colour name', () => {
+    expect(rgbToColorName(255, 0, 255)).toBe('purple');
+    expect(rgbToColorName(255, 0, 0)).toBe('red');
+    expect(rgbToColorName(102, 255, 0)).toBe('green');
+    expect(rgbToColorName(255, 255, 0)).toBe('yellow');
+    expect(rgbToColorName(0, 0, 255)).toBe('blue');
+    expect(rgbToColorName(0, 255, 255)).toBe('cyan');
+    expect(rgbToColorName(255, 255, 255)).toBe('white');
+    expect(rgbToColorName(0, 0, 0)).toBe('black');
+    expect(rgbToColorName(136, 136, 136)).toBe('gray');
+  });
+
+  it('throws a RangeError for an RGB triple outside the Hexahue palette', () => {
+    expect(() => rgbToColorName(1, 2, 3)).toThrow(RangeError);
   });
 });

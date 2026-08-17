@@ -27,4 +27,9 @@ describe('parsePng', () => {
     const buffer = await renderer.render(MOCK_ROTATED_GRID_4x6, 'small');
     await expect(parsePng(buffer, 7)).rejects.toThrow(RangeError);
   });
+
+  it('throws a RangeError when casePixels is wrong but still evenly divides the image dimensions', async () => {
+    const buffer = await renderer.render(MOCK_ROTATED_GRID_4x6, 'medium');
+    await expect(parsePng(buffer, 32)).rejects.toThrow(RangeError);
+  });
 });

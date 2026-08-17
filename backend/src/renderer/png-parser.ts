@@ -8,8 +8,19 @@ import { rgbToColorName } from './palette';
  * identical by construction (PngRenderer paints solid, non-interpolated
  * blocks) - and matches it exactly against the fixed Hexahue palette.
  *
- * @throws {RangeError} If the buffer is not a valid image, or its
- *   dimensions are not exact multiples of casePixels.
+ * Known limitation: this cannot detect a casePixels value that is a proper
+ * divisor of the real one (e.g. parsing a 16px-case image as if it used
+ * 8px cases). In that case every sampled sub-block still sits entirely
+ * inside one real, monochrome case, so no local pixel comparison can tell
+ * the two apart without risking false positives on legitimate data (real
+ * neighbouring cases can and do share colours). It reliably catches a
+ * casePixels value that is too large, or otherwise does not evenly align
+ * with the real case boundaries.
+ *
+ * @throws {RangeError} If the buffer is not a valid image, its dimensions
+ *   are not exact multiples of casePixels, or a case is not monochrome
+ *   (which happens when casePixels is wrong and misaligned with the real
+ *   case boundaries).
  */
 export async function parsePng(
   buffer: Buffer,
@@ -46,6 +57,26 @@ export async function parsePng(
       const px = caseX * casePixels;
       const py = caseY * casePixels;
       const offset = (py * width + px) * channels;
+
+      // Sample a second pixel (the case's bottom-right corner): every pixel
+      // within a real case is identical by construction, so a mismatch here
+      // means this case straddles a real case boundary, i.e. casePixels
+      // does not match the image actually being parsed (see the "Known
+      // limitation" note above for the one class of mismatch this misses).
+      const px2 = px + casePixels - 1;
+      const py2 = py + casePixels - 1;
+      const offset2 = (py2 * width + px2) * channels;
+
+      if (
+        data[offset] !== data[offset2] ||
+        data[offset + 1] !== data[offset2 + 1] ||
+        data[offset + 2] !== data[offset2 + 2]
+      ) {
+        throw new RangeError(
+          `Case at (${caseX}, ${caseY}) is not monochrome, casePixels=${casePixels} is likely wrong`,
+        );
+      }
+
       row.push(
         rgbToColorName(data[offset], data[offset + 1], data[offset + 2]),
       );

@@ -163,3 +163,13 @@ describe('KeyCodec round-trip', () => {
     expect(KeyCodec.encode(BASE_PARAMS)).toBe(KeyCodec.encode(BASE_PARAMS));
   });
 });
+
+describe('KeyCodec.decode - out-of-range payload values', () => {
+  it('throws for a structurally valid key that unpacks to an out-of-range rotation sequence index', () => {
+    expect(() => KeyCodec.decode('HR1·ZZZZ')).toThrow(Error);
+  });
+
+  it('throws for a structurally valid key that unpacks to pivotBlockSize=0', () => {
+    expect(() => KeyCodec.decode('HR1·0000')).toThrow(Error);
+  });
+});

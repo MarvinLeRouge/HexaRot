@@ -12,23 +12,13 @@ import {
   IsBoolean,
   ValidateIf,
 } from 'class-validator';
-
-const READING_ORDERS = [
-  'LR-TB',
-  'RL-TB',
-  'TB-LR',
-  'BT-LR',
-  'LR-TB-ALT',
-  'RL-TB-ALT',
-  'TB-LR-ALT',
-  'BT-LR-ALT',
-];
+import { READING_ORDERS } from '../../key/key-codec';
 
 /**
  * Request body for POST /encode. Either `key` is provided (individual
  * params below are ignored), or all four individual params are provided
  * (there is no "sensible defaults" fallback for this endpoint - that is
- * POST /key/generate's job, not implemented yet).
+ * POST /key/generate's job).
  */
 export class EncodeRequestDto {
   @IsString()

@@ -37,11 +37,6 @@ export class EncodeService {
       } catch (err) {
         throw new BadRequestException((err as Error).message);
       }
-      if (!keyParams.rotationSequence || keyParams.pivotBlockSize < 1) {
-        throw new BadRequestException(
-          `Invalid key format: "${dto.key}" (unpacks to an unusable pivot block size or rotation sequence)`,
-        );
-      }
       key = dto.key;
     } else {
       keyParams = {

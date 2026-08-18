@@ -162,16 +162,16 @@ frontend/
 ### V1
 
 - ✅ Infra (NestJS, Vue.js, Docker Compose, Prisma)
-- 🔄 CI (GitHub Actions — pipeline de tests, synchronisation du backlog)
-- ⬜ Alphabet (interface VisualAlphabet + implémentation Hexahue)
-- ⬜ Cipher (pré-traitement, construction de grille, en-tête de métadonnées)
-- ⬜ Moteur de rotation
-- ⬜ Codec de clé (encodage / décodage / validation base36)
-- ⬜ Stratégies d'ordre de lecture (4 directions + mode alterné)
-- ⬜ Renderers (PNG + SVG)
-- ⬜ Endpoints API (encode, decode, key)
+- ✅ CI (GitHub Actions — pipeline de tests, synchronisation du backlog)
+- ✅ Alphabet (interface VisualAlphabet + implémentation Hexahue)
+- ✅ Cipher (pré-traitement, construction de grille, pas d'en-tête de métadonnées, choix délibéré anti-fuite)
+- ✅ Moteur de rotation
+- ✅ Codec de clé (encodage / décodage / validation base36)
+- ✅ Stratégies d'ordre de lecture (4 directions + mode alterné)
+- ✅ Renderers (PNG + SVG)
+- ✅ Endpoints API (encode, decode, key)
 - ⬜ Frontend (vue encodage, vue décodage, vue clé)
-- ⬜ Tests & couverture
+- 🔄 Tests & couverture (chaque feature livrée embarque déjà sa propre suite unitaire/e2e ; les items de suite de tests dédiée restent ouverts)
 
 ### V2
 

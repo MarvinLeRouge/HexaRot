@@ -1,1 +1,7 @@
-{}
+{
+  "nav": {
+    "encode": "Encode",
+    "decode": "Decode",
+    "key": "Key"
+  }
+}

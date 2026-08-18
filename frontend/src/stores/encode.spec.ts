@@ -31,6 +31,7 @@ describe('useEncodeStore', () => {
     expect(store.status).toBe('idle')
     expect(store.result).toBeNull()
     expect(store.errorMessage).toBeNull()
+    expect(store.errorCode).toBeNull()
   })
 
   it.each([
@@ -69,7 +70,7 @@ describe('useEncodeStore', () => {
   })
 
   it('stores the error message and sets status to error on a failed submit', async () => {
-    vi.mocked(postJson).mockRejectedValue(new ApiError('message must not be empty', 400))
+    vi.mocked(postJson).mockRejectedValue(new ApiError('message must not be empty', 'http', 400))
     const store = useEncodeStore()
 
     await store.submit()
@@ -77,6 +78,17 @@ describe('useEncodeStore', () => {
     expect(store.status).toBe('error')
     expect(store.errorMessage).toBe('message must not be empty')
     expect(store.result).toBeNull()
+  })
+
+  it('sets errorCode to network and leaves errorMessage null on a network failure', async () => {
+    vi.mocked(postJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+    const store = useEncodeStore()
+
+    await store.submit()
+
+    expect(store.status).toBe('error')
+    expect(store.errorCode).toBe('network')
+    expect(store.errorMessage).toBeNull()
   })
 
   it('clears the previous result when a new submit is dispatched', async () => {

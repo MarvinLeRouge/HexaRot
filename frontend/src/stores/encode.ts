@@ -29,6 +29,7 @@ interface EncodeState {
   status: EncodeStatus
   result: EncodeResult | null
   errorMessage: string | null
+  errorCode: 'network' | 'unknown' | null
 }
 
 function initialState(): EncodeState {
@@ -45,6 +46,7 @@ function initialState(): EncodeState {
     status: 'idle',
     result: null,
     errorMessage: null,
+    errorCode: null,
   }
 }
 
@@ -55,6 +57,7 @@ export const useEncodeStore = defineStore('encode', {
       this.status = 'loading'
       this.result = null
       this.errorMessage = null
+      this.errorCode = null
 
       const payload =
         this.mode === 'key'
@@ -78,7 +81,15 @@ export const useEncodeStore = defineStore('encode', {
         this.result = await postJson<EncodeResult>('/encode', payload)
         this.status = 'success'
       } catch (err) {
-        this.errorMessage = err instanceof ApiError ? err.message : 'Unknown error'
+        if (err instanceof ApiError && err.code === 'http') {
+          this.errorMessage = err.message
+        } else if (err instanceof ApiError && err.code === 'network') {
+          this.errorMessage = null
+          this.errorCode = 'network'
+        } else {
+          this.errorMessage = null
+          this.errorCode = 'unknown'
+        }
         this.status = 'error'
       }
     },

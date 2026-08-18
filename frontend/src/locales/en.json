@@ -57,7 +57,12 @@
       "warningsHeading": "Weakness warnings",
       "unknownCharsExplanation": "The following characters are not part of the alphabet and were dropped during encoding:",
       "downloadPng": "Download PNG",
-      "downloadSvg": "Download SVG"
+      "downloadSvg": "Download SVG",
+      "copyError": "Copy failed"
     }
+  },
+  "errors": {
+    "network": "Network error: unable to reach the server",
+    "unknown": "Something went wrong. Please try again."
   }
 }

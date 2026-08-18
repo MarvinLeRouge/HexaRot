@@ -8,10 +8,12 @@ interface ApiErrorBody {
 
 export class ApiError extends Error {
   readonly status?: number
+  readonly code: 'http' | 'network'
 
-  constructor(message: string, status?: number) {
+  constructor(message: string, code: 'http' | 'network', status?: number) {
     super(message)
     this.name = 'ApiError'
+    this.code = code
     this.status = status
   }
 }
@@ -31,6 +33,9 @@ async function parseErrorBody(response: Response): Promise<ApiErrorBody> {
 
 async function handleResponse<TResponse>(response: Response): Promise<TResponse> {
   if (response.ok) {
+    if (response.status === 204) {
+      return undefined as TResponse
+    }
     return (await response.json()) as TResponse
   }
 
@@ -39,14 +44,14 @@ async function handleResponse<TResponse>(response: Response): Promise<TResponse>
     ? body.message.join(', ')
     : (body.message ?? response.statusText);
 
-  throw new ApiError(message, response.status)
+  throw new ApiError(message, 'http', response.status)
 }
 
 async function doFetch(url: string, init: RequestInit): Promise<Response> {
   try {
     return await fetch(url, init)
   } catch {
-    throw new ApiError('Network error: unable to reach the server')
+    throw new ApiError('Network error: unable to reach the server', 'network')
   }
 }
 

@@ -103,6 +103,47 @@ describe('EncodeView', () => {
 
       expect(wrapper.find('button[type="submit"]').text()).toBe('Encode')
     })
+
+    it.each([
+      ['size', 'select[name="size"]', 'large'],
+      ['readingOrder', 'select[name="readingOrder"]', 'BT-LR-ALT'],
+      ['rotationDirection', 'select[name="rotationDirection"]', 'ccw'],
+    ])('includes the selected %s value in the API payload', async (field, selector, value) => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find(selector).setValue(value)
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(postJson).toHaveBeenCalledWith('/encode', expect.objectContaining({ [field]: value }))
+    })
+  })
+
+  describe('key mode', () => {
+    it('shows an inline error for a malformed key and disables submit', async () => {
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('input[type="radio"][value="key"]').setValue()
+      await wrapper.find('input[type="text"]').setValue('not-a-valid-key')
+
+      expect(wrapper.find('.encode-params-form__error').exists()).toBe(true)
+      expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
+    })
+
+    it('submits the key-mode payload for a well-formed key', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('input[type="radio"][value="key"]').setValue()
+      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(postJson).toHaveBeenCalledWith('/encode', expect.objectContaining({ message: 'hello world', key: 'HR1·a1b2' }))
+    })
   })
 
   describe('successful response', () => {
@@ -186,7 +227,7 @@ describe('EncodeView', () => {
 
   describe('error handling', () => {
     it('displays an error message when the API call returns a 4xx or 5xx response', async () => {
-      vi.mocked(postJson).mockRejectedValue(new ApiError('message must not be empty', 400))
+      vi.mocked(postJson).mockRejectedValue(new ApiError('message must not be empty', 'http', 400))
       const wrapper = mountView()
       await wrapper.find('textarea').setValue('hello world')
 
@@ -197,7 +238,7 @@ describe('EncodeView', () => {
     })
 
     it('does not display a cryptogram preview after an API error', async () => {
-      vi.mocked(postJson).mockRejectedValue(new ApiError('message must not be empty', 400))
+      vi.mocked(postJson).mockRejectedValue(new ApiError('message must not be empty', 'http', 400))
       const wrapper = mountView()
       await wrapper.find('textarea').setValue('hello world')
 

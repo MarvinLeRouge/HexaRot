@@ -13,18 +13,23 @@
   "dependencies": {
     "pinia": "^3.0.4",
     "vue": "^3.5.30",
-    "vue-i18n": "^9.14.5"
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.6.4",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.4",
     "@types/node": "^24.12.0",
     "@vitejs/plugin-vue": "^6.0.5",
+    "@vue/test-utils": "^2.4.11",
     "@vue/tsconfig": "^0.9.0",
     "eslint": "^9.39.4",
     "eslint-plugin-vue": "^10.8.0",
+    "globals": "^16.0.0",
+    "jsdom": "^30.0.1",
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.57.1",
-    "vite": "^8.0.1",
+    "vite": "^7.3.6",
     "vitest": "^3.2.4",
     "vue-tsc": "^3.2.5"
   }

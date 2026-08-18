@@ -1,1 +1,68 @@
-{}
+{
+  "nav": {
+    "encode": "Encode",
+    "decode": "Decode",
+    "key": "Key"
+  },
+  "encode": {
+    "title": "Encode a message",
+    "form": {
+      "mode": {
+        "label": "Mode",
+        "params": "New parameters",
+        "key": "Existing key"
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "Enter the message to encode"
+      },
+      "pivotBlockSize": {
+        "label": "Pivot block size"
+      },
+      "rotationSequence": {
+        "label": "Rotation sequence"
+      },
+      "rotationDirection": {
+        "label": "Rotation direction",
+        "cw": "Clockwise",
+        "ccw": "Counter-clockwise"
+      },
+      "readingOrder": {
+        "label": "Reading order"
+      },
+      "size": {
+        "label": "Cryptogram size",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large"
+      },
+      "overrideWeaknessWarning": {
+        "label": "Suppress weakness warnings"
+      },
+      "key": {
+        "label": "HexaRot key",
+        "placeholder": "HR1·xxxx",
+        "formatError": "This does not look like a valid HexaRot key."
+      },
+      "submit": {
+        "label": "Encode",
+        "loading": "Encoding..."
+      }
+    },
+    "result": {
+      "pngAlt": "PNG cryptogram preview",
+      "keyLabel": "Key",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "warningsHeading": "Weakness warnings",
+      "unknownCharsExplanation": "The following characters are not part of the alphabet and were dropped during encoding:",
+      "downloadPng": "Download PNG",
+      "downloadSvg": "Download SVG",
+      "copyError": "Copy failed"
+    }
+  },
+  "errors": {
+    "network": "Network error: unable to reach the server",
+    "unknown": "Something went wrong. Please try again."
+  }
+}

@@ -786,7 +786,7 @@ decoded parameters as a structured object.
 - **type:** feat
 - **id:** FEAT-014
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** frontend
 - **complexity:** L

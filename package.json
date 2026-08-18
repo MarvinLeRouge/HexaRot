@@ -22,6 +22,6 @@
   },
   "lint-staged": {
     "backend/src/**/*.ts": "backend/node_modules/.bin/eslint --fix --flag unstable_config_lookup_from_file",
-    "frontend/src/**/*.{ts,vue}": "frontend/node_modules/.bin/eslint --fix --no-warn-ignored"
+    "frontend/src/**/*.{ts,vue}": "frontend/node_modules/.bin/eslint --fix --no-warn-ignored --flag unstable_config_lookup_from_file"
   }
 }

@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import { onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDecodeStore } from '../stores/decode'
 import DecodeParamsForm from '../components/DecodeParamsForm.vue'
 
 const store = useDecodeStore()
 const { t } = useI18n()
+
+onUnmounted(() => {
+  store.reset()
+})
 </script>
 
 <template>
@@ -21,6 +26,7 @@ const { t } = useI18n()
     <p
       v-if="store.status === 'success' && store.result"
       class="decode-view__result"
+      aria-live="polite"
     >
       <strong>{{ t('decode.result.label') }}:</strong> {{ store.result }}
     </p>

@@ -3,6 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 import DecodeView from './DecodeView.vue'
+import { useDecodeStore } from '../stores/decode'
 import en from '../locales/en.json'
 import {
   MOCK_DECODE_RESPONSE,
@@ -183,6 +184,26 @@ describe('DecodeView', () => {
       await vi.waitFor(() => expect(wrapper.text()).toContain('invalid key'))
 
       expect(wrapper.find('.decode-view__result').exists()).toBe(false)
+    })
+  })
+
+  describe('unmount', () => {
+    it('resets the store when the view unmounts', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+      const wrapper = mountView()
+      await selectFile(wrapper, MOCK_PNG_FILE)
+      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+
+      await wrapper.find('form').trigger('submit')
+      await vi.waitFor(() => expect(wrapper.find('.decode-view__result').exists()).toBe(true))
+
+      const store = useDecodeStore()
+      expect(store.result).toBe(MOCK_DECODE_RESPONSE.message)
+
+      wrapper.unmount()
+
+      expect(store.result).toBeNull()
+      expect(store.status).toBe('idle')
     })
   })
 

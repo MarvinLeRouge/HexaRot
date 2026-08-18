@@ -80,7 +80,10 @@ function handleSubmit(): void {
 
       <label class="encode-params-form__field">
         {{ t('encode.form.rotationDirection.label') }}
-        <select v-model="store.rotationDirection">
+        <select
+          v-model="store.rotationDirection"
+          name="rotationDirection"
+        >
           <option value="cw">{{ t('encode.form.rotationDirection.cw') }}</option>
           <option value="ccw">{{ t('encode.form.rotationDirection.ccw') }}</option>
         </select>
@@ -88,7 +91,10 @@ function handleSubmit(): void {
 
       <label class="encode-params-form__field">
         {{ t('encode.form.readingOrder.label') }}
-        <select v-model="store.readingOrder">
+        <select
+          v-model="store.readingOrder"
+          name="readingOrder"
+        >
           <option
             v-for="order in READING_ORDERS"
             :key="order"
@@ -118,7 +124,10 @@ function handleSubmit(): void {
 
     <label class="encode-params-form__field">
       {{ t('encode.form.size.label') }}
-      <select v-model="store.size">
+      <select
+        v-model="store.size"
+        name="size"
+      >
         <option value="small">{{ t('encode.form.size.small') }}</option>
         <option value="medium">{{ t('encode.form.size.medium') }}</option>
         <option value="large">{{ t('encode.form.size.large') }}</option>

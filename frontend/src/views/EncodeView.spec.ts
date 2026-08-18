@@ -38,8 +38,9 @@ describe('EncodeView', () => {
 
     it.each([
       ['pivotBlockSize', 'input[type="number"]'],
-      ['rotationDirection', 'select'],
-      ['size', 'select'],
+      ['rotationDirection', 'select[name="rotationDirection"]'],
+      ['readingOrder', 'select[name="readingOrder"]'],
+      ['size', 'select[name="size"]'],
     ])('renders the %s control', (_field, selector) => {
       const wrapper = mountView()
       expect(wrapper.find(selector).exists()).toBe(true)

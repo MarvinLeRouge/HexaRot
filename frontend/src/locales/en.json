@@ -61,6 +61,38 @@
       "copyError": "Copy failed"
     }
   },
+  "decode": {
+    "title": "Decode a cryptogram",
+    "upload": {
+      "browse": "Choose a file",
+      "dropHint": "or drag and drop a PNG or SVG file here",
+      "invalidExtension": "Only .png and .svg files are supported."
+    },
+    "form": {
+      "upload": {
+        "label": "Cryptogram file"
+      },
+      "key": {
+        "label": "HexaRot key",
+        "placeholder": "HR1·xxxx",
+        "formatError": "This does not look like a valid HexaRot key."
+      },
+      "size": {
+        "label": "Cryptogram size",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large",
+        "hint": "Must match the size used when the cryptogram was encoded."
+      },
+      "submit": {
+        "label": "Decode",
+        "loading": "Decoding..."
+      }
+    },
+    "result": {
+      "label": "Decoded message"
+    }
+  },
   "errors": {
     "network": "Network error: unable to reach the server",
     "unknown": "Something went wrong. Please try again."

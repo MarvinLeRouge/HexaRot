@@ -3,5 +3,12 @@
     "encode": "Encode",
     "decode": "Decode",
     "key": "Key"
+  },
+  "encode": {
+    "form": {
+      "rotationSequence": {
+        "label": "Rotation sequence"
+      }
+    }
   }
 }

@@ -62,6 +62,9 @@ function handleSubmit(): void {
         <option value="large">{{ t('decode.form.size.large') }}</option>
       </select>
     </label>
+    <p class="decode-params-form__hint">
+      {{ t('decode.form.size.hint') }}
+    </p>
 
     <button
       type="submit"
@@ -88,5 +91,11 @@ function handleSubmit(): void {
 
 .decode-params-form__error {
   color: #c0392b;
+}
+
+.decode-params-form__hint {
+  font-size: 0.85em;
+  color: var(--text);
+  margin: 0;
 }
 </style>

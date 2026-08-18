@@ -81,7 +81,8 @@
         "label": "Cryptogram size",
         "small": "Small",
         "medium": "Medium",
-        "large": "Large"
+        "large": "Large",
+        "hint": "Must match the size used when the cryptogram was encoded."
       },
       "submit": {
         "label": "Decode",

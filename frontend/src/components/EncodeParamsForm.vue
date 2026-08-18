@@ -20,6 +20,9 @@ const canSubmit = computed(() => {
   if (store.mode === 'key') {
     return store.keyInput.length > 0 && keyFormatError.value === null
   }
+  if (store.mode === 'params') {
+    return Number.isInteger(store.pivotBlockSize) && store.pivotBlockSize >= 1 && store.pivotBlockSize <= 255
+  }
   return true
 })
 

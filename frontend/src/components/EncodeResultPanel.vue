@@ -11,11 +11,15 @@ const { t } = useI18n()
 
 const pngDataUrl = computed(() => `data:image/png;base64,${props.result.png}`)
 
-const copyState = ref<'idle' | 'copied'>('idle')
+const copyState = ref<'idle' | 'copied' | 'error'>('idle')
 
 async function copyKey(): Promise<void> {
-  await navigator.clipboard.writeText(props.result.key)
-  copyState.value = 'copied'
+  try {
+    await navigator.clipboard.writeText(props.result.key)
+    copyState.value = 'copied'
+  } catch {
+    copyState.value = 'error'
+  }
   setTimeout(() => {
     copyState.value = 'idle'
   }, 2000)
@@ -27,7 +31,7 @@ function triggerDownload(blob: Blob, filename: string): void {
   link.href = url
   link.download = filename
   link.click()
-  URL.revokeObjectURL(url)
+  setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
 function downloadPng(): void {
@@ -52,11 +56,8 @@ function downloadSvg(): void {
         :alt="t('encode.result.pngAlt')"
         class="encode-result-panel__png"
       >
-      <!-- eslint-disable-next-line vue/no-v-html -- result.svg is generated exclusively by this project's own backend renderer, never from user input, so it is a trusted string. -->
-      <div
-        class="encode-result-panel__svg"
-        v-html="result.svg"
-      />
+      <!-- eslint-disable-next-line vue/no-v-html, vue/max-attributes-per-line -- result.svg is generated exclusively by this project's own backend renderer, never from user input, so it is a trusted string. -->
+      <div class="encode-result-panel__svg" v-html="result.svg" />
     </div>
 
     <div class="encode-result-panel__key">
@@ -65,7 +66,7 @@ function downloadSvg(): void {
         type="button"
         @click="copyKey"
       >
-        {{ copyState === 'copied' ? t('encode.result.copied') : t('encode.result.copy') }}
+        {{ copyState === 'copied' ? t('encode.result.copied') : copyState === 'error' ? t('encode.result.copyError') : t('encode.result.copy') }}
       </button>
     </div>
 

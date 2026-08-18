@@ -5,6 +5,7 @@
     "key": "Key"
   },
   "encode": {
+    "title": "Encode a message",
     "form": {
       "mode": {
         "label": "Mode",

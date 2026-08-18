@@ -11,7 +11,7 @@ const { t } = useI18n()
 
 const keyFormatError = computed(() => {
   if (store.mode !== 'key' || store.keyInput.length === 0) return null
-  return isValidKeyFormat(store.keyInput) ? t('encode.form.key.formatError') : null
+  return isValidKeyFormat(store.keyInput) ? null : t('encode.form.key.formatError')
 })
 
 const canSubmit = computed(() => {

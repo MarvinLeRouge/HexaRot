@@ -6,8 +6,46 @@
   },
   "encode": {
     "form": {
+      "mode": {
+        "label": "Mode",
+        "params": "New parameters",
+        "key": "Existing key"
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "Enter the message to encode"
+      },
+      "pivotBlockSize": {
+        "label": "Pivot block size"
+      },
       "rotationSequence": {
         "label": "Rotation sequence"
+      },
+      "rotationDirection": {
+        "label": "Rotation direction",
+        "cw": "Clockwise",
+        "ccw": "Counter-clockwise"
+      },
+      "readingOrder": {
+        "label": "Reading order"
+      },
+      "size": {
+        "label": "Cryptogram size",
+        "small": "Small",
+        "medium": "Medium",
+        "large": "Large"
+      },
+      "overrideWeaknessWarning": {
+        "label": "Suppress weakness warnings"
+      },
+      "key": {
+        "label": "HexaRot key",
+        "placeholder": "HR1·xxxx",
+        "formatError": "This does not look like a valid HexaRot key."
+      },
+      "submit": {
+        "label": "Encode",
+        "loading": "Encoding..."
       }
     }
   }

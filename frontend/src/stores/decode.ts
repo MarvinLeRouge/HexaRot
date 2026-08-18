@@ -63,10 +63,10 @@ export const useDecodeStore = defineStore('decode', {
       this.errorMessage = null
       this.errorCode = null
 
-      const format = detectFormat(file)
-      const cryptogram = format === 'png' ? await readFileAsBase64(file) : await readFileAsText(file)
-
       try {
+        const format = detectFormat(file)
+        const cryptogram = format === 'png' ? await readFileAsBase64(file) : await readFileAsText(file)
+
         const response = await postJson<{ message: string }>('/decode', {
           cryptogram,
           format,

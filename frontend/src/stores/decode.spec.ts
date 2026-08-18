@@ -131,6 +131,36 @@ describe('useDecodeStore', () => {
     expect(store.result).toBeNull()
   })
 
+  it('sets errorCode to unknown and status to error when the file cannot be read', async () => {
+    const store = useDecodeStore()
+    store.file = MOCK_PNG_FILE
+    store.keyInput = 'HR1·a1b2'
+
+    const OriginalFileReader = globalThis.FileReader
+    class FailingFileReader {
+      onload: (() => void) | null = null
+      onerror: ((event: unknown) => void) | null = null
+      error = new Error('read failed')
+      readAsDataURL(): void {
+        queueMicrotask(() => this.onerror?.(new Event('error')))
+      }
+      readAsText(): void {
+        queueMicrotask(() => this.onerror?.(new Event('error')))
+      }
+    }
+    // @ts-expect-error -- intentionally stubbing the global for this one test
+    globalThis.FileReader = FailingFileReader
+
+    try {
+      await store.submit()
+    } finally {
+      globalThis.FileReader = OriginalFileReader
+    }
+
+    expect(store.status).toBe('error')
+    expect(store.errorCode).toBe('unknown')
+  })
+
   it('restores default state when reset is called', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
     const store = useDecodeStore()

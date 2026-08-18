@@ -47,6 +47,16 @@
         "label": "Encode",
         "loading": "Encoding..."
       }
+    },
+    "result": {
+      "pngAlt": "PNG cryptogram preview",
+      "keyLabel": "Key",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "warningsHeading": "Weakness warnings",
+      "unknownCharsExplanation": "The following characters are not part of the alphabet and were dropped during encoding:",
+      "downloadPng": "Download PNG",
+      "downloadSvg": "Download SVG"
     }
   }
 }

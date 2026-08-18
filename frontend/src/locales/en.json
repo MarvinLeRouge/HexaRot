@@ -61,6 +61,13 @@
       "copyError": "Copy failed"
     }
   },
+  "decode": {
+    "upload": {
+      "browse": "Choose a file",
+      "dropHint": "or drag and drop a PNG or SVG file here",
+      "invalidExtension": "Only .png and .svg files are supported."
+    }
+  },
   "errors": {
     "network": "Network error: unable to reach the server",
     "unknown": "Something went wrong. Please try again."

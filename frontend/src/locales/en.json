@@ -154,5 +154,11 @@
   "errors": {
     "network": "Network error: unable to reach the server",
     "unknown": "Something went wrong. Please try again."
+  },
+  "rotationSequence": {
+    "grabbed": "Picked up {angle}°, position {position} of {total}. Use arrow keys to move, space to drop, escape to cancel.",
+    "moved": "Moved to position {position} of {total}.",
+    "dropped": "Dropped {angle}° at position {position} of {total}.",
+    "cancelled": "Reorder cancelled."
   }
 }

@@ -41,4 +41,64 @@ describe('RotationSequencePicker', () => {
 
     expect(wrapper.emitted('update:modelValue')).toEqual([[[2, 0, 1, 3]]])
   })
+
+  describe('keyboard accessibility', () => {
+    it('exposes listbox/option roles for assistive technology', () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      expect(wrapper.find('[role="listbox"]').exists()).toBe(true)
+      expect(wrapper.findAll('[role="option"]').length).toBe(4)
+    })
+
+    it('gives only the first item a roving tabindex by default', () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      const items = wrapper.findAll('li')
+      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', '-1', '-1'])
+    })
+
+    it('moves the roving tabindex to the next item on ArrowRight without reordering', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
+
+      const items = wrapper.findAll('li')
+      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['-1', '0', '-1', '-1'])
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    })
+
+    it('grabs an item with Space, marking it aria-selected', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
+      expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('true')
+    })
+
+    it('moves a grabbed item with ArrowRight, emitting the reordered indices', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
+      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
+
+      expect(wrapper.emitted('update:modelValue')).toEqual([[[1, 0, 2, 3]]])
+    })
+
+    it('drops the grabbed item on a second Space, clearing aria-selected', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
+      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
+      expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('false')
+    })
+
+    it('cancels an in-progress reorder on Escape, emitting the pre-grab order', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
+      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
+      await wrapper.findAll('li')[0].trigger('keydown', { key: 'Escape' })
+
+      expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([[0, 1, 2, 3]])
+      expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('false')
+    })
+
+    it('announces the grabbed state through the live region', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
+      expect(wrapper.find('[role="status"]').text()).toContain('Picked up')
+    })
+  })
 })

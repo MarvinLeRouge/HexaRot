@@ -93,6 +93,38 @@
       "label": "Decoded message"
     }
   },
+  "key": {
+    "title": "Generate or parse a key",
+    "generator": {
+      "title": "Generate a key",
+      "form": {
+        "pivotBlockSize": {
+          "label": "Pivot block size"
+        },
+        "rotationSequence": {
+          "label": "Rotation sequence"
+        },
+        "rotationDirection": {
+          "label": "Rotation direction",
+          "cw": "Clockwise",
+          "ccw": "Counter-clockwise"
+        },
+        "readingOrder": {
+          "label": "Reading order"
+        },
+        "submit": {
+          "label": "Generate",
+          "loading": "Generating..."
+        }
+      },
+      "result": {
+        "keyLabel": "Key",
+        "copy": "Copy",
+        "copied": "Copied!",
+        "copyError": "Copy failed"
+      }
+    }
+  },
   "errors": {
     "network": "Network error: unable to reach the server",
     "unknown": "Something went wrong. Please try again."

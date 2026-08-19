@@ -56,7 +56,7 @@ jobs:
         run: npm run lint
 
       - name: Test
-        run: npm run test
+        run: npm run test:cov
 
   frontend:
     name: Frontend — install, lint, test

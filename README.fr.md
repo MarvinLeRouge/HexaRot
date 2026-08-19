@@ -170,7 +170,7 @@ frontend/
 - ✅ Stratégies d'ordre de lecture (4 directions + mode alterné)
 - ✅ Renderers (PNG + SVG)
 - ✅ Endpoints API (encode, decode, key)
-- 🔄 Frontend (vue encodage, vue décodage terminées ; vue clé restante)
+- ✅ Frontend (vues encodage, décodage, clé toutes terminées)
 - 🔄 Tests & couverture (chaque feature livrée embarque déjà sa propre suite unitaire/e2e ; les items de suite de tests dédiée restent ouverts)
 
 ### V2

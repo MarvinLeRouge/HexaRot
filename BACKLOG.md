@@ -999,7 +999,7 @@ supertest. Tests cover happy paths, validation errors, and round-trip correctnes
 - **type:** test
 - **id:** TEST-003
 - **milestone:** v1
-- **status:** backlog
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** M

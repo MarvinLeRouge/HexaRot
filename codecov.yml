@@ -27,14 +27,12 @@ flags:
 
 coverage:
   status:
-    # informational until the first real merged number is observed on a PR;
-    # flip to false once confirmed the true combined total clears 85% (see TEST-005)
     project:
       default:
         enabled: true
         target: 85%
         threshold: 2%
-        informational: true
+        informational: false
     patch:
       default:
         enabled: true

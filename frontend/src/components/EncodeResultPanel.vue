@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
 import type { EncodeResult } from '../stores/encode'
 
@@ -8,8 +8,6 @@ const props = defineProps<{
 }>()
 
 const { t } = useI18n()
-
-const pngDataUrl = computed(() => `data:image/png;base64,${props.result.png}`)
 
 const copyState = ref<'idle' | 'copied' | 'error'>('idle')
 
@@ -56,20 +54,20 @@ function downloadSvg(): void {
     aria-live="polite"
     :aria-label="t('encode.result.regionLabel')"
   >
-    <div class="encode-result-panel__previews">
-      <img
-        :src="pngDataUrl"
-        :alt="t('encode.result.pngAlt')"
-        class="encode-result-panel__png"
-      >
+    <div class="encode-result-panel__preview">
       <!-- eslint-disable-next-line vue/no-v-html, vue/max-attributes-per-line -- result.svg is generated exclusively by this project's own backend renderer, never from user input, so it is a trusted string. -->
       <div class="encode-result-panel__svg" v-html="result.svg" />
     </div>
 
     <div class="encode-result-panel__key">
-      <span>{{ t('encode.result.keyLabel') }}: <code>{{ result.key }}</code></span>
+      <span class="encode-result-panel__key-label">{{ t('encode.result.keyLabel') }}</span>
+      <code class="encode-result-panel__key-value">{{ result.key }}</code>
+      <p class="encode-result-panel__key-hint">
+        {{ t('encode.result.keyHint') }}
+      </p>
       <button
         type="button"
+        class="encode-result-panel__copy"
         @click="copyKey"
       >
         {{ copyState === 'copied' ? t('encode.result.copied') : copyState === 'error' ? t('encode.result.copyError') : t('encode.result.copy') }}
@@ -111,6 +109,7 @@ function downloadSvg(): void {
     <div class="encode-result-panel__downloads">
       <button
         type="button"
+        class="encode-result-panel__download-primary"
         @click="downloadPng"
       >
         {{ t('encode.result.downloadPng') }}
@@ -134,26 +133,73 @@ function downloadSvg(): void {
   width: 100%;
 }
 
-.encode-result-panel__previews {
+.encode-result-panel__preview {
   display: flex;
-  gap: 16px;
-  align-items: flex-start;
+  justify-content: center;
+  padding: 20px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
 }
 
-.encode-result-panel__png {
-  image-rendering: pixelated;
-  max-width: 200px;
+.encode-result-panel__svg {
+  width: 100%;
+  max-width: 280px;
+}
+
+.encode-result-panel__svg :deep(svg) {
+  width: 100%;
+  height: auto;
+  display: block;
 }
 
 .encode-result-panel__key {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  background: var(--accent-bg);
+}
+
+.encode-result-panel__key-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-h);
+}
+
+.encode-result-panel__key-value {
+  font-size: 1.3em;
+  padding: 0;
+  background: transparent;
+  word-break: break-all;
+}
+
+.encode-result-panel__key-hint {
+  margin: 0;
+  font-size: 0.9em;
+  color: var(--text);
+}
+
+.encode-result-panel__download-primary {
+  border: 1px solid var(--accent-border);
+  background: var(--accent-bg);
+  color: var(--text-h);
+  font-weight: 600;
 }
 
 .encode-result-panel__warnings {
   border: 1px solid #c0392b;
   border-radius: 4px;
   padding: 8px 12px;
+}
+
+.encode-result-panel__downloads {
+  display: flex;
+  gap: 12px;
 }
 </style>

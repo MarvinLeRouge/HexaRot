@@ -58,7 +58,7 @@ describe('EncodeView', () => {
 
     it('does not display a cryptogram preview on initial render', () => {
       const wrapper = mountView()
-      expect(wrapper.find('img').exists()).toBe(false)
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
     })
 
     it('does not display warnings or unknown chars on initial render', () => {
@@ -156,11 +156,6 @@ describe('EncodeView', () => {
       return wrapper
     }
 
-    it('displays the PNG preview after a successful encode response', async () => {
-      const wrapper = await submitAndResolve()
-      expect(wrapper.find('img').attributes('src')).toContain(MOCK_ENCODE_RESPONSE.png)
-    })
-
     it('displays the SVG preview after a successful encode response', async () => {
       const wrapper = await submitAndResolve()
       expect(wrapper.find('.encode-result-panel__svg svg').exists()).toBe(true)
@@ -245,7 +240,7 @@ describe('EncodeView', () => {
       await wrapper.find('form').trigger('submit')
       await flushPromises()
 
-      expect(wrapper.find('img').exists()).toBe(false)
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
     })
 
     it('clears the previous result when a new submission is made', async () => {
@@ -254,12 +249,12 @@ describe('EncodeView', () => {
       await wrapper.find('textarea').setValue('hello world')
       await wrapper.find('form').trigger('submit')
       await flushPromises()
-      expect(wrapper.find('img').exists()).toBe(true)
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(true)
 
       vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
       await wrapper.find('form').trigger('submit')
 
-      expect(wrapper.find('img').exists()).toBe(false)
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
     })
   })
 

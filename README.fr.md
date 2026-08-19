@@ -44,16 +44,19 @@ La même clé déchiffre tous les messages qu'elle a servi à chiffrer.
 
 ## Démarrage rapide
 
-**Prérequis :** Docker et Docker Compose.
+**Prérequis :** Docker, Docker Compose, et un reverse proxy Traefik local (le
+développement local passe par Traefik pour refléter la production — voir
+[CONTRIBUTING.fr.md](CONTRIBUTING.fr.md#environnement-de-développement-local) pour
+la configuration initiale, notamment l'entrée `/etc/hosts` requise).
 
 ```bash
 git clone https://github.com/MarvinLeRouge/HexaRot.git && cd HexaRot
 cp .env.example .env
-docker-compose up
+docker compose up
 ```
 
-L'interface web est disponible sur `http://localhost:5173`.
-L'API est disponible sur `http://localhost:3000`.
+L'interface web est disponible sur `http://hexarot.marvinlerouge.local`.
+L'API est disponible sur `http://hexarot.marvinlerouge.local/api`.
 
 ---
 
@@ -92,11 +95,60 @@ POST /api/encode
 }
 ```
 
+**Exemple — `POST /decode`**
+
+```json
+POST /api/decode
+{
+  "cryptogram": "<PNG encodé en base64 ou chaîne SVG brute>",
+  "format": "png",
+  "key": "HR1·57C3",
+  "size": "medium"
+}
+```
+
+```json
+{
+  "message": "HELLO WORLD"
+}
+```
+
+**Exemple — `POST /key/generate`**
+
+```json
+POST /api/key/generate
+{
+  "pivotBlockSize": 5,
+  "rotationSequence": [0, 1, 2, 3],
+  "rotationDirection": "cw",
+  "readingOrder": "LR-TB"
+}
+```
+
+```json
+{
+  "key": "HR1·57C3"
+}
+```
+
+**Exemple — `GET /key/parse`**
+
+```
+GET /api/key/parse?key=HR1·57C3
+```
+
+```json
+{
+  "pivotBlockSize": 5,
+  "rotationSequence": [0, 90, 180, 270],
+  "rotationDirection": "cw",
+  "readingOrder": "LR-TB"
+}
+```
+
 ---
 
 ## Format de la clé
-
-> ⚠️ *Spécification d'encodage exacte en cours (FEAT-004). Les valeurs ci-dessous sont illustratives.*
 
 Une clé HexaRot condense tous les paramètres de chiffrement dans une courte chaîne base36 :
 
@@ -118,8 +170,10 @@ Les paramètres condensés dans la clé, avec exemples de valeurs :
 | Ordre de lecture | `LR-TB` | Gauche-droite, haut-bas |
 
 La clé est **indépendante du message** — la même clé chiffre et déchiffre autant de messages
-que souhaité. La longueur du message est stockée dans l'en-tête du cryptogramme, pas dans
-la clé.
+que souhaité. Le cryptogramme ne contient aucune métadonnée de longueur par conception (un
+choix délibéré anti-fuite) : le décodage traite toujours la grille entière, en remplissant
+le padding éventuel par un caractère `?` plutôt que de stocker ou de laisser fuiter la
+longueur d'origine.
 
 ---
 
@@ -141,7 +195,7 @@ la clé.
 ```
 backend/
 ├── alphabet/        # Interface VisualAlphabet + implémentation HexahueAlphabet
-├── cipher/          # Pré-traitement, construction de grille, en-tête de métadonnées
+├── cipher/          # Pré-traitement, construction de grille (pas d'en-tête de métadonnées, par conception)
 ├── rotation/        # Moteur de rotation de blocs (encodage + inverse)
 ├── key/             # KeyCodec — encode/décode/valide en base36
 ├── reading-order/   # Implémentations de ReadingOrderStrategy

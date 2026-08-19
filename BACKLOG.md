@@ -1287,7 +1287,7 @@ psql access) — it is not routed through Traefik.
 - **type:** chore
 - **id:** CHORE-007
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** infra
 - **complexity:** M

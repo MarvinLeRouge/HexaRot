@@ -95,7 +95,7 @@ function handleSubmit(): void {
 
 .decode-params-form__hint {
   font-size: 0.85em;
-  color: var(--text);
+  color: var(--text-muted);
   margin: 0;
 }
 </style>

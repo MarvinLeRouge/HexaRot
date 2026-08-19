@@ -30,7 +30,7 @@ export const WEAK_ENCODE_BODY = {
 };
 
 export const ENCODE_BODY_WITH_UNKNOWN_CHARS = {
-  message: 'ABXYZ',
+  message: 'AB@#',
   pivotBlockSize: 5,
   rotationSequence: [0, 1, 2, 3],
   rotationDirection: 'cw',

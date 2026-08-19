@@ -1,14 +1,8 @@
-jest.mock('../src/prisma/prisma.service', () => ({
-  PrismaService: class MockPrismaService {},
-}));
-
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { ApiModule } from '../src/api/api.module';
 import { KeyParseResult } from '../src/api/key.service';
-import { HexahueAlphabet } from '../src/alphabet/hexahue-alphabet.service';
-import { MockAlphabet } from './utils/mock-alphabet';
 import { MALFORMED_KEY_STRINGS } from './fixtures/api.fixtures';
 
 interface KeyGenerateResult {
@@ -21,10 +15,7 @@ describe('Key endpoints (e2e)', () => {
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [ApiModule],
-    })
-      .overrideProvider(HexahueAlphabet)
-      .useValue(new MockAlphabet())
-      .compile();
+    }).compile();
 
     app = moduleRef.createNestApplication();
     app.setGlobalPrefix('api');

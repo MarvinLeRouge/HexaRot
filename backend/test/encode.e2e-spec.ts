@@ -1,15 +1,8 @@
-// Prevent Jest from parsing PrismaService's generated ESM Prisma client.
-jest.mock('../src/prisma/prisma.service', () => ({
-  PrismaService: class MockPrismaService {},
-}));
-
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { ApiModule } from '../src/api/api.module';
 import { EncodeResult } from '../src/api/encode.service';
-import { HexahueAlphabet } from '../src/alphabet/hexahue-alphabet.service';
-import { MockAlphabet } from './utils/mock-alphabet';
 import {
   VALID_ENCODE_BODY,
   VALID_ENCODE_BODY_WITH_KEY,
@@ -24,10 +17,7 @@ describe('POST /api/encode (e2e)', () => {
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [ApiModule],
-    })
-      .overrideProvider(HexahueAlphabet)
-      .useValue(new MockAlphabet())
-      .compile();
+    }).compile();
 
     app = moduleRef.createNestApplication();
     app.setGlobalPrefix('api');
@@ -170,9 +160,7 @@ describe('POST /api/encode (e2e)', () => {
 
       expect(res.status).toBe(200);
       const body = res.body as EncodeResult;
-      expect(body.unknownChars).toEqual(
-        expect.arrayContaining(['X', 'Y', 'Z']),
-      );
+      expect(body.unknownChars).toEqual(['@', '#']);
     });
 
     it('encodes the remaining supported characters when unknown chars are present', async () => {

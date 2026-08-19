@@ -4,7 +4,7 @@
  * KeyCodec.decode() remains the sole source of truth for whether a
  * well-formed-looking key actually decodes to valid parameters.
  */
-const KEY_FORMAT_REGEX = /^HR\d·[0-9a-z]{4}$/
+const KEY_FORMAT_REGEX = /^HR\d·[0-9A-Za-z]{4}$/
 
 export function isValidKeyFormat(key: string): boolean {
   return KEY_FORMAT_REGEX.test(key.trim())

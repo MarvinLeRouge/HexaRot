@@ -129,7 +129,7 @@
       "form": {
         "key": {
           "label": "HexaRot key",
-          "placeholder": "HR1·xxxx",
+          "placeholder": "HR1·XXXX",
           "formatError": "This does not look like a valid HexaRot key."
         },
         "submit": {

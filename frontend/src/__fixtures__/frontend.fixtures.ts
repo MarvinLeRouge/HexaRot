@@ -9,7 +9,7 @@ export const TINY_PNG_BASE64 =
 export const MOCK_ENCODE_RESPONSE: EncodeResult = {
   png: TINY_PNG_BASE64,
   svg: '<svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"><rect width="10" height="10" fill="#000"/></svg>',
-  key: 'HR1·a1b2',
+  key: 'HR1·A1B2',
   warnings: [],
   unknownChars: [],
 }
@@ -42,7 +42,7 @@ export const MOCK_DECODE_RESPONSE = {
 }
 
 export const MOCK_KEY_GENERATE_RESPONSE = {
-  key: 'HR1·c3d4',
+  key: 'HR1·035X',
 }
 
 export const MOCK_KEY_PARSE_RESPONSE = {

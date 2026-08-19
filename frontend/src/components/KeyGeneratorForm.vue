@@ -117,6 +117,11 @@ async function copyKey(): Promise<void> {
   flex-direction: column;
   gap: 16px;
   max-width: 480px;
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
 }
 
 .key-generator-form__field {

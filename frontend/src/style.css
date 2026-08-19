@@ -80,3 +80,11 @@ code {
   outline-offset: 2px;
   border-radius: 4px;
 }
+
+button,
+select,
+input,
+textarea {
+  font-family: inherit;
+  font-size: 1em;
+}

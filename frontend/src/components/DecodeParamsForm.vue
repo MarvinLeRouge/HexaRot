@@ -81,6 +81,7 @@ function handleSubmit(): void {
   flex-direction: column;
   gap: 16px;
   max-width: 480px;
+  width: 100%;
 }
 
 .decode-params-form__field {

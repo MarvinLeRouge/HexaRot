@@ -65,7 +65,12 @@ function handleSubmit(): void {
       />
     </label>
 
-    <template v-if="store.mode === 'params'">
+    <fieldset
+      v-if="store.mode === 'params'"
+      class="encode-params-form__group"
+    >
+      <legend>{{ t('encode.form.transformGroup.label') }}</legend>
+
       <label class="encode-params-form__field">
         {{ t('encode.form.pivotBlockSize.label') }}
         <input
@@ -105,7 +110,7 @@ function handleSubmit(): void {
           >{{ order }}</option>
         </select>
       </label>
-    </template>
+    </fieldset>
 
     <template v-else>
       <label class="encode-params-form__field">
@@ -125,25 +130,29 @@ function handleSubmit(): void {
       </p>
     </template>
 
-    <label class="encode-params-form__field">
-      {{ t('encode.form.size.label') }}
-      <select
-        v-model="store.size"
-        name="size"
-      >
-        <option value="small">{{ t('encode.form.size.small') }}</option>
-        <option value="medium">{{ t('encode.form.size.medium') }}</option>
-        <option value="large">{{ t('encode.form.size.large') }}</option>
-      </select>
-    </label>
+    <fieldset class="encode-params-form__group">
+      <legend>{{ t('encode.form.outputGroup.label') }}</legend>
 
-    <label class="encode-params-form__checkbox">
-      <input
-        v-model="store.overrideWeaknessWarning"
-        type="checkbox"
-      >
-      {{ t('encode.form.overrideWeaknessWarning.label') }}
-    </label>
+      <label class="encode-params-form__field">
+        {{ t('encode.form.size.label') }}
+        <select
+          v-model="store.size"
+          name="size"
+        >
+          <option value="small">{{ t('encode.form.size.small') }}</option>
+          <option value="medium">{{ t('encode.form.size.medium') }}</option>
+          <option value="large">{{ t('encode.form.size.large') }}</option>
+        </select>
+      </label>
+
+      <label class="encode-params-form__checkbox">
+        <input
+          v-model="store.overrideWeaknessWarning"
+          type="checkbox"
+        >
+        {{ t('encode.form.overrideWeaknessWarning.label') }}
+      </label>
+    </fieldset>
 
     <button
       type="submit"
@@ -160,6 +169,7 @@ function handleSubmit(): void {
   flex-direction: column;
   gap: 16px;
   max-width: 480px;
+  width: 100%;
 }
 
 .encode-params-form__field {
@@ -173,6 +183,28 @@ function handleSubmit(): void {
   gap: 16px;
   border: none;
   padding: 0;
+}
+
+.encode-params-form__group {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  margin: 0;
+}
+
+.encode-params-form__group legend {
+  padding: 0 4px;
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.encode-params-form__checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 .encode-params-form__error {

@@ -16,6 +16,9 @@
         "label": "Message",
         "placeholder": "Enter the message to encode"
       },
+      "transformGroup": {
+        "label": "Transformation"
+      },
       "pivotBlockSize": {
         "label": "Pivot block size"
       },
@@ -29,6 +32,9 @@
       },
       "readingOrder": {
         "label": "Reading order"
+      },
+      "outputGroup": {
+        "label": "Output"
       },
       "size": {
         "label": "Cryptogram size",

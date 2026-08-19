@@ -25,6 +25,7 @@ onUnmounted(() => {
 .key-view {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 32px;
 }
 </style>

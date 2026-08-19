@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useKeyStore } from '../stores/key'
 import { isValidKeyFormat } from '../utils/key-format'
+import { revealResult } from '../utils/reveal-result'
+import LoadingSpinner from './LoadingSpinner.vue'
 
 const store = useKeyStore()
 const { t } = useI18n()
@@ -21,11 +23,27 @@ function handleParse(): void {
   if (!canParse.value) return
   void store.parse()
 }
+
+const errorRef = ref<HTMLElement | null>(null)
+const resultRef = ref<HTMLElement | null>(null)
+
+watch(
+  () => store.parseStatus,
+  async (status) => {
+    await nextTick()
+    if (status === 'success') {
+      revealResult(resultRef.value, { focus: true })
+    } else if (status === 'error') {
+      revealResult(errorRef.value)
+    }
+  },
+)
 </script>
 
 <template>
   <form
     class="key-parser-form"
+    :aria-busy="store.parseStatus === 'loading'"
     @submit.prevent="handleParse"
   >
     <h2>{{ t('key.parser.title') }}</h2>
@@ -48,13 +66,16 @@ function handleParse(): void {
 
     <button
       type="submit"
+      class="key-parser-form__submit"
       :disabled="!canParse"
     >
+      <LoadingSpinner v-if="store.parseStatus === 'loading'" />
       {{ store.parseStatus === 'loading' ? t('key.parser.form.submit.loading') : t('key.parser.form.submit.label') }}
     </button>
 
     <p
       v-if="store.parseStatus === 'error'"
+      ref="errorRef"
       class="key-parser-form__error"
       role="alert"
     >
@@ -63,7 +84,12 @@ function handleParse(): void {
 
     <dl
       v-if="store.parseStatus === 'success' && store.parsedParams"
+      ref="resultRef"
       class="key-parser-form__result"
+      role="region"
+      tabindex="-1"
+      aria-live="polite"
+      :aria-label="t('key.parser.result.regionLabel')"
     >
       <dt>{{ t('key.parser.result.pivotBlockSize') }}</dt>
       <dd>{{ store.parsedParams.pivotBlockSize }}</dd>
@@ -101,6 +127,13 @@ function handleParse(): void {
 
 .key-parser-form__error {
   color: #c0392b;
+}
+
+.key-parser-form__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .key-parser-form__result {

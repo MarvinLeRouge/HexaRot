@@ -5,6 +5,7 @@ import { useEncodeStore } from '../stores/encode'
 import { READING_ORDERS } from '../constants/reading-orders'
 import { isValidKeyFormat } from '../utils/key-format'
 import RotationSequencePicker from './RotationSequencePicker.vue'
+import LoadingSpinner from './LoadingSpinner.vue'
 
 const store = useEncodeStore()
 const { t } = useI18n()
@@ -156,8 +157,10 @@ function handleSubmit(): void {
 
     <button
       type="submit"
+      class="encode-params-form__submit"
       :disabled="!canSubmit"
     >
+      <LoadingSpinner v-if="store.status === 'loading'" />
       {{ store.status === 'loading' ? t('encode.form.submit.loading') : t('encode.form.submit.label') }}
     </button>
   </form>
@@ -209,5 +212,12 @@ function handleSubmit(): void {
 
 .encode-params-form__error {
   color: #c0392b;
+}
+
+.encode-params-form__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 </style>

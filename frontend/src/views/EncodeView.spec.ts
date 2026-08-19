@@ -269,4 +269,38 @@ describe('EncodeView', () => {
       expect(wrapper.find('button[type="submit"]').text()).toBe(en.encode.form.submit.label)
     })
   })
+
+  describe('submit feedback', () => {
+    it('marks the view busy and shows a spinner while the request is in flight', async () => {
+      vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('form').trigger('submit')
+
+      expect(wrapper.find('.encode-view').attributes('aria-busy')).toBe('true')
+      expect(wrapper.find('.loading-spinner').exists()).toBe(true)
+    })
+
+    it('moves focus to the result panel after a successful encode', async () => {
+      const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus')
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(focusSpy).toHaveBeenCalledWith({ preventScroll: true })
+      focusSpy.mockRestore()
+    })
+
+    it('does not mark the view busy once the request has settled', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(wrapper.find('.encode-view').attributes('aria-busy')).toBe('false')
+    })
+  })
 })

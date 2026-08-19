@@ -100,4 +100,27 @@ describe('KeyGeneratorForm', () => {
 
     expect(wrapper.text()).toContain('invalid parameters')
   })
+
+  describe('submit feedback', () => {
+    it('marks the form busy and shows a spinner while generating', async () => {
+      vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
+      const wrapper = mountForm()
+      await wrapper.find('form').trigger('submit')
+
+      expect(wrapper.find('.key-generator-form').attributes('aria-busy')).toBe('true')
+      expect(wrapper.find('.loading-spinner').exists()).toBe(true)
+    })
+
+    it('moves focus to the result after a successful generate', async () => {
+      const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus')
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
+      const wrapper = mountForm()
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(focusSpy).toHaveBeenCalledWith({ preventScroll: true })
+      focusSpy.mockRestore()
+    })
+  })
 })

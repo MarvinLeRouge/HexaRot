@@ -1,9 +1,11 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useKeyStore } from '../stores/key'
 import { READING_ORDERS } from '../constants/reading-orders'
+import { revealResult } from '../utils/reveal-result'
 import RotationSequencePicker from './RotationSequencePicker.vue'
+import LoadingSpinner from './LoadingSpinner.vue'
 
 const store = useKeyStore()
 const { t } = useI18n()
@@ -17,6 +19,21 @@ function handleGenerate(): void {
   if (!canGenerate.value) return
   void store.generate()
 }
+
+const errorRef = ref<HTMLElement | null>(null)
+const resultRef = ref<HTMLElement | null>(null)
+
+watch(
+  () => store.generateStatus,
+  async (status) => {
+    await nextTick()
+    if (status === 'success') {
+      revealResult(resultRef.value, { focus: true })
+    } else if (status === 'error') {
+      revealResult(errorRef.value)
+    }
+  },
+)
 
 const copyState = ref<'idle' | 'copied' | 'error'>('idle')
 
@@ -37,6 +54,7 @@ async function copyKey(): Promise<void> {
 <template>
   <form
     class="key-generator-form"
+    :aria-busy="store.generateStatus === 'loading'"
     @submit.prevent="handleGenerate"
   >
     <h2>{{ t('key.generator.title') }}</h2>
@@ -83,13 +101,16 @@ async function copyKey(): Promise<void> {
 
     <button
       type="submit"
+      class="key-generator-form__submit"
       :disabled="!canGenerate"
     >
+      <LoadingSpinner v-if="store.generateStatus === 'loading'" />
       {{ store.generateStatus === 'loading' ? t('key.generator.form.submit.loading') : t('key.generator.form.submit.label') }}
     </button>
 
     <p
       v-if="store.generateStatus === 'error'"
+      ref="errorRef"
       class="key-generator-form__error"
       role="alert"
     >
@@ -98,7 +119,12 @@ async function copyKey(): Promise<void> {
 
     <div
       v-if="store.generateStatus === 'success' && store.generatedKey"
+      ref="resultRef"
       class="key-generator-form__result"
+      role="region"
+      tabindex="-1"
+      aria-live="polite"
+      :aria-label="t('key.generator.result.regionLabel')"
     >
       <span>{{ t('key.generator.result.keyLabel') }}: <code>{{ store.generatedKey }}</code></span>
       <button
@@ -132,6 +158,13 @@ async function copyKey(): Promise<void> {
 
 .key-generator-form__error {
   color: #c0392b;
+}
+
+.key-generator-form__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 
 .key-generator-form__result {

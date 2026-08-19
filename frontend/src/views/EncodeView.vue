@@ -1,19 +1,40 @@
 <script setup lang="ts">
+import { nextTick, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useEncodeStore } from '../stores/encode'
+import { revealResult } from '../utils/reveal-result'
 import EncodeParamsForm from '../components/EncodeParamsForm.vue'
 import EncodeResultPanel from '../components/EncodeResultPanel.vue'
 
 const store = useEncodeStore()
 const { t } = useI18n()
+
+const errorRef = ref<HTMLElement | null>(null)
+const resultRef = ref<InstanceType<typeof EncodeResultPanel> | null>(null)
+
+watch(
+  () => store.status,
+  async (status) => {
+    await nextTick()
+    if (status === 'success') {
+      revealResult(resultRef.value?.$el ?? null, { focus: true })
+    } else if (status === 'error') {
+      revealResult(errorRef.value)
+    }
+  },
+)
 </script>
 
 <template>
-  <div class="encode-view">
+  <div
+    class="encode-view"
+    :aria-busy="store.status === 'loading'"
+  >
     <h1>{{ t('encode.title') }}</h1>
     <EncodeParamsForm />
     <p
       v-if="store.status === 'error'"
+      ref="errorRef"
       class="encode-view__error"
       role="alert"
     >
@@ -21,6 +42,7 @@ const { t } = useI18n()
     </p>
     <EncodeResultPanel
       v-if="store.status === 'success' && store.result"
+      ref="resultRef"
       :result="store.result"
     />
   </div>

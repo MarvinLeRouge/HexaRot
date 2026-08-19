@@ -49,7 +49,13 @@ function downloadSvg(): void {
 </script>
 
 <template>
-  <section class="encode-result-panel">
+  <section
+    class="encode-result-panel"
+    role="region"
+    tabindex="-1"
+    aria-live="polite"
+    :aria-label="t('encode.result.regionLabel')"
+  >
     <div class="encode-result-panel__previews">
       <img
         :src="pngDataUrl"

@@ -59,6 +59,7 @@
       }
     },
     "result": {
+      "regionLabel": "Encode result",
       "pngAlt": "PNG cryptogram preview",
       "keyLabel": "Key",
       "copy": "Copy",
@@ -134,6 +135,7 @@
         }
       },
       "result": {
+        "regionLabel": "Generated key",
         "keyLabel": "Key",
         "copy": "Copy",
         "copied": "Copied!",
@@ -157,6 +159,7 @@
         }
       },
       "result": {
+        "regionLabel": "Parsed key parameters",
         "pivotBlockSize": "Pivot block size",
         "rotationSequence": "Rotation sequence",
         "rotationDirection": "Rotation direction",

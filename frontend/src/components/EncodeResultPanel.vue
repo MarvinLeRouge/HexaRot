@@ -76,6 +76,7 @@ function downloadSvg(): void {
       role="alert"
     >
       <p>{{ t('encode.result.warningsHeading') }}</p>
+      <p>{{ t('encode.result.warningsExplanation') }}</p>
       <ul>
         <li
           v-for="warning in result.warnings"

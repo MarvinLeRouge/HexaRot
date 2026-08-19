@@ -53,6 +53,9 @@
       "submit": {
         "label": "Encode",
         "loading": "Encoding..."
+      },
+      "error": {
+        "prefix": "Couldn't encode this message: {detail}"
       }
     },
     "result": {
@@ -61,6 +64,7 @@
       "copy": "Copy",
       "copied": "Copied!",
       "warningsHeading": "Weakness warnings",
+      "warningsExplanation": "This combination weakens the cryptogram's rotation pattern. You can proceed anyway, or adjust the pivot block size to remove the warning:",
       "unknownCharsExplanation": "The following characters are not part of the alphabet and were dropped during encoding:",
       "downloadPng": "Download PNG",
       "downloadSvg": "Download SVG",
@@ -93,6 +97,9 @@
       "submit": {
         "label": "Decode",
         "loading": "Decoding..."
+      },
+      "error": {
+        "prefix": "Couldn't decode this cryptogram: {detail}"
       }
     },
     "result": {
@@ -121,6 +128,9 @@
         "submit": {
           "label": "Generate",
           "loading": "Generating..."
+        },
+        "error": {
+          "prefix": "Couldn't generate a key: {detail}"
         }
       },
       "result": {
@@ -141,6 +151,9 @@
         "submit": {
           "label": "Parse",
           "loading": "Parsing..."
+        },
+        "error": {
+          "prefix": "Couldn't parse this key: {detail}"
         }
       },
       "result": {
@@ -152,7 +165,7 @@
     }
   },
   "errors": {
-    "network": "Network error: unable to reach the server",
+    "network": "Couldn't reach the server. Check your connection and try again.",
     "unknown": "Something went wrong. Please try again."
   },
   "rotationSequence": {

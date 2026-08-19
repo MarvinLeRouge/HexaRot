@@ -21,7 +21,7 @@ onUnmounted(() => {
       class="decode-view__error"
       role="alert"
     >
-      {{ store.errorMessage ?? t(`errors.${store.errorCode}`) }}
+      {{ store.errorMessage ? t('decode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
     </p>
     <p
       v-if="store.status === 'success' && store.result"

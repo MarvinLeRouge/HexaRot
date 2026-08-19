@@ -17,7 +17,7 @@ const { t } = useI18n()
       class="encode-view__error"
       role="alert"
     >
-      {{ store.errorMessage ?? t(`errors.${store.errorCode}`) }}
+      {{ store.errorMessage ? t('encode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
     </p>
     <EncodeResultPanel
       v-if="store.status === 'success' && store.result"

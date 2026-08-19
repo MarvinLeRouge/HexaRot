@@ -58,7 +58,7 @@ function handleParse(): void {
       class="key-parser-form__error"
       role="alert"
     >
-      {{ store.parseErrorMessage ?? t(`errors.${store.parseErrorCode}`) }}
+      {{ store.parseErrorMessage ? t('key.parser.form.error.prefix', { detail: store.parseErrorMessage }) : t(`errors.${store.parseErrorCode}`) }}
     </p>
 
     <dl

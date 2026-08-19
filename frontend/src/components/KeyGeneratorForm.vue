@@ -93,7 +93,7 @@ async function copyKey(): Promise<void> {
       class="key-generator-form__error"
       role="alert"
     >
-      {{ store.generateErrorMessage ?? t(`errors.${store.generateErrorCode}`) }}
+      {{ store.generateErrorMessage ? t('key.generator.form.error.prefix', { detail: store.generateErrorMessage }) : t(`errors.${store.generateErrorCode}`) }}
     </p>
 
     <div

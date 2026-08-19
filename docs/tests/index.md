@@ -23,8 +23,17 @@ only in a dedicated test environment.
 | Peripheral modules (renderer, validation, API controllers) | **75%** | branch coverage |
 | Global (backend + frontend combined) | **≥ 85%** | branch coverage |
 
-These thresholds are enforced in CI (Jest `--coverage` with `coverageThreshold` in
-`package.json`'s `jest` block, Vitest equivalent for the frontend).
+The algorithmic core row is enforced locally per test run (Jest `--coverage` with
+`coverageThreshold` in `package.json`'s `jest` block, scoped to
+cipher/key/rotation/reading-order). The peripheral modules row (renderer, validation,
+API controllers) is now real and measured - `backend/test/jest-e2e.json` collects
+coverage from the e2e suite that actually exercises this layer - but has no local
+`coverageThreshold` gate of its own; it is visible in Codecov's per-file view and rolls
+into the global combined check below. The global combined row - the only one that spans
+both languages and both backend test layers (unit + e2e) - is enforced by Codecov
+(`codecov.yml`, `project` coverage status), which merges the backend's unit and e2e
+reports under a single `backend` flag and the frontend's under `frontend`, then checks
+the combined project total against the target on every pull request.
 
 ---
 
@@ -81,6 +90,8 @@ These thresholds are enforced in CI (Jest `--coverage` with `coverageThreshold` 
 | TEST-001 | cipher.md, key.md, rotation.md, reading-order.md | Consolidation |
 | TEST-002 | api.md | Consolidation |
 | TEST-003 | frontend.md | Consolidation |
+| TEST-005 | this document (§2) | Coverage reconciliation |
+| CI-005 | this document (§2) | Codecov reporting |
 
 ---
 

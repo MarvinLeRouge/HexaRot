@@ -1429,3 +1429,85 @@ new backlog item rather than silently dropped.
 - Dependency audit (`npm audit` or equivalent) run on both backend and frontend, with
   high/critical findings addressed or explicitly deferred with rationale
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CI-005] Codecov integration — coverage reporting and PR diff comments
+
+- **type:** ci
+- **id:** CI-005
+- **milestone:** v1
+- **status:** done
+- **priority:** medium
+- **domain:** infra
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** TEST-001, TEST-002, TEST-003
+- **learning:** [Codecov GitHub Action, OIDC-based auth (tokenless), lcov coverage report formats, coverage flags, coverage badges, PR coverage diff comments]
+- **labels:** [ci, domain:infra, priority:medium, milestone:v1]
+
+#### Description
+
+Upload the backend (Jest, unit + e2e combined under one `backend` flag) and frontend
+(Vitest) coverage reports to Codecov via the official `codecov/codecov-action`, using
+OIDC (`use_oidc: true`) rather than a stored `CODECOV_TOKEN` secret - the same
+tokenless auth pattern already used across this developer's other tracked projects
+(HiveMind, GeoChallenge-Tracker, Triton, CC-Beacon). A `codecov.yml` at the repo root
+configures the `backend`/`frontend` flags, per-flag ignore paths (entry points, DI
+wiring, generated code), and the project-wide coverage target. A coverage badge is
+added to `README.md`/`README.fr.md`.
+
+#### Acceptance criteria
+
+- Backend CI job uploads both its unit (`backend/coverage/lcov.info`) and e2e
+  (`backend/coverage-e2e/lcov.info`) reports under a single `backend` flag; frontend CI
+  job uploads its report under a `frontend` flag
+- Both jobs authenticate via OIDC (`use_oidc: true`, `permissions: id-token: write`) -
+  no `CODECOV_TOKEN` secret is created or referenced
+- `codecov.yml` defines the `backend`/`frontend` flags with their paths and ignore
+  lists, and a project coverage target consistent with `docs/tests/index.md`'s
+  documented ≥85% global bar
+- README (both languages) displays a Codecov coverage badge
+- Codecov posts a coverage diff comment on pull requests
+- No hardcoded credentials in the workflow file
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [TEST-004] Coverage reconciliation — real backend peripheral + global combined numbers
+
+- **type:** test
+- **id:** TEST-004
+- **milestone:** v1
+- **status:** done
+- **priority:** medium
+- **domain:** infra
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** TEST-001, TEST-002, TEST-003
+- **learning:** [Jest multi-config coverage collection, rootDir resolution for collectCoverageFrom, combining unit and integration coverage under one Codecov flag]
+
+#### Description
+
+TEST-001/002/003 each closed their own layer's coverage gap, but left one real question
+open: is the ≥85% "Global (backend + frontend combined)" bar from `docs/tests/index.md`
+actually true, or just true for each layer measured in isolation? The backend's
+peripheral layer (API controllers, renderer, validation) is exercised by the e2e suite
+(TEST-002), not by unit tests, and the e2e Jest config (`jest-e2e.json`) had no coverage
+collection configured at all - so that layer's real number was never measured. This item
+adds e2e coverage collection and verifies the real combined number, using Codecov (see
+CI-005) as the cross-report merging mechanism rather than hand-rolling local coverage
+merging.
+
+#### Acceptance criteria
+
+- `backend/test/jest-e2e.json` collects coverage from `src/**` (excluding `*.module.ts`,
+  matching TEST-001's exclusion), output to a separate `coverage-e2e` directory so it
+  doesn't clobber the unit run's `coverage` directory
+- A `test:e2e:cov` script runs the e2e suite with coverage collection
+- CI's backend job runs `test:e2e:cov` (not the plain `test:e2e`) and uploads both the
+  unit and e2e reports to Codecov
+- Real measured numbers for the backend's peripheral layer (controllers, renderer,
+  validation) are visible in Codecov, not just assumed
+- The true combined project number (via Codecov's `backend` + `frontend` flags) is
+  verified to actually clear the ≥85% target, or a follow-up item is logged if it
+  doesn't
+<!-- ITEM:END -->

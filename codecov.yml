@@ -1,0 +1,44 @@
+flag_management:
+  default_rules:
+    ignore:
+      # Backend — entry point, seed data, generated Prisma client, DI wiring
+      - "backend/src/main.ts"
+      - "backend/prisma/seed.ts"
+      - "backend/prisma/migrations/**"
+      - "backend/generated/**"
+      - "backend/src/**/*.module.ts"
+      # Frontend — entry point and framework wiring
+      - "frontend/src/main.ts"
+      - "frontend/src/App.vue"
+      - "frontend/src/router/**"
+      - "frontend/src/layouts/**"
+
+flags:
+  backend:
+    paths:
+      - backend/src/
+    carryforward: true
+  frontend:
+    paths:
+      - frontend/src/
+    carryforward: true
+
+coverage:
+  status:
+    project:
+      default:
+        enabled: true
+        target: 85%
+        threshold: 2%
+        informational: false
+    patch:
+      default:
+        enabled: true
+        target: 70%
+        threshold: 5%
+        informational: false
+
+comment:
+  layout: reach,diff,flags,files
+  behavior: default
+  require_changes: true

@@ -10,6 +10,10 @@ jobs:
     name: Backend — install, lint, test
     runs-on: ubuntu-latest
 
+    permissions:
+      id-token: write
+      contents: read
+
     services:
       postgres:
         image: postgres:16
@@ -59,11 +63,23 @@ jobs:
         run: npm run test:cov
 
       - name: E2E test
-        run: npm run test:e2e
+        run: npm run test:e2e:cov
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          use_oidc: true
+          flags: backend
+          files: backend/coverage/lcov.info,backend/coverage-e2e/lcov.info
+          fail_ci_if_error: false
 
   frontend:
     name: Frontend — install, lint, test
     runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
 
     defaults:
       run:
@@ -88,3 +104,11 @@ jobs:
 
       - name: Test
         run: npm run test:cov
+
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          use_oidc: true
+          flags: frontend
+          files: frontend/coverage/lcov.info
+          fail_ci_if_error: false

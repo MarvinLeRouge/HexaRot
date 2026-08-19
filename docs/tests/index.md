@@ -23,8 +23,13 @@ only in a dedicated test environment.
 | Peripheral modules (renderer, validation, API controllers) | **75%** | branch coverage |
 | Global (backend + frontend combined) | **≥ 85%** | branch coverage |
 
-These thresholds are enforced in CI (Jest `--coverage` with `coverageThreshold` in
-`package.json`'s `jest` block, Vitest equivalent for the frontend).
+The algorithmic core and peripheral module rows are enforced locally per test run
+(Jest `--coverage` with `coverageThreshold` in `package.json`'s `jest` block; Vitest's
+equivalent in `frontend/vite.config.ts`). The global combined row - the only one that
+spans both languages and both backend test layers (unit + e2e) - is enforced by
+Codecov (`codecov.yml`, `project` coverage status), which merges the backend's unit
+and e2e reports under a single `backend` flag and the frontend's under `frontend`, then
+checks the combined project total against the target on every pull request.
 
 ---
 

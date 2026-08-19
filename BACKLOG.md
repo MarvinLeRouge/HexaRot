@@ -1030,7 +1030,7 @@ transitions, and API call mocking.
 - **type:** docs
 - **id:** DOCS-001
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** docs
 - **complexity:** M

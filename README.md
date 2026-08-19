@@ -44,16 +44,19 @@ The same key decodes any message it was used to encode.
 
 ## Quick start
 
-**Prerequisites:** Docker and Docker Compose.
+**Prerequisites:** Docker, Docker Compose, and a local Traefik reverse proxy (local
+dev is routed through Traefik to mirror production — see
+[CONTRIBUTING.md](CONTRIBUTING.md#local-development-environment) for the one-time
+setup, including the required `/etc/hosts` entry).
 
 ```bash
 git clone https://github.com/MarvinLeRouge/HexaRot.git && cd HexaRot
 cp .env.example .env
-docker-compose up
+docker compose up
 ```
 
-The web interface is available at `http://localhost:5173`.
-The API is available at `http://localhost:3000`.
+The web interface is available at `http://hexarot.marvinlerouge.local`.
+The API is available at `http://hexarot.marvinlerouge.local/api`.
 
 ---
 
@@ -92,11 +95,60 @@ POST /api/encode
 }
 ```
 
+**Example — `POST /decode`**
+
+```json
+POST /api/decode
+{
+  "cryptogram": "<base64-encoded PNG or raw SVG string>",
+  "format": "png",
+  "key": "HR1·57C3",
+  "size": "medium"
+}
+```
+
+```json
+{
+  "message": "HELLO WORLD"
+}
+```
+
+**Example — `POST /key/generate`**
+
+```json
+POST /api/key/generate
+{
+  "pivotBlockSize": 5,
+  "rotationSequence": [0, 1, 2, 3],
+  "rotationDirection": "cw",
+  "readingOrder": "LR-TB"
+}
+```
+
+```json
+{
+  "key": "HR1·57C3"
+}
+```
+
+**Example — `GET /key/parse`**
+
+```
+GET /api/key/parse?key=HR1·57C3
+```
+
+```json
+{
+  "pivotBlockSize": 5,
+  "rotationSequence": [0, 90, 180, 270],
+  "rotationDirection": "cw",
+  "readingOrder": "LR-TB"
+}
+```
+
 ---
 
 ## The key format
-
-> ⚠️ *Exact encoding specification in progress (FEAT-004). The values below are illustrative.*
 
 A HexaRot key encodes all encryption parameters into a short base36 string:
 
@@ -118,7 +170,9 @@ The parameters packed into the key, with example values:
 | Reading order | `LR-TB` | Left-right, top-bottom |
 
 The key is **message-independent** — the same key encrypts and decrypts any number of
-messages. Message length is stored in the cryptogram header, not in the key.
+messages. The cryptogram carries no message-length metadata by design (a deliberate
+anti-leakage choice): decoding always processes the full grid, filling any padding
+with a `?` placeholder rather than storing or leaking the original length anywhere.
 
 ---
 
@@ -140,7 +194,7 @@ messages. Message length is stored in the cryptogram header, not in the key.
 ```
 backend/
 ├── alphabet/        # VisualAlphabet interface + HexahueAlphabet implementation
-├── cipher/          # Pre-processing, grid construction, metadata header
+├── cipher/          # Pre-processing, grid construction (no metadata header, by design)
 ├── rotation/        # Block rotation engine (encode + inverse)
 ├── key/             # KeyCodec — base36 encode/decode/validate
 ├── reading-order/   # ReadingOrderStrategy implementations

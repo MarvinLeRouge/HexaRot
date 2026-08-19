@@ -123,6 +123,26 @@
         "copied": "Copied!",
         "copyError": "Copy failed"
       }
+    },
+    "parser": {
+      "title": "Parse a key",
+      "form": {
+        "key": {
+          "label": "HexaRot key",
+          "placeholder": "HR1·xxxx",
+          "formatError": "This does not look like a valid HexaRot key."
+        },
+        "submit": {
+          "label": "Parse",
+          "loading": "Parsing..."
+        }
+      },
+      "result": {
+        "pivotBlockSize": "Pivot block size",
+        "rotationSequence": "Rotation sequence",
+        "rotationDirection": "Rotation direction",
+        "readingOrder": "Reading order"
+      }
     }
   },
   "errors": {

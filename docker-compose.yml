@@ -6,7 +6,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5433:5432"
+      - "127.0.0.1:5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -14,13 +14,13 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - internal
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
-    ports:
-      - "3000:3000"
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -31,13 +31,21 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.hexarot-api-dev.rule=Host(`hexarot.marvinlerouge.local`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.hexarot-api-dev.entrypoints=web"
+      - "traefik.http.routers.hexarot-api-dev.service=hexarot-backend-dev"
+      - "traefik.http.services.hexarot-backend-dev.loadbalancer.server.port=3000"
+    networks:
+      - traefik-public
+      - internal
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
-    ports:
-      - "5173:5173"
     volumes:
       - ./frontend:/app
       - /app/node_modules
@@ -46,6 +54,20 @@ services:
       VITE_PROXY_TARGET: http://backend:3000
     depends_on:
       - backend
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.hexarot-frontend-dev.rule=Host(`hexarot.marvinlerouge.local`)"
+      - "traefik.http.routers.hexarot-frontend-dev.entrypoints=web"
+      - "traefik.http.services.hexarot-frontend-dev.loadbalancer.server.port=5173"
+    networks:
+      - traefik-public
 
 volumes:
   postgres_data:
+
+networks:
+  traefik-public:
+    external: true
+  internal:
+    driver: bridge

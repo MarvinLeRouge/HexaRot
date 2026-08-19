@@ -7,6 +7,7 @@ export default defineConfig({
     proxy: {
       '/api': process.env.VITE_PROXY_TARGET ?? 'http://localhost:3000',
     },
+    allowedHosts: ['hexarot.marvinlerouge.local'],
   },
   test: {
     environment: 'jsdom',

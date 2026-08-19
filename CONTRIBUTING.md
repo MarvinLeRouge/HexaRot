@@ -4,6 +4,31 @@
 
 # Contributing to HexaRot
 
+## Local development environment
+
+Local development is routed through a local Traefik reverse proxy, mirroring the
+topology used in production, instead of publishing container ports directly.
+
+### Prerequisites
+
+- A Traefik instance already running locally, attached to an external Docker network
+  named `traefik-public`, with a `web` entrypoint on port 80.
+- An entry in `/etc/hosts` pointing `hexarot.marvinlerouge.local` to `127.0.0.1`:
+  ```
+  127.0.0.1 hexarot.marvinlerouge.local
+  ```
+
+### Running the stack
+
+```bash
+docker compose up
+```
+
+- Frontend: `http://hexarot.marvinlerouge.local`
+- Backend API: `http://hexarot.marvinlerouge.local/api/...`
+- PostgreSQL remains reachable directly at `127.0.0.1:5433` for local tooling
+  (Prisma Studio, `psql`) - it is not routed through Traefik.
+
 ## GitHub Actions setup
 
 The CI/CD pipeline requires a Personal Access Token (classic) stored as a repository secret.

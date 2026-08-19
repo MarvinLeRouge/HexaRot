@@ -1244,7 +1244,7 @@ at implementation time.
 - **type:** chore
 - **id:** CHORE-006
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** infra
 - **complexity:** M

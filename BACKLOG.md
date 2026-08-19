@@ -968,7 +968,7 @@ these modules. Tests must be deterministic and isolated (no database, no filesys
 - **type:** test
 - **id:** TEST-002
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** high
 - **domain:** api
 - **complexity:** M

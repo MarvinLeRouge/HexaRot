@@ -40,3 +40,14 @@ export const MOCK_SVG_FILE = new File([SVG_CRYPTOGRAM_CONTENT], 'cryptogram.svg'
 export const MOCK_DECODE_RESPONSE = {
   message: 'HELLO WORLD',
 }
+
+export const MOCK_KEY_GENERATE_RESPONSE = {
+  key: 'HR1·c3d4',
+}
+
+export const MOCK_KEY_PARSE_RESPONSE = {
+  pivotBlockSize: 5,
+  rotationSequence: [0, 90, 180, 270],
+  rotationDirection: 'cw' as const,
+  readingOrder: 'LR-TB',
+}

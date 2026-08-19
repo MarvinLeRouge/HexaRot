@@ -96,6 +96,17 @@ describe('useKeyStore', () => {
     expect(store.generateErrorMessage).toBeNull()
   })
 
+  it('sets generateErrorCode to unknown and leaves generateErrorMessage null on a non-ApiError failure', async () => {
+    vi.mocked(postJson).mockRejectedValue(new Error('unexpected'))
+    const store = useKeyStore()
+
+    await store.generate()
+
+    expect(store.generateStatus).toBe('error')
+    expect(store.generateErrorCode).toBe('unknown')
+    expect(store.generateErrorMessage).toBeNull()
+  })
+
   it('clears the previous generated key when a new generate is dispatched, without touching parse state', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
     vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
@@ -154,6 +165,30 @@ describe('useKeyStore', () => {
     expect(store.parseStatus).toBe('error')
     expect(store.parseErrorMessage).toBe('unsupported key version')
     expect(store.parsedParams).toBeNull()
+  })
+
+  it('sets parseErrorCode to network and leaves parseErrorMessage null on a network failure', async () => {
+    vi.mocked(getJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+    const store = useKeyStore()
+    store.keyInput = 'HR1·a1b2'
+
+    await store.parse()
+
+    expect(store.parseStatus).toBe('error')
+    expect(store.parseErrorCode).toBe('network')
+    expect(store.parseErrorMessage).toBeNull()
+  })
+
+  it('sets parseErrorCode to unknown and leaves parseErrorMessage null on a non-ApiError failure', async () => {
+    vi.mocked(getJson).mockRejectedValue(new Error('unexpected'))
+    const store = useKeyStore()
+    store.keyInput = 'HR1·a1b2'
+
+    await store.parse()
+
+    expect(store.parseStatus).toBe('error')
+    expect(store.parseErrorCode).toBe('unknown')
+    expect(store.parseErrorMessage).toBeNull()
   })
 
   it('clears the previous parsed params when a new parse is dispatched, without touching generate state', async () => {

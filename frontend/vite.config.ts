@@ -12,5 +12,22 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: false,
+    coverage: {
+      provider: 'v8',
+      include: ['src/**'],
+      exclude: [
+        'src/main.ts',
+        'src/App.vue',
+        'src/router/**',
+        'src/layouts/**',
+        'src/__fixtures__/**',
+      ],
+      thresholds: {
+        branches: 85,
+        functions: 85,
+        lines: 85,
+        statements: 85,
+      },
+    },
   },
 })

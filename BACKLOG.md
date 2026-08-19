@@ -938,7 +938,7 @@ can query dimensions without knowing the concrete implementation.
 - **type:** test
 - **id:** TEST-001
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** cipher
 - **complexity:** M

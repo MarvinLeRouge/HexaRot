@@ -21,10 +21,10 @@ only in a dedicated test environment.
 |---|---|---|
 | Algorithmic core (cipher, rotation, key, reading-order) | **90%** | branch coverage |
 | Peripheral modules (renderer, validation, API controllers) | **75%** | branch coverage |
-| Global (backend + frontend combined) | **> 75%** | branch coverage |
+| Global (backend + frontend combined) | **≥ 85%** | branch coverage |
 
 These thresholds are enforced in CI (Jest `--coverage` with `coverageThreshold` in
-`jest.config.ts`, Vitest equivalent for the frontend).
+`package.json`'s `jest` block, Vitest equivalent for the frontend).
 
 ---
 

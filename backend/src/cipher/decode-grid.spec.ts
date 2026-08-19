@@ -43,4 +43,9 @@ describe('decodeGrid', () => {
     ];
     expect(decodeGrid(grid, alphabet)).toBe('AB');
   });
+
+  it('returns an empty string for an empty grid without accessing a missing row', () => {
+    const grid: ColorGrid = [];
+    expect(decodeGrid(grid, alphabet)).toBe('');
+  });
 });

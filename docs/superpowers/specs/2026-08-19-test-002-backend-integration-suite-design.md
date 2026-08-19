@@ -178,11 +178,29 @@ composes `ApiModule` (or `AlphabetModule`) into a context that isn't
 this is a pure robustness fix with no behavioral change for the existing
 `AppModule`-rooted boot path.
 
-With both fixed, all 71 e2e tests and all 370 unit tests pass unmodified
-beyond the two fixture/assertion changes in Decision 3. No PNG/SVG-geometry
-breakage occurred - the existing assertions were validity/shape-based as
-predicted, not literal-byte comparisons that would have broken against the
-real alphabet's different `symbolWidth`/`symbolHeight`.
+With both fixed, all 71 pre-existing e2e tests and all 370 unit tests pass
+unmodified beyond the fixture/assertion changes in Decision 3, plus one
+intentional addition: the "multi-word message with spaces" round-trip test
+that `docs/tests/api.md` always specified but the suite skipped while
+`MockAlphabet` had no space character (Architecture section, decode spec
+bullet) - bringing the total to 72. No PNG/SVG-geometry breakage occurred -
+the existing assertions were validity/shape-based as predicted, not
+literal-byte comparisons that would have broken against the real alphabet's
+different `symbolWidth`/`symbolHeight`.
+
+**Post-implementation fix-up (fresh review pass):** an independent review of
+this branch's diff found three real gaps invisible until the suite actually
+held a live database connection: `app.e2e-spec.ts` had no `afterAll`/`app.close()`
+(harmless while `PrismaService` was mocked, a real connection leak once it
+wasn't); `PrismaService` never implemented `OnModuleDestroy`/`$disconnect()`,
+so even `app.close()` didn't release the Postgres pool; and `jest-e2e.json`
+had no `testTimeout` override, leaving Jest's 5s default to cover real
+`$connect()` + seeded-alphabet `findMany` work newly added to every spec's
+`beforeAll`, a flakiness risk on a step that just became a CI merge gate.
+All three fixed (`app.e2e-spec.ts` teardown added; `PrismaService` implements
+`OnModuleDestroy`; `jest-e2e.json` sets `testTimeout: 30000`), plus two Minor
+polish items (Prettier formatting on the new spaces test; the unknown-chars
+assertion tightened from `arrayContaining` to an exact array match).
 
 ## Testing strategy
 

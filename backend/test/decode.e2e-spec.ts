@@ -121,7 +121,10 @@ describe('POST /api/decode (e2e)', () => {
     );
 
     it('recovers a multi-word message with spaces', async () => {
-      const encoded = await encode({ ...BASE_ENCODE_BODY, message: 'HELLO WORLD' });
+      const encoded = await encode({
+        ...BASE_ENCODE_BODY,
+        message: 'HELLO WORLD',
+      });
       const res = await request(app.getHttpServer()).post('/api/decode').send({
         cryptogram: encoded.png,
         format: 'png',

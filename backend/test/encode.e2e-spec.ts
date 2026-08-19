@@ -160,7 +160,7 @@ describe('POST /api/encode (e2e)', () => {
 
       expect(res.status).toBe(200);
       const body = res.body as EncodeResult;
-      expect(body.unknownChars).toEqual(expect.arrayContaining(['@', '#']));
+      expect(body.unknownChars).toEqual(['@', '#']);
     });
 
     it('encodes the remaining supported characters when unknown chars are present', async () => {

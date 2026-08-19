@@ -1,13 +1,7 @@
-jest.mock('../src/prisma/prisma.service', () => ({
-  PrismaService: class MockPrismaService {},
-}));
-
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
 import { ApiModule } from '../src/api/api.module';
-import { HexahueAlphabet } from '../src/alphabet/hexahue-alphabet.service';
-import { MockAlphabet } from './utils/mock-alphabet';
 import { DecodeResult } from '../src/api/decode.service';
 import { EncodeResult } from '../src/api/encode.service';
 
@@ -29,10 +23,7 @@ describe('POST /api/decode (e2e)', () => {
   beforeAll(async () => {
     const moduleRef: TestingModule = await Test.createTestingModule({
       imports: [ApiModule],
-    })
-      .overrideProvider(HexahueAlphabet)
-      .useValue(new MockAlphabet())
-      .compile();
+    }).compile();
 
     app = moduleRef.createNestApplication();
     app.setGlobalPrefix('api');
@@ -129,9 +120,19 @@ describe('POST /api/decode (e2e)', () => {
       },
     );
 
-    // "multi-word message with spaces" (docs/tests/api.md) is skipped: MockAlphabet
-    // does not support a space character, and that bullet's own wording explicitly
-    // hedges with "if supported by alphabet".
+    it('recovers a multi-word message with spaces', async () => {
+      const encoded = await encode({ ...BASE_ENCODE_BODY, message: 'HELLO WORLD' });
+      const res = await request(app.getHttpServer()).post('/api/decode').send({
+        cryptogram: encoded.png,
+        format: 'png',
+        key: encoded.key,
+        size: 'medium',
+      });
+
+      expect(res.status).toBe(200);
+      const body = res.body as DecodeResponseBody;
+      expect(body.message.startsWith('HELLO WORLD')).toBe(true);
+    });
   });
 
   describe('validation errors', () => {

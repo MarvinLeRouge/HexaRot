@@ -58,6 +58,9 @@ jobs:
       - name: Test
         run: npm run test:cov
 
+      - name: E2E test
+        run: npm run test:e2e
+
   frontend:
     name: Frontend — install, lint, test
     runs-on: ubuntu-latest

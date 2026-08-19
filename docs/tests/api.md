@@ -4,14 +4,16 @@ Covers: FEAT-011 (POST /encode), FEAT-012 (POST /decode), FEAT-013 (POST /key/ge
 GET /key/parse).
 
 All tests in this document are **integration tests**. They use the NestJS testing module
-and supertest. They require a seeded PostgreSQL test database (full Hexahue alphabet).
+and supertest. They run against a real, seeded PostgreSQL test database (full Hexahue
+alphabet) - `backend/test/{app,encode,decode,key}.e2e-spec.ts`, run via `npm run test:e2e`.
 
-Each test run must be isolated: no state leakage between tests. Strategy: wrap each
-test in a transaction that is rolled back, or truncate mutable tables in `afterEach`.
-The Hexahue alphabet seed data is read-only and does not need cleanup.
-
-> ⚠️ **Pending**: CI-001 must provision a PostgreSQL service in the CI environment
-> before these tests can run in CI. See `index.md` — Open Points.
+No per-test isolation logic (transactions, truncation) is needed: the schema
+(`Alphabet`, `Symbol`, `ColorCase`) is entirely seed data, never written to by any
+encode/decode/key endpoint at runtime, so there is no mutable state for tests to leak
+into each other. Locally, point `DATABASE_URL` at the `docker-compose.yml` postgres
+service (already migrated and seeded for normal development). In CI, the backend job's
+`postgres:16` service (provisioned by CI-003) is migrated and seeded before the E2E
+test step runs.
 
 ---
 
@@ -63,10 +65,8 @@ describe('POST /decode')
 - it decodes an SVG cryptogram produced by POST /encode and recovers the original message
 - it recovers the message for all four reading orders
 - it recovers the message for both rotation directions
-- it recovers the message for a multi-word message with spaces (if supported by alphabet)
-  (skipped in the current suite: the test alphabet, MockAlphabet, has no space
-  character, and this bullet's own wording already hedges with "if supported by
-  alphabet")
+- it recovers the message for a multi-word message with spaces (the real Hexahue
+  alphabet supports a space character, unlike the unit-test-only MockAlphabet)
 
 **Validation errors**
 - it returns 400 when `cryptogram` is missing

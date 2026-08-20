@@ -71,6 +71,7 @@ function triggerBrowse(): void {
     >
     <button
       type="button"
+      class="btn-secondary"
       @click="triggerBrowse"
     >
       {{ t('decode.upload.browse') }}
@@ -111,6 +112,6 @@ function triggerBrowse(): void {
 }
 
 .decode-upload-area__error {
-  color: #c0392b;
+  color: var(--danger);
 }
 </style>

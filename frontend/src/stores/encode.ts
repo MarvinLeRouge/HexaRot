@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { postJson, ApiError } from '../api/client'
+import { normalizeKeyInput } from '../utils/key-format'
 import type { ReadingOrder } from '../constants/reading-orders'
 
 export type EncodeMode = 'params' | 'key'
@@ -63,7 +64,7 @@ export const useEncodeStore = defineStore('encode', {
         this.mode === 'key'
           ? {
               message: this.message,
-              key: this.keyInput,
+              key: normalizeKeyInput(this.keyInput),
               size: this.size,
               overrideWeaknessWarning: this.overrideWeaknessWarning,
             }

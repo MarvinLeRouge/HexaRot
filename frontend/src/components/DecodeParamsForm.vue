@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useDecodeStore } from '../stores/decode'
 import { isValidKeyFormat } from '../utils/key-format'
 import DecodeUploadArea from './DecodeUploadArea.vue'
+import LoadingSpinner from './LoadingSpinner.vue'
 
 const store = useDecodeStore()
 const { t } = useI18n()
@@ -68,8 +69,10 @@ function handleSubmit(): void {
 
     <button
       type="submit"
+      class="decode-params-form__submit btn-primary"
       :disabled="!canSubmit"
     >
+      <LoadingSpinner v-if="store.status === 'loading'" />
       {{ store.status === 'loading' ? t('decode.form.submit.loading') : t('decode.form.submit.label') }}
     </button>
   </form>
@@ -81,6 +84,7 @@ function handleSubmit(): void {
   flex-direction: column;
   gap: 16px;
   max-width: 480px;
+  width: 100%;
 }
 
 .decode-params-form__field {
@@ -90,12 +94,19 @@ function handleSubmit(): void {
 }
 
 .decode-params-form__error {
-  color: #c0392b;
+  color: var(--danger);
 }
 
 .decode-params-form__hint {
   font-size: 0.85em;
-  color: var(--text);
+  color: var(--text-muted);
   margin: 0;
+}
+
+.decode-params-form__submit {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
 }
 </style>

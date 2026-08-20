@@ -49,6 +49,18 @@ describe('useEncodeStore', () => {
     expect(postJson).toHaveBeenCalledWith('/encode', expectedPayload)
   })
 
+  it('normalizes a near-miss key (wrong separator, wrong case) before sending it in key mode', async () => {
+    vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+    const store = useEncodeStore()
+    store.mode = 'key'
+    store.message = 'hi'
+    store.keyInput = 'hr1.a1b2'
+
+    await store.submit()
+
+    expect(postJson).toHaveBeenCalledWith('/encode', expect.objectContaining({ key: 'HR1·a1b2' }))
+  })
+
   it('sets status to loading while the request is in flight', () => {
     vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
     const store = useEncodeStore()

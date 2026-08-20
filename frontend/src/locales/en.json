@@ -16,6 +16,9 @@
         "label": "Message",
         "placeholder": "Enter the message to encode"
       },
+      "transformGroup": {
+        "label": "Transformation"
+      },
       "pivotBlockSize": {
         "label": "Pivot block size"
       },
@@ -30,6 +33,9 @@
       "readingOrder": {
         "label": "Reading order"
       },
+      "outputGroup": {
+        "label": "Output"
+      },
       "size": {
         "label": "Cryptogram size",
         "small": "Small",
@@ -42,19 +48,24 @@
       "key": {
         "label": "HexaRot key",
         "placeholder": "HR1·xxxx",
-        "formatError": "This does not look like a valid HexaRot key."
+        "formatError": "A HexaRot key looks like HR1·a3f9 - \"HR\", a version number, a separator, then 4 characters."
       },
       "submit": {
         "label": "Encode",
         "loading": "Encoding..."
+      },
+      "error": {
+        "prefix": "Couldn't encode this message: {detail}"
       }
     },
     "result": {
-      "pngAlt": "PNG cryptogram preview",
+      "regionLabel": "Encode result",
       "keyLabel": "Key",
+      "keyHint": "This key is required to decode your message and is not stored anywhere. Copy or download it now.",
       "copy": "Copy",
       "copied": "Copied!",
       "warningsHeading": "Weakness warnings",
+      "warningsExplanation": "This combination weakens the cryptogram's rotation pattern. You can proceed anyway, or adjust the pivot block size to remove the warning:",
       "unknownCharsExplanation": "The following characters are not part of the alphabet and were dropped during encoding:",
       "downloadPng": "Download PNG",
       "downloadSvg": "Download SVG",
@@ -75,7 +86,7 @@
       "key": {
         "label": "HexaRot key",
         "placeholder": "HR1·xxxx",
-        "formatError": "This does not look like a valid HexaRot key."
+        "formatError": "A HexaRot key looks like HR1·a3f9 - \"HR\", a version number, a separator, then 4 characters."
       },
       "size": {
         "label": "Cryptogram size",
@@ -87,6 +98,9 @@
       "submit": {
         "label": "Decode",
         "loading": "Decoding..."
+      },
+      "error": {
+        "prefix": "Couldn't decode this cryptogram: {detail}"
       }
     },
     "result": {
@@ -115,10 +129,15 @@
         "submit": {
           "label": "Generate",
           "loading": "Generating..."
+        },
+        "error": {
+          "prefix": "Couldn't generate a key: {detail}"
         }
       },
       "result": {
+        "regionLabel": "Generated key",
         "keyLabel": "Key",
+        "keyHint": "This key is not stored anywhere. Copy it now.",
         "copy": "Copy",
         "copied": "Copied!",
         "copyError": "Copy failed"
@@ -129,15 +148,19 @@
       "form": {
         "key": {
           "label": "HexaRot key",
-          "placeholder": "HR1·XXXX",
-          "formatError": "This does not look like a valid HexaRot key."
+          "placeholder": "HR1·xxxx",
+          "formatError": "A HexaRot key looks like HR1·a3f9 - \"HR\", a version number, a separator, then 4 characters."
         },
         "submit": {
           "label": "Parse",
           "loading": "Parsing..."
+        },
+        "error": {
+          "prefix": "Couldn't parse this key: {detail}"
         }
       },
       "result": {
+        "regionLabel": "Parsed key parameters",
         "pivotBlockSize": "Pivot block size",
         "rotationSequence": "Rotation sequence",
         "rotationDirection": "Rotation direction",
@@ -146,7 +169,13 @@
     }
   },
   "errors": {
-    "network": "Network error: unable to reach the server",
+    "network": "Couldn't reach the server. Check your connection and try again.",
     "unknown": "Something went wrong. Please try again."
+  },
+  "rotationSequence": {
+    "grabbed": "Picked up {angle}°, position {position} of {total}. Use arrow keys to move, space to drop, escape to cancel.",
+    "moved": "Moved to position {position} of {total}.",
+    "dropped": "Dropped {angle}° at position {position} of {total}.",
+    "cancelled": "Reorder cancelled."
   }
 }

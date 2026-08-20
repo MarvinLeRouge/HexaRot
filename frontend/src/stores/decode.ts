@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { postJson, ApiError } from '../api/client'
+import { normalizeKeyInput } from '../utils/key-format'
 
 export type DecodeStatus = 'idle' | 'loading' | 'success' | 'error'
 export type CryptogramSize = 'small' | 'medium' | 'large'
@@ -70,7 +71,7 @@ export const useDecodeStore = defineStore('decode', {
         const response = await postJson<{ message: string }>('/decode', {
           cryptogram,
           format,
-          key: this.keyInput,
+          key: normalizeKeyInput(this.keyInput),
           size: this.size,
         })
         this.result = response.message

@@ -3,6 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 import EncodeView from './EncodeView.vue'
+import { useEncodeStore } from '../stores/encode'
 import en from '../locales/en.json'
 import {
   MOCK_ENCODE_RESPONSE,
@@ -58,7 +59,7 @@ describe('EncodeView', () => {
 
     it('does not display a cryptogram preview on initial render', () => {
       const wrapper = mountView()
-      expect(wrapper.find('img').exists()).toBe(false)
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
     })
 
     it('does not display warnings or unknown chars on initial render', () => {
@@ -156,11 +157,6 @@ describe('EncodeView', () => {
       return wrapper
     }
 
-    it('displays the PNG preview after a successful encode response', async () => {
-      const wrapper = await submitAndResolve()
-      expect(wrapper.find('img').attributes('src')).toContain(MOCK_ENCODE_RESPONSE.png)
-    })
-
     it('displays the SVG preview after a successful encode response', async () => {
       const wrapper = await submitAndResolve()
       expect(wrapper.find('.encode-result-panel__svg svg').exists()).toBe(true)
@@ -245,7 +241,7 @@ describe('EncodeView', () => {
       await wrapper.find('form').trigger('submit')
       await flushPromises()
 
-      expect(wrapper.find('img').exists()).toBe(false)
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
     })
 
     it('clears the previous result when a new submission is made', async () => {
@@ -254,12 +250,12 @@ describe('EncodeView', () => {
       await wrapper.find('textarea').setValue('hello world')
       await wrapper.find('form').trigger('submit')
       await flushPromises()
-      expect(wrapper.find('img').exists()).toBe(true)
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(true)
 
       vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
       await wrapper.find('form').trigger('submit')
 
-      expect(wrapper.find('img').exists()).toBe(false)
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
     })
   })
 
@@ -267,6 +263,69 @@ describe('EncodeView', () => {
     it('renders no raw string literals - the submit button text comes from the locale file', () => {
       const wrapper = mountView()
       expect(wrapper.find('button[type="submit"]').text()).toBe(en.encode.form.submit.label)
+    })
+  })
+
+  describe('submit feedback', () => {
+    it('marks the view busy and shows a spinner while the request is in flight', async () => {
+      vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('form').trigger('submit')
+
+      expect(wrapper.find('.encode-view').attributes('aria-busy')).toBe('true')
+      expect(wrapper.find('.loading-spinner').exists()).toBe(true)
+    })
+
+    it('moves focus to the result panel after a successful encode', async () => {
+      const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus')
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(focusSpy).toHaveBeenCalledWith({ preventScroll: true })
+      focusSpy.mockRestore()
+    })
+
+    it('does not mark the view busy once the request has settled', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(wrapper.find('.encode-view').attributes('aria-busy')).toBe('false')
+    })
+  })
+
+  describe('unmount', () => {
+    it('does not reset the store when the view unmounts after a successful encode', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      const store = useEncodeStore()
+      expect(store.result).toEqual(MOCK_ENCODE_RESPONSE)
+
+      wrapper.unmount()
+
+      expect(store.result).toEqual(MOCK_ENCODE_RESPONSE)
+      expect(store.status).toBe('success')
+    })
+
+    it('resets the store when the view unmounts without a successful encode', () => {
+      const wrapper = mountView()
+      const store = useEncodeStore()
+      store.message = 'a draft message'
+
+      wrapper.unmount()
+
+      expect(store.message).toBe('')
+      expect(store.status).toBe('idle')
     })
   })
 })

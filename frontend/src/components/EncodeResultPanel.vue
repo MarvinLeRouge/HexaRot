@@ -86,6 +86,12 @@ function downloadSvg(): void {
       <div class="encode-result-panel__preview">
         <!-- eslint-disable-next-line vue/no-v-html, vue/max-attributes-per-line -- result.svg is generated exclusively by this project's own backend renderer, never from user input, so it is a trusted string. -->
         <div class="encode-result-panel__svg" v-html="result.svg" />
+        <span
+          v-if="stale"
+          class="encode-result-panel__stale-badge"
+        >
+          {{ t('encode.result.staleBadge') }}
+        </span>
       </div>
 
       <div class="encode-result-panel__key">
@@ -147,6 +153,7 @@ function downloadSvg(): void {
         </button>
         <button
           type="button"
+          class="btn-secondary"
           :disabled="stale"
           @click="downloadSvg"
         >
@@ -187,17 +194,37 @@ function downloadSvg(): void {
   gap: 16px;
 }
 
-.encode-result-panel__content--stale {
+/*
+ * The cryptogram's cell colors are the message - dimming them with opacity
+ * would display factually wrong colors while claiming to just mark the
+ * result "stale". Everything except the preview dims normally; the preview
+ * stays at full color fidelity and gets a corner badge instead.
+ */
+.encode-result-panel__content--stale > :not(.encode-result-panel__preview) {
   opacity: 0.5;
 }
 
 .encode-result-panel__preview {
+  position: relative;
   display: flex;
   justify-content: center;
   padding: 20px;
   border: 1px solid var(--border);
   border-radius: 8px;
   box-shadow: var(--shadow);
+}
+
+.encode-result-panel__stale-badge {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 2px 8px;
+  border: 1px solid var(--warning-border);
+  border-radius: 4px;
+  background: var(--warning-bg);
+  color: var(--text-h);
+  font-size: 0.75em;
+  font-weight: 600;
 }
 
 .encode-result-panel__svg {

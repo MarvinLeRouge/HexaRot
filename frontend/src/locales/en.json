@@ -66,6 +66,7 @@
       "copy": "Copy",
       "copied": "Copied!",
       "staleNotice": "These parameters changed. Re-encode to update this cryptogram.",
+      "staleBadge": "Out of date",
       "reencode": "Re-encode",
       "warningsHeading": "Weakness warnings",
       "warningsExplanation": "This combination weakens the cryptogram's rotation pattern. You can proceed anyway, or adjust the pivot block size to remove the warning:",

@@ -120,8 +120,8 @@ textarea {
 .btn-primary:disabled,
 .btn-secondary:disabled {
   cursor: not-allowed;
-  background: var(--border);
-  color: var(--text-muted);
+  background: var(--code-bg);
+  color: var(--text);
   border-color: var(--border);
 }
 

@@ -92,6 +92,14 @@ describe('EncodeResultPanel', () => {
       expect(blob.type).toBe('image/svg+xml')
       expect(downloadedFilename).toBe('hexarot-cryptogram.svg')
     })
+
+    it('styles Download SVG the same as its Download PNG sibling', () => {
+      const wrapper = mountPanel()
+      const [pngButton, svgButton] = wrapper.findAll('.encode-result-panel__downloads button')
+
+      expect(svgButton.classes()).toContain('btn-secondary')
+      expect(svgButton.classes()).toEqual(pngButton.classes())
+    })
   })
 
   describe('stale state', () => {
@@ -99,6 +107,7 @@ describe('EncodeResultPanel', () => {
       const wrapper = mountPanel()
 
       expect(wrapper.find('.encode-result-panel__stale-notice').exists()).toBe(false)
+      expect(wrapper.find('.encode-result-panel__stale-badge').exists()).toBe(false)
       expect(wrapper.find('.encode-result-panel__key button').attributes('disabled')).toBeUndefined()
       const downloadButtons = wrapper.findAll('.encode-result-panel__downloads button')
       expect(downloadButtons[0].attributes('disabled')).toBeUndefined()
@@ -113,6 +122,12 @@ describe('EncodeResultPanel', () => {
       const downloadButtons = wrapper.findAll('.encode-result-panel__downloads button')
       expect(downloadButtons[0].attributes('disabled')).toBeDefined()
       expect(downloadButtons[1].attributes('disabled')).toBeDefined()
+    })
+
+    it('marks the preview with a badge when stale, so the cryptogram itself keeps its true colors', () => {
+      const wrapper = mountPanel({ stale: true })
+
+      expect(wrapper.find('.encode-result-panel__stale-badge').text()).toBe(en.encode.result.staleBadge)
     })
 
     it('re-encodes with the current store parameters when Re-encode is clicked', async () => {

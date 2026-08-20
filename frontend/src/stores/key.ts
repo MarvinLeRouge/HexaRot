@@ -28,6 +28,7 @@ interface KeyState {
   keyInput: string
   parseStatus: KeyStatus
   parsedParams: KeyParseResult | null
+  parsedParamsStale: boolean
   parseErrorMessage: string | null
   parseErrorCode: 'network' | 'unknown' | null
 }
@@ -47,6 +48,7 @@ function initialState(): KeyState {
     keyInput: '',
     parseStatus: 'idle',
     parsedParams: null,
+    parsedParamsStale: false,
     parseErrorMessage: null,
     parseErrorCode: null,
   }
@@ -87,6 +89,7 @@ export const useKeyStore = defineStore('key', {
     async parse(): Promise<void> {
       this.parseStatus = 'loading'
       this.parsedParams = null
+      this.parsedParamsStale = false
       this.parseErrorMessage = null
       this.parseErrorCode = null
 
@@ -113,6 +116,11 @@ export const useKeyStore = defineStore('key', {
     invalidateGenerated(): void {
       if (this.generateStatus !== 'success') return
       this.generatedKeyStale = true
+    },
+    /** Marks the parsed parameters stale once the key that produced them has changed. */
+    invalidateParsed(): void {
+      if (this.parseStatus !== 'success') return
+      this.parsedParamsStale = true
     },
   },
 })

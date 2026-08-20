@@ -152,6 +152,40 @@ describe('DecodeView', () => {
     })
   })
 
+  describe('stale result', () => {
+    it('marks the decoded message stale, without removing it, when the key changes', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+      const wrapper = mountView()
+      await selectFile(wrapper, MOCK_PNG_FILE)
+      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+      await wrapper.find('form').trigger('submit')
+      await vi.waitFor(() => expect(wrapper.find('.decode-view__result').exists()).toBe(true))
+      await flushPromises()
+
+      await wrapper.find('input[type="text"]').setValue('HR1·b2c3')
+
+      expect(wrapper.find('.decode-view__result').text()).toContain(MOCK_DECODE_RESPONSE.message)
+      expect(wrapper.find('.decode-view__stale-notice').exists()).toBe(true)
+    })
+
+    it('clears the stale notice when re-decoding', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+      const wrapper = mountView()
+      await selectFile(wrapper, MOCK_PNG_FILE)
+      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+      await wrapper.find('form').trigger('submit')
+      await vi.waitFor(() => expect(wrapper.find('.decode-view__result').exists()).toBe(true))
+      await flushPromises()
+      await wrapper.find('input[type="text"]').setValue('HR1·b2c3')
+      expect(wrapper.find('.decode-view__stale-notice').exists()).toBe(true)
+
+      await wrapper.find('.decode-view__stale-notice button').trigger('click')
+      await flushPromises()
+
+      expect(wrapper.find('.decode-view__stale-notice').exists()).toBe(false)
+    })
+  })
+
   describe('error handling', () => {
     it('displays an error when the key format is invalid (client-side, before the API call)', async () => {
       const wrapper = mountView()

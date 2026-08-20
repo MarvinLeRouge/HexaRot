@@ -186,4 +186,56 @@ describe('useDecodeStore', () => {
     expect(store.status).toBe('idle')
     expect(store.result).toBeNull()
   })
+
+  describe('invalidateResult', () => {
+    it('marks a successful result stale without clearing it', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+      const store = useDecodeStore()
+      store.file = MOCK_PNG_FILE
+      store.keyInput = 'HR1·a1b2'
+      await store.submit()
+
+      store.invalidateResult()
+
+      expect(store.status).toBe('success')
+      expect(store.result).toBe(MOCK_DECODE_RESPONSE.message)
+      expect(store.resultStale).toBe(true)
+    })
+
+    it('does nothing when there is no successful result to invalidate', () => {
+      const store = useDecodeStore()
+
+      store.invalidateResult()
+
+      expect(store.status).toBe('idle')
+      expect(store.resultStale).toBe(false)
+    })
+
+    it('does not mark an in-flight request stale', () => {
+      vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
+      const store = useDecodeStore()
+      store.file = MOCK_PNG_FILE
+      store.keyInput = 'HR1·a1b2'
+      void store.submit()
+
+      store.invalidateResult()
+
+      expect(store.status).toBe('loading')
+      expect(store.resultStale).toBe(false)
+    })
+
+    it('a new submit clears the stale flag', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+      const store = useDecodeStore()
+      store.file = MOCK_PNG_FILE
+      store.keyInput = 'HR1·a1b2'
+      await store.submit()
+      store.invalidateResult()
+      expect(store.resultStale).toBe(true)
+
+      await store.submit()
+
+      expect(store.resultStale).toBe(false)
+    })
+  })
 })

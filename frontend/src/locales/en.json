@@ -108,7 +108,9 @@
     },
     "result": {
       "label": "Decoded message",
-      "emptyState": "Your decoded message will appear here."
+      "emptyState": "Your decoded message will appear here.",
+      "staleNotice": "These parameters changed. Re-decode to update this message.",
+      "redecode": "Re-decode"
     }
   },
   "key": {
@@ -170,7 +172,9 @@
         "pivotBlockSize": "Pivot block size",
         "rotationSequence": "Rotation sequence",
         "rotationDirection": "Rotation direction",
-        "readingOrder": "Reading order"
+        "readingOrder": "Reading order",
+        "staleNotice": "The key changed. Re-parse to update these parameters.",
+        "reparse": "Re-parse"
       }
     }
   },

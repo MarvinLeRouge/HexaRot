@@ -38,6 +38,11 @@ watch(
     }
   },
 )
+
+watch(
+  () => store.keyInput,
+  () => store.invalidateParsed(),
+)
 </script>
 
 <template>
@@ -83,27 +88,47 @@ watch(
       {{ store.parseErrorMessage ? t('key.parser.form.error.prefix', { detail: store.parseErrorMessage }) : t(`errors.${store.parseErrorCode}`) }}
     </p>
 
-    <dl
+    <div
       v-if="store.parseStatus === 'success' && store.parsedParams"
       ref="resultRef"
-      class="key-parser-form__result"
+      class="key-parser-form__result-region"
       role="region"
       tabindex="-1"
       aria-live="polite"
       :aria-label="t('key.parser.result.regionLabel')"
     >
-      <dt>{{ t('key.parser.result.pivotBlockSize') }}</dt>
-      <dd>{{ store.parsedParams.pivotBlockSize }}</dd>
+      <div
+        v-if="store.parsedParamsStale"
+        class="key-parser-form__stale-notice"
+        role="status"
+      >
+        <p>{{ t('key.parser.result.staleNotice') }}</p>
+        <button
+          type="button"
+          class="btn-primary"
+          @click="handleParse"
+        >
+          {{ t('key.parser.result.reparse') }}
+        </button>
+      </div>
 
-      <dt>{{ t('key.parser.result.rotationSequence') }}</dt>
-      <dd>{{ store.parsedParams.rotationSequence.map((angle) => `${angle}°`).join(', ') }}</dd>
+      <dl
+        class="key-parser-form__result"
+        :class="{ 'key-parser-form__result--stale': store.parsedParamsStale }"
+      >
+        <dt>{{ t('key.parser.result.pivotBlockSize') }}</dt>
+        <dd>{{ store.parsedParams.pivotBlockSize }}</dd>
 
-      <dt>{{ t('key.parser.result.rotationDirection') }}</dt>
-      <dd>{{ t(`key.generator.form.rotationDirection.${store.parsedParams.rotationDirection}`) }}</dd>
+        <dt>{{ t('key.parser.result.rotationSequence') }}</dt>
+        <dd>{{ store.parsedParams.rotationSequence.map((angle) => `${angle}°`).join(', ') }}</dd>
 
-      <dt>{{ t('key.parser.result.readingOrder') }}</dt>
-      <dd>{{ store.parsedParams.readingOrder }}</dd>
-    </dl>
+        <dt>{{ t('key.parser.result.rotationDirection') }}</dt>
+        <dd>{{ t(`key.generator.form.rotationDirection.${store.parsedParams.rotationDirection}`) }}</dd>
+
+        <dt>{{ t('key.parser.result.readingOrder') }}</dt>
+        <dd>{{ store.parsedParams.readingOrder }}</dd>
+      </dl>
+    </div>
   </form>
 </template>
 
@@ -137,6 +162,27 @@ watch(
   gap: 8px;
 }
 
+.key-parser-form__result-region {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.key-parser-form__stale-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--warning-border);
+  background: var(--warning-bg);
+  border-radius: 8px;
+}
+
+.key-parser-form__stale-notice p {
+  margin: 0;
+  flex: 1;
+}
+
 .key-parser-form__result {
   display: grid;
   grid-template-columns: auto 1fr;
@@ -145,5 +191,9 @@ watch(
 
 .key-parser-form__result dt {
   font-weight: 600;
+}
+
+.key-parser-form__result--stale {
+  opacity: 0.5;
 }
 </style>

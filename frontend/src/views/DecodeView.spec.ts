@@ -131,6 +131,19 @@ describe('DecodeView', () => {
 
       expect(wrapper.find('button[type="submit"]').text()).toBe('Decoding...')
     })
+
+    it('keeps the output column occupied with a skeleton while the API call is in progress', async () => {
+      vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
+      const wrapper = mountView()
+      await selectFile(wrapper, MOCK_PNG_FILE)
+      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(wrapper.find('.decode-view__output-loading').exists()).toBe(true)
+      expect(wrapper.find('.decode-view__output-empty').exists()).toBe(false)
+    })
   })
 
   describe('successful response', () => {

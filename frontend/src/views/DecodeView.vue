@@ -51,6 +51,13 @@ onUnmounted(() => {
           {{ store.errorMessage ? t('decode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
         </p>
         <div
+          v-if="store.status === 'loading'"
+          class="decode-view__output-loading"
+          aria-hidden="true"
+        >
+          <div class="decode-view__skeleton-block" />
+        </div>
+        <div
           v-if="store.status === 'success' && store.result"
           ref="resultRef"
           class="decode-view__result-region"
@@ -156,6 +163,36 @@ onUnmounted(() => {
   border-radius: 8px;
   color: var(--text-muted);
   text-align: center;
+}
+
+.decode-view__output-loading {
+  display: flex;
+  flex-direction: column;
+}
+
+.decode-view__skeleton-block {
+  height: 60px;
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--code-bg) 25%, var(--border) 50%, var(--code-bg) 75%);
+  background-size: 200% 100%;
+  animation: decode-view-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes decode-view-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .decode-view__skeleton-block {
+    animation: none;
+    background: var(--code-bg);
+  }
 }
 
 @media (min-width: 900px) {

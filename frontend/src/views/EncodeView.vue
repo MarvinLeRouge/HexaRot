@@ -25,7 +25,9 @@ watch(
 )
 
 onUnmounted(() => {
-  store.reset()
+  if (store.status !== 'success') {
+    store.reset()
+  }
 })
 </script>
 

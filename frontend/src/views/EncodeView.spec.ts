@@ -3,6 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 import EncodeView from './EncodeView.vue'
+import { useEncodeStore } from '../stores/encode'
 import en from '../locales/en.json'
 import {
   MOCK_ENCODE_RESPONSE,
@@ -296,6 +297,35 @@ describe('EncodeView', () => {
       await flushPromises()
 
       expect(wrapper.find('.encode-view').attributes('aria-busy')).toBe('false')
+    })
+  })
+
+  describe('unmount', () => {
+    it('does not reset the store when the view unmounts after a successful encode', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      const store = useEncodeStore()
+      expect(store.result).toEqual(MOCK_ENCODE_RESPONSE)
+
+      wrapper.unmount()
+
+      expect(store.result).toEqual(MOCK_ENCODE_RESPONSE)
+      expect(store.status).toBe('success')
+    })
+
+    it('resets the store when the view unmounts without a successful encode', () => {
+      const wrapper = mountView()
+      const store = useEncodeStore()
+      store.message = 'a draft message'
+
+      wrapper.unmount()
+
+      expect(store.message).toBe('')
+      expect(store.status).toBe('idle')
     })
   })
 })

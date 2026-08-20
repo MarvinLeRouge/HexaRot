@@ -225,8 +225,8 @@ frontend/
 - ✅ Reading order strategies (4 directions + alternate)
 - ✅ Renderers (PNG + SVG)
 - ✅ API endpoints (encode, decode, key)
-- ✅ Frontend (encode, decode, key views all done)
-- 🔄 Tests & coverage (every shipped feature carries its own unit/e2e suite; dedicated backend/frontend test-suite items still open)
+- ✅ Frontend (encode, decode, key views all done, UI/UX polish pass done)
+- ✅ Tests & coverage (backend + frontend unit/e2e suites, Codecov reporting, ≥85% global bar confirmed)
 
 ### V2
 

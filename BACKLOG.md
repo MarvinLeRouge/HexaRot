@@ -1367,7 +1367,7 @@ direct SSH access to the production server is performed outside of this pipeline
 - **type:** refactor
 - **id:** REFACTOR-001
 - **milestone:** v1
-- **status:** backlog
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** M
@@ -1513,4 +1513,59 @@ merging.
   merged number has never actually been observed before this branch); flip to `false`
   once the first real PR shows it clearing the ≥85% target - tracked as a quick
   follow-up, not a separate backlog item
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-002] Structural layout pass — two-column result, stale-result invalidation, key/size binding
+
+- **type:** refactor
+- **id:** REFACTOR-002
+- **milestone:** v2
+- **status:** backlog
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** L
+- **parent:** ~
+- **depends-on:** REFACTOR-001
+- **learning:** [CSS grid two-column responsive layout, Pinia $subscribe vs component-level watchers for cross-field invalidation, key-format versioning if size joins the packed payload]
+- **labels:** [refactor, domain:frontend, priority:medium, milestone:v2]
+
+#### Description
+
+A post-REFACTOR-001 re-critique (`.impeccable/critique/2026-08-20T09-40-23Z__hexarot-frontend-encode-decode-key-views.md`,
+score 18/40) found real defects REFACTOR-001 fixed, plus a smaller set of deeper,
+structural findings deliberately deferred out of that polish-scoped branch because they
+need their own design decisions rather than a mechanical fix:
+
+1. **Single-column stacking defeats the app's own submit-feedback fix.** On common
+   desktop viewport heights, the page runs out of scrollable height before the result
+   panel reaches the top of the viewport, so `revealResult`'s scroll-into-view can never
+   actually bring the result fully into view - verified live (scrollY maxes out with the
+   result still ~370px down). A `grid-template-columns: minmax(360px, 480px) 1fr` layout
+   (form left, result right, collapsing to one column under ~900px) would fix this
+   structurally, let the cryptogram render larger than 280px, and use the ~60% of the
+   desktop canvas that currently sits empty next to the centred column.
+2. **A successful result goes stale silently.** Editing the message or any transform
+   parameter after a successful encode leaves the old cryptogram and key on screen, still
+   fully downloadable and copyable, with no indication they no longer match the current
+   form state - a user can produce a key/image pair that will never decode together.
+   Needs a UX decision (clear the result outright vs. dim it and disable its actions vs.
+   auto-resubmit) rather than a default pick.
+3. **Decode requires the user to recall the cryptogram size**, which the key does not
+   carry and the app never displays after the fact. Investigate whether size can join the
+   packed key payload (a `KeyCodec`/backend change, likely its own item if so) or be
+   inferred from the uploaded image's dimensions on the Decode side (frontend-only).
+
+#### Acceptance criteria
+
+- Encode and Decode use a two-column layout (form + result/preview) at desktop widths,
+  single-column below ~900px; the result never requires scrolling past the fold to be
+  visible on a standard 1280x800 viewport
+- Editing a parameter that affects the encode output while a previous result is
+  displayed visibly invalidates that result before the user can download or copy a
+  mismatched key/cryptogram pair - approach documented before implementation
+- A documented decision on carrying/inferring the cryptogram size for Decode, with
+  either a frontend-only fix or a cross-cutting item opened against the backend
+  `key-codec` if the payload format needs to change
+- No functional regression: all existing frontend tests (TEST-003) still pass
 <!-- ITEM:END -->

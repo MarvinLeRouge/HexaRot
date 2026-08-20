@@ -34,24 +34,28 @@ onUnmounted(() => {
     :aria-busy="store.status === 'loading'"
   >
     <h1>{{ t('decode.title') }}</h1>
-    <DecodeParamsForm />
-    <p
-      v-if="store.status === 'error'"
-      ref="errorRef"
-      class="decode-view__error"
-      role="alert"
-    >
-      {{ store.errorMessage ? t('decode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
-    </p>
-    <p
-      v-if="store.status === 'success' && store.result"
-      ref="resultRef"
-      class="decode-view__result"
-      tabindex="-1"
-      aria-live="polite"
-    >
-      <strong>{{ t('decode.result.label') }}:</strong> {{ store.result }}
-    </p>
+    <div class="decode-view__body">
+      <DecodeParamsForm />
+      <div class="decode-view__output">
+        <p
+          v-if="store.status === 'error'"
+          ref="errorRef"
+          class="decode-view__error"
+          role="alert"
+        >
+          {{ store.errorMessage ? t('decode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
+        </p>
+        <p
+          v-if="store.status === 'success' && store.result"
+          ref="resultRef"
+          class="decode-view__result"
+          tabindex="-1"
+          aria-live="polite"
+        >
+          <strong>{{ t('decode.result.label') }}:</strong> {{ store.result }}
+        </p>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -59,11 +63,41 @@ onUnmounted(() => {
 .decode-view {
   display: flex;
   flex-direction: column;
+  gap: 24px;
+}
+
+.decode-view h1 {
+  align-self: center;
+}
+
+.decode-view__body {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 24px;
 }
 
+.decode-view__output {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 480px;
+}
+
 .decode-view__error {
   color: var(--danger);
+}
+
+@media (min-width: 900px) {
+  .decode-view__body {
+    display: grid;
+    grid-template-columns: minmax(360px, 480px) 1fr;
+    align-items: start;
+  }
+
+  .decode-view__output {
+    max-width: none;
+  }
 }
 </style>

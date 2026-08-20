@@ -1521,7 +1521,7 @@ merging.
 - **type:** refactor
 - **id:** REFACTOR-002
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** M

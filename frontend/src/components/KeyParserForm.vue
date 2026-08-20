@@ -66,7 +66,7 @@ watch(
 
     <button
       type="submit"
-      class="key-parser-form__submit"
+      class="key-parser-form__submit btn-primary"
       :disabled="!canParse"
     >
       <LoadingSpinner v-if="store.parseStatus === 'loading'" />
@@ -126,7 +126,7 @@ watch(
 }
 
 .key-parser-form__error {
-  color: #c0392b;
+  color: var(--danger);
 }
 
 .key-parser-form__submit {

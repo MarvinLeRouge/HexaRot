@@ -63,6 +63,6 @@ onUnmounted(() => {
 }
 
 .encode-view__error {
-  color: #c0392b;
+  color: var(--danger);
 }
 </style>

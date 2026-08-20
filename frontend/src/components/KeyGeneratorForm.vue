@@ -101,7 +101,7 @@ async function copyKey(): Promise<void> {
 
     <button
       type="submit"
-      class="key-generator-form__submit"
+      class="key-generator-form__submit btn-primary"
       :disabled="!canGenerate"
     >
       <LoadingSpinner v-if="store.generateStatus === 'loading'" />
@@ -133,6 +133,7 @@ async function copyKey(): Promise<void> {
       </p>
       <button
         type="button"
+        class="btn-primary"
         @click="copyKey"
       >
         {{ copyState === 'copied' ? t('key.generator.result.copied') : copyState === 'error' ? t('key.generator.result.copyError') : t('key.generator.result.copy') }}
@@ -161,7 +162,7 @@ async function copyKey(): Promise<void> {
 }
 
 .key-generator-form__error {
-  color: #c0392b;
+  color: var(--danger);
 }
 
 .key-generator-form__submit {

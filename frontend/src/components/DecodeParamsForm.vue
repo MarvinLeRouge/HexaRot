@@ -69,7 +69,7 @@ function handleSubmit(): void {
 
     <button
       type="submit"
-      class="decode-params-form__submit"
+      class="decode-params-form__submit btn-primary"
       :disabled="!canSubmit"
     >
       <LoadingSpinner v-if="store.status === 'loading'" />
@@ -94,7 +94,7 @@ function handleSubmit(): void {
 }
 
 .decode-params-form__error {
-  color: #c0392b;
+  color: var(--danger);
 }
 
 .decode-params-form__hint {

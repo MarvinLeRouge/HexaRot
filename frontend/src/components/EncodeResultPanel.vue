@@ -67,7 +67,7 @@ function downloadSvg(): void {
       </p>
       <button
         type="button"
-        class="encode-result-panel__copy"
+        class="btn-primary"
         @click="copyKey"
       >
         {{ copyState === 'copied' ? t('encode.result.copied') : copyState === 'error' ? t('encode.result.copyError') : t('encode.result.copy') }}
@@ -109,7 +109,7 @@ function downloadSvg(): void {
     <div class="encode-result-panel__downloads">
       <button
         type="button"
-        class="encode-result-panel__download-primary"
+        class="btn-secondary"
         @click="downloadPng"
       >
         {{ t('encode.result.downloadPng') }}
@@ -185,15 +185,9 @@ function downloadSvg(): void {
   color: var(--text);
 }
 
-.encode-result-panel__download-primary {
-  border: 1px solid var(--accent-border);
-  background: var(--accent-bg);
-  color: var(--text-h);
-  font-weight: 600;
-}
-
 .encode-result-panel__warnings {
-  border: 1px solid #c0392b;
+  border: 1px solid var(--warning-border);
+  background: var(--warning-bg);
   border-radius: 4px;
   padding: 8px 12px;
 }

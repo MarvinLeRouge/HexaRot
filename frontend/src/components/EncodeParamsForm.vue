@@ -158,7 +158,7 @@ function handleSubmit(): void {
 
     <button
       type="submit"
-      class="encode-params-form__submit"
+      class="encode-params-form__submit btn-primary"
       :disabled="!canSubmit"
     >
       <LoadingSpinner v-if="store.status === 'loading'" />
@@ -212,7 +212,7 @@ function handleSubmit(): void {
 }
 
 .encode-params-form__error {
-  color: #c0392b;
+  color: var(--danger);
 }
 
 .encode-params-form__submit {

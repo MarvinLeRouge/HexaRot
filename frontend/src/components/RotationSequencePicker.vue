@@ -68,10 +68,12 @@ function onKeydown(event: KeyboardEvent, key: number): void {
     if (grabbedKey.value === key) {
       moveItem(pos, newPos)
       announce('rotationSequence.moved', { position: newPos + 1, total: items.value.length })
+      void focusItem(key)
     } else {
-      focusedKey.value = items.value[newPos].index
+      const destinationKey = items.value[newPos].index
+      focusedKey.value = destinationKey
+      void focusItem(destinationKey)
     }
-    void focusItem(key)
     return
   }
 
@@ -112,6 +114,7 @@ function onKeydown(event: KeyboardEvent, key: number): void {
         :ref="(el) => setItemRef(element.index, el as Element | null)"
         class="rotation-sequence-picker__item"
         role="option"
+        aria-roledescription="sortable item"
         :aria-selected="element.index === grabbedKey"
         :tabindex="element.index === focusedKey ? 0 : -1"
         :class="{ 'rotation-sequence-picker__item--grabbed': element.index === grabbedKey }"
@@ -190,6 +193,7 @@ function onKeydown(event: KeyboardEvent, key: number): void {
   align-items: center;
   gap: 6px;
   padding: 8px 12px;
+  box-sizing: border-box;
   border: 1px solid var(--border);
   border-radius: 4px;
   cursor: grab;
@@ -199,9 +203,10 @@ function onKeydown(event: KeyboardEvent, key: number): void {
 
 .rotation-sequence-picker__item--grabbed {
   cursor: grabbing;
-  border-color: var(--accent);
+  border: 2px solid var(--accent);
   background: var(--accent-bg);
   color: var(--text-h);
+  box-shadow: var(--shadow);
 }
 
 .rotation-sequence-picker__handle {

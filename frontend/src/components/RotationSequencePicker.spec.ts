@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import draggable from 'vuedraggable'
@@ -62,6 +62,17 @@ describe('RotationSequencePicker', () => {
       const items = wrapper.findAll('li')
       expect(items.map((item) => item.attributes('tabindex'))).toEqual(['-1', '0', '-1', '-1'])
       expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    })
+
+    it('moves actual DOM focus to the destination item on ArrowRight, not just the roving tabindex', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus')
+
+      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
+
+      const destination = wrapper.findAll('li')[1].element
+      expect(focusSpy.mock.instances).toContain(destination)
+      focusSpy.mockRestore()
     })
 
     it('grabs an item with Space, marking it aria-selected', async () => {

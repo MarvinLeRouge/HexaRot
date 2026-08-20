@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue'
+import { nextTick, onUnmounted, ref, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useEncodeStore } from '../stores/encode'
 import { revealResult } from '../utils/reveal-result'
@@ -23,6 +23,10 @@ watch(
     }
   },
 )
+
+onUnmounted(() => {
+  store.reset()
+})
 </script>
 
 <template>

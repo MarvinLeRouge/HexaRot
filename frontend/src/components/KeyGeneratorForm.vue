@@ -126,7 +126,11 @@ async function copyKey(): Promise<void> {
       aria-live="polite"
       :aria-label="t('key.generator.result.regionLabel')"
     >
-      <span>{{ t('key.generator.result.keyLabel') }}: <code>{{ store.generatedKey }}</code></span>
+      <span class="key-generator-form__result-label">{{ t('key.generator.result.keyLabel') }}</span>
+      <code class="key-generator-form__result-value">{{ store.generatedKey }}</code>
+      <p class="key-generator-form__result-hint">
+        {{ t('key.generator.result.keyHint') }}
+      </p>
       <button
         type="button"
         @click="copyKey"
@@ -169,7 +173,33 @@ async function copyKey(): Promise<void> {
 
 .key-generator-form__result {
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: flex-start;
   gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  background: var(--accent-bg);
+}
+
+.key-generator-form__result-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-h);
+}
+
+.key-generator-form__result-value {
+  font-size: 1.3em;
+  padding: 0;
+  background: transparent;
+  word-break: break-all;
+}
+
+.key-generator-form__result-hint {
+  margin: 0;
+  font-size: 0.9em;
+  color: var(--text);
 }
 </style>

@@ -62,6 +62,7 @@ function handleSubmit(): void {
       {{ t('encode.form.message.label') }}
       <textarea
         v-model="store.message"
+        rows="4"
         :placeholder="t('encode.form.message.placeholder')"
       />
     </label>

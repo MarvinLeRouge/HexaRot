@@ -137,6 +137,7 @@
       "result": {
         "regionLabel": "Generated key",
         "keyLabel": "Key",
+        "keyHint": "This key is not stored anywhere. Copy it now.",
         "copy": "Copy",
         "copied": "Copied!",
         "copyError": "Copy failed"
@@ -147,7 +148,7 @@
       "form": {
         "key": {
           "label": "HexaRot key",
-          "placeholder": "HR1·XXXX",
+          "placeholder": "HR1·xxxx",
           "formatError": "This does not look like a valid HexaRot key."
         },
         "submit": {

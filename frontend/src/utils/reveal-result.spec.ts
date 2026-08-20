@@ -44,6 +44,13 @@ describe('revealResult', () => {
     expect(el.scrollIntoView).toHaveBeenCalledWith(expect.objectContaining({ behavior: 'auto' }))
   })
 
+  it('scrolls instantly when focus is requested, even with no reduced-motion preference', () => {
+    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: false }))
+    const el = makeElement()
+    revealResult(el, { focus: true })
+    expect(el.scrollIntoView).toHaveBeenCalledWith(expect.objectContaining({ behavior: 'auto' }))
+  })
+
   it('does not throw when scrollIntoView is unavailable', () => {
     const el = document.createElement('div')
     el.focus = vi.fn()

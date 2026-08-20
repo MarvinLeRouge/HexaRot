@@ -1562,7 +1562,7 @@ since they are a different kind of work.
 - **type:** refactor
 - **id:** REFACTOR-003
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** S

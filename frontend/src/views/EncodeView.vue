@@ -37,20 +37,24 @@ onUnmounted(() => {
     :aria-busy="store.status === 'loading'"
   >
     <h1>{{ t('encode.title') }}</h1>
-    <EncodeParamsForm />
-    <p
-      v-if="store.status === 'error'"
-      ref="errorRef"
-      class="encode-view__error"
-      role="alert"
-    >
-      {{ store.errorMessage ? t('encode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
-    </p>
-    <EncodeResultPanel
-      v-if="store.status === 'success' && store.result"
-      ref="resultRef"
-      :result="store.result"
-    />
+    <div class="encode-view__body">
+      <EncodeParamsForm />
+      <div class="encode-view__output">
+        <p
+          v-if="store.status === 'error'"
+          ref="errorRef"
+          class="encode-view__error"
+          role="alert"
+        >
+          {{ store.errorMessage ? t('encode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
+        </p>
+        <EncodeResultPanel
+          v-if="store.status === 'success' && store.result"
+          ref="resultRef"
+          :result="store.result"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
@@ -58,11 +62,41 @@ onUnmounted(() => {
 .encode-view {
   display: flex;
   flex-direction: column;
+  gap: 24px;
+}
+
+.encode-view h1 {
+  align-self: center;
+}
+
+.encode-view__body {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 24px;
 }
 
+.encode-view__output {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 480px;
+}
+
 .encode-view__error {
   color: var(--danger);
+}
+
+@media (min-width: 900px) {
+  .encode-view__body {
+    display: grid;
+    grid-template-columns: minmax(360px, 480px) 1fr;
+    align-items: start;
+  }
+
+  .encode-view__output {
+    max-width: none;
+  }
 }
 </style>

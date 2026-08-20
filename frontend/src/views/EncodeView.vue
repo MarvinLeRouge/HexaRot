@@ -52,6 +52,7 @@ onUnmounted(() => {
           v-if="store.status === 'success' && store.result"
           ref="resultRef"
           :result="store.result"
+          :stale="store.resultStale"
         />
       </div>
     </div>

@@ -29,6 +29,7 @@ interface EncodeState {
   overrideWeaknessWarning: boolean
   status: EncodeStatus
   result: EncodeResult | null
+  resultStale: boolean
   errorMessage: string | null
   errorCode: 'network' | 'unknown' | null
 }
@@ -46,6 +47,7 @@ function initialState(): EncodeState {
     overrideWeaknessWarning: false,
     status: 'idle',
     result: null,
+    resultStale: false,
     errorMessage: null,
     errorCode: null,
   }
@@ -57,6 +59,7 @@ export const useEncodeStore = defineStore('encode', {
     async submit(): Promise<void> {
       this.status = 'loading'
       this.result = null
+      this.resultStale = false
       this.errorMessage = null
       this.errorCode = null
 
@@ -97,11 +100,10 @@ export const useEncodeStore = defineStore('encode', {
     reset(): void {
       Object.assign(this, initialState())
     },
-    /** Clears a previous result once the parameters that produced it have changed. */
+    /** Marks a previous result stale once the parameters that produced it have changed. */
     invalidateResult(): void {
       if (this.status !== 'success') return
-      this.status = 'idle'
-      this.result = null
+      this.resultStale = true
     },
   },
 })

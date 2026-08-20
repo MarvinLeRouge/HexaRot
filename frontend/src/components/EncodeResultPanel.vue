@@ -1,13 +1,23 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useEncodeStore } from '../stores/encode'
 import type { EncodeResult } from '../stores/encode'
 
-const props = defineProps<{
-  result: EncodeResult
-}>()
+const props = withDefaults(
+  defineProps<{
+    result: EncodeResult
+    stale?: boolean
+  }>(),
+  { stale: false },
+)
 
+const store = useEncodeStore()
 const { t } = useI18n()
+
+function reencode(): void {
+  void store.submit()
+}
 
 const copyState = ref<'idle' | 'copied' | 'error'>('idle')
 
@@ -54,72 +64,95 @@ function downloadSvg(): void {
     aria-live="polite"
     :aria-label="t('encode.result.regionLabel')"
   >
-    <div class="encode-result-panel__preview">
-      <!-- eslint-disable-next-line vue/no-v-html, vue/max-attributes-per-line -- result.svg is generated exclusively by this project's own backend renderer, never from user input, so it is a trusted string. -->
-      <div class="encode-result-panel__svg" v-html="result.svg" />
-    </div>
-
-    <div class="encode-result-panel__key">
-      <span class="encode-result-panel__key-label">{{ t('encode.result.keyLabel') }}</span>
-      <code class="encode-result-panel__key-value">{{ result.key }}</code>
-      <p class="encode-result-panel__key-hint">
-        {{ t('encode.result.keyHint') }}
-      </p>
+    <div
+      v-if="stale"
+      class="encode-result-panel__stale-notice"
+      role="status"
+    >
+      <p>{{ t('encode.result.staleNotice') }}</p>
       <button
         type="button"
         class="btn-primary"
-        @click="copyKey"
+        @click="reencode"
       >
-        {{ copyState === 'copied' ? t('encode.result.copied') : copyState === 'error' ? t('encode.result.copyError') : t('encode.result.copy') }}
+        {{ t('encode.result.reencode') }}
       </button>
     </div>
 
     <div
-      v-if="result.warnings.length > 0"
-      class="encode-result-panel__warnings"
-      role="alert"
+      class="encode-result-panel__content"
+      :class="{ 'encode-result-panel__content--stale': stale }"
     >
-      <p>{{ t('encode.result.warningsHeading') }}</p>
-      <p>{{ t('encode.result.warningsExplanation') }}</p>
-      <ul>
-        <li
-          v-for="warning in result.warnings"
-          :key="warning"
-        >
-          {{ warning }}
-        </li>
-      </ul>
-    </div>
+      <div class="encode-result-panel__preview">
+        <!-- eslint-disable-next-line vue/no-v-html, vue/max-attributes-per-line -- result.svg is generated exclusively by this project's own backend renderer, never from user input, so it is a trusted string. -->
+        <div class="encode-result-panel__svg" v-html="result.svg" />
+      </div>
 
-    <div
-      v-if="result.unknownChars.length > 0"
-      class="encode-result-panel__unknown-chars"
-    >
-      <p>{{ t('encode.result.unknownCharsExplanation') }}</p>
-      <ul>
-        <li
-          v-for="char in result.unknownChars"
-          :key="char"
+      <div class="encode-result-panel__key">
+        <span class="encode-result-panel__key-label">{{ t('encode.result.keyLabel') }}</span>
+        <code class="encode-result-panel__key-value">{{ result.key }}</code>
+        <p class="encode-result-panel__key-hint">
+          {{ t('encode.result.keyHint') }}
+        </p>
+        <button
+          type="button"
+          class="btn-primary"
+          :disabled="stale"
+          @click="copyKey"
         >
-          {{ char }}
-        </li>
-      </ul>
-    </div>
+          {{ copyState === 'copied' ? t('encode.result.copied') : copyState === 'error' ? t('encode.result.copyError') : t('encode.result.copy') }}
+        </button>
+      </div>
 
-    <div class="encode-result-panel__downloads">
-      <button
-        type="button"
-        class="btn-secondary"
-        @click="downloadPng"
+      <div
+        v-if="result.warnings.length > 0"
+        class="encode-result-panel__warnings"
+        role="alert"
       >
-        {{ t('encode.result.downloadPng') }}
-      </button>
-      <button
-        type="button"
-        @click="downloadSvg"
+        <p>{{ t('encode.result.warningsHeading') }}</p>
+        <p>{{ t('encode.result.warningsExplanation') }}</p>
+        <ul>
+          <li
+            v-for="warning in result.warnings"
+            :key="warning"
+          >
+            {{ warning }}
+          </li>
+        </ul>
+      </div>
+
+      <div
+        v-if="result.unknownChars.length > 0"
+        class="encode-result-panel__unknown-chars"
       >
-        {{ t('encode.result.downloadSvg') }}
-      </button>
+        <p>{{ t('encode.result.unknownCharsExplanation') }}</p>
+        <ul>
+          <li
+            v-for="char in result.unknownChars"
+            :key="char"
+          >
+            {{ char }}
+          </li>
+        </ul>
+      </div>
+
+      <div class="encode-result-panel__downloads">
+        <button
+          type="button"
+          class="btn-secondary"
+          :disabled="stale"
+          @click="downloadPng"
+        >
+          {{ t('encode.result.downloadPng') }}
+        </button>
+        <button
+          type="button"
+          :disabled="stale"
+          @click="downloadSvg"
+        >
+          {{ t('encode.result.downloadSvg') }}
+        </button>
+      </div>
     </div>
   </section>
 </template>
@@ -131,6 +164,31 @@ function downloadSvg(): void {
   gap: 16px;
   max-width: 480px;
   width: 100%;
+}
+
+.encode-result-panel__stale-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--warning-border);
+  background: var(--warning-bg);
+  border-radius: 8px;
+}
+
+.encode-result-panel__stale-notice p {
+  margin: 0;
+  flex: 1;
+}
+
+.encode-result-panel__content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.encode-result-panel__content--stale {
+  opacity: 0.5;
 }
 
 .encode-result-panel__preview {

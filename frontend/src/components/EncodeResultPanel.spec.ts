@@ -1,21 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 import EncodeResultPanel from './EncodeResultPanel.vue'
 import en from '../locales/en.json'
 import { MOCK_ENCODE_RESPONSE } from '../__fixtures__/frontend.fixtures'
 
-function mountPanel() {
+vi.mock('../api/client', async () => {
+  const actual = await vi.importActual<typeof import('../api/client')>('../api/client')
+  return { ...actual, postJson: vi.fn() }
+})
+
+import { postJson } from '../api/client'
+import { useEncodeStore } from '../stores/encode'
+
+function mountPanel(props: { stale?: boolean } = {}) {
   const i18n = createI18n({ legacy: false, locale: 'en', messages: { en } })
   return mount(EncodeResultPanel, {
-    props: { result: MOCK_ENCODE_RESPONSE },
-    global: { plugins: [i18n] },
+    props: { result: MOCK_ENCODE_RESPONSE, ...props },
+    global: { plugins: [createPinia(), i18n] },
   })
 }
 
 describe('EncodeResultPanel', () => {
   beforeEach(() => {
     vi.restoreAllMocks()
+    setActivePinia(createPinia())
+    vi.mocked(postJson).mockReset()
   })
 
   describe('copy to clipboard', () => {
@@ -80,6 +91,40 @@ describe('EncodeResultPanel', () => {
       const blob = createObjectURL.mock.calls[0][0] as Blob
       expect(blob.type).toBe('image/svg+xml')
       expect(downloadedFilename).toBe('hexarot-cryptogram.svg')
+    })
+  })
+
+  describe('stale state', () => {
+    it('shows no notice and enables all actions when not stale', () => {
+      const wrapper = mountPanel()
+
+      expect(wrapper.find('.encode-result-panel__stale-notice').exists()).toBe(false)
+      expect(wrapper.find('.encode-result-panel__key button').attributes('disabled')).toBeUndefined()
+      const downloadButtons = wrapper.findAll('.encode-result-panel__downloads button')
+      expect(downloadButtons[0].attributes('disabled')).toBeUndefined()
+      expect(downloadButtons[1].attributes('disabled')).toBeUndefined()
+    })
+
+    it('shows a notice and disables Copy and both downloads when stale', () => {
+      const wrapper = mountPanel({ stale: true })
+
+      expect(wrapper.find('.encode-result-panel__stale-notice').exists()).toBe(true)
+      expect(wrapper.find('.encode-result-panel__key button').attributes('disabled')).toBeDefined()
+      const downloadButtons = wrapper.findAll('.encode-result-panel__downloads button')
+      expect(downloadButtons[0].attributes('disabled')).toBeDefined()
+      expect(downloadButtons[1].attributes('disabled')).toBeDefined()
+    })
+
+    it('re-encodes with the current store parameters when Re-encode is clicked', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountPanel({ stale: true })
+      const store = useEncodeStore()
+
+      await wrapper.find('.encode-result-panel__stale-notice button').trigger('click')
+      await flushPromises()
+
+      expect(postJson).toHaveBeenCalledOnce()
+      expect(store.status).toBe('success')
     })
   })
 })

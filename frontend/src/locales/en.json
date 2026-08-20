@@ -64,6 +64,8 @@
       "keyHint": "This key is required to decode your message and is not stored anywhere. Copy or download it now.",
       "copy": "Copy",
       "copied": "Copied!",
+      "staleNotice": "These parameters changed. Re-encode to update this cryptogram.",
+      "reencode": "Re-encode",
       "warningsHeading": "Weakness warnings",
       "warningsExplanation": "This combination weakens the cryptogram's rotation pattern. You can proceed anyway, or adjust the pivot block size to remove the warning:",
       "unknownCharsExplanation": "The following characters are not part of the alphabet and were dropped during encoding:",

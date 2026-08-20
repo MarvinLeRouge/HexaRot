@@ -1516,7 +1516,7 @@ merging.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
-### [REFACTOR-002] Structural layout pass — two-column result, stale-result invalidation, key/size binding
+### [REFACTOR-002] Two-column result layout — encode and decode views
 
 - **type:** refactor
 - **id:** REFACTOR-002
@@ -1524,48 +1524,121 @@ merging.
 - **status:** ready
 - **priority:** medium
 - **domain:** frontend
-- **complexity:** L
+- **complexity:** M
 - **parent:** ~
 - **depends-on:** REFACTOR-001
-- **learning:** [CSS grid two-column responsive layout, Pinia $subscribe vs component-level watchers for cross-field invalidation, key-format versioning if size joins the packed payload]
+- **learning:** [CSS grid two-column responsive layout, viewport-height-aware scroll-into-view]
 - **labels:** [refactor, domain:frontend, priority:medium, milestone:v2]
 
 #### Description
 
 A post-REFACTOR-001 re-critique (`.impeccable/critique/2026-08-20T09-40-23Z__hexarot-frontend-encode-decode-key-views.md`,
-score 18/40) found real defects REFACTOR-001 fixed, plus a smaller set of deeper,
-structural findings deliberately deferred out of that polish-scoped branch because they
-need their own design decisions rather than a mechanical fix:
+score 18/40) found that single-column stacking defeats the app's own submit-feedback
+fix: on common desktop viewport heights, the page runs out of scrollable height before
+the result panel reaches the top of the viewport, so `revealResult`'s scroll-into-view
+can never actually bring the result fully into view - verified live (scrollY maxes out
+with the result still ~370px down). A `grid-template-columns: minmax(360px, 480px) 1fr`
+layout (form left, result right, collapsing to one column under ~900px) fixes this
+structurally, lets the cryptogram render larger than the current 280px, and uses the
+~60% of the desktop canvas that currently sits empty next to the centred column.
 
-1. **Single-column stacking defeats the app's own submit-feedback fix.** On common
-   desktop viewport heights, the page runs out of scrollable height before the result
-   panel reaches the top of the viewport, so `revealResult`'s scroll-into-view can never
-   actually bring the result fully into view - verified live (scrollY maxes out with the
-   result still ~370px down). A `grid-template-columns: minmax(360px, 480px) 1fr` layout
-   (form left, result right, collapsing to one column under ~900px) would fix this
-   structurally, let the cryptogram render larger than 280px, and use the ~60% of the
-   desktop canvas that currently sits empty next to the centred column.
-2. **A successful result goes stale silently.** Editing the message or any transform
-   parameter after a successful encode leaves the old cryptogram and key on screen, still
-   fully downloadable and copyable, with no indication they no longer match the current
-   form state - a user can produce a key/image pair that will never decode together.
-   Needs a UX decision (clear the result outright vs. dim it and disable its actions vs.
-   auto-resubmit) rather than a default pick.
-3. **Decode requires the user to recall the cryptogram size**, which the key does not
-   carry and the app never displays after the fact. Investigate whether size can join the
-   packed key payload (a `KeyCodec`/backend change, likely its own item if so) or be
-   inferred from the uploaded image's dimensions on the Decode side (frontend-only).
+This item is pure layout/visual-design work — no state, validation, or crypto-domain
+logic changes. See REFACTOR-003 (stale-result invalidation) and CHORE-009 (key/size
+binding investigation) for the other findings from the same re-critique, kept separate
+since they are a different kind of work.
 
 #### Acceptance criteria
 
 - Encode and Decode use a two-column layout (form + result/preview) at desktop widths,
-  single-column below ~900px; the result never requires scrolling past the fold to be
-  visible on a standard 1280x800 viewport
+  single-column below ~900px
+- The result never requires scrolling past the fold to be visible on a standard
+  1280x800 viewport
+- No functional regression: all existing frontend tests (TEST-003) still pass
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-003] Invalidate a stale encode result on parameter change
+
+- **type:** refactor
+- **id:** REFACTOR-003
+- **milestone:** v2
+- **status:** ready
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** REFACTOR-001
+- **learning:** [Pinia $subscribe vs component-level watchers for cross-field invalidation]
+- **labels:** [refactor, domain:frontend, priority:medium, milestone:v2]
+
+#### Description
+
+Found by the same post-REFACTOR-001 re-critique as REFACTOR-002
+(`.impeccable/critique/2026-08-20T09-40-23Z__hexarot-frontend-encode-decode-key-views.md`).
+Editing the message or any transform parameter after a successful encode currently
+leaves the old cryptogram and key on screen, still fully downloadable and copyable,
+with no indication they no longer match the current form state - a user can produce a
+key/image pair that will never decode together. This is a state-correctness bug, not a
+visual one: kept separate from REFACTOR-002's pure layout work and from CHORE-009's
+crypto-domain investigation.
+
+Needs a UX decision before implementation: clear the result outright vs. dim it and
+disable its actions vs. auto-resubmit. Bring the options back for a quick confirmation
+before writing the fix.
+
+#### Acceptance criteria
+
 - Editing a parameter that affects the encode output while a previous result is
   displayed visibly invalidates that result before the user can download or copy a
-  mismatched key/cryptogram pair - approach documented before implementation
-- A documented decision on carrying/inferring the cryptogram size for Decode, with
-  either a frontend-only fix or a cross-cutting item opened against the backend
-  `key-codec` if the payload format needs to change
+  mismatched key/cryptogram pair
+- The chosen approach (clear / dim+disable / auto-resubmit) is confirmed before
+  implementation, not defaulted silently
 - No functional regression: all existing frontend tests (TEST-003) still pass
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CHORE-009] Investigate binding the cryptogram size to the key
+
+- **type:** chore
+- **id:** CHORE-009
+- **milestone:** v2
+- **status:** ready
+- **priority:** low
+- **domain:** backend
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** REFACTOR-001
+- **learning:** [KeyCodec bit-packing layout, key-format versioning strategy, image-dimension-based size inference]
+- **labels:** [chore, domain:backend, priority:low, milestone:v2]
+
+#### Description
+
+Found by the same post-REFACTOR-001 re-critique as REFACTOR-002 and REFACTOR-003
+(`.impeccable/critique/2026-08-20T09-40-23Z__hexarot-frontend-encode-decode-key-views.md`).
+Decode requires the user to recall the cryptogram size (small/medium/large) used at
+encode time - the key does not carry it and the app never displays or stores it
+anywhere after the fact, so a mismatch is a common, hard-to-diagnose decode failure.
+
+This is a crypto/key-format question, not a UI one - kept separate from REFACTOR-002
+and REFACTOR-003's frontend-only work. Two candidate directions, to be evaluated as a
+spike before committing to either:
+
+1. Pack the size into the key payload - a `KeyCodec` version bump (the current V1 bit
+   layout is fully used: pivotBlockSize 0-7, readingOrderIndex 8-10, rotationDirection
+   11, rotationSequenceIndex 12-16; adding size needs either spare bits or a new byte),
+   which is a breaking format change requiring its own versioning story.
+2. Infer the size from the uploaded image's pixel dimensions on the Decode side -
+   frontend/backend-boundary-only, no key-format change, but only works for PNG (SVG
+   viewBox dimensions may not map 1:1 to the size enum depending on how the renderer
+   scales).
+
+#### Acceptance criteria
+
+- A short written recommendation (in this item or a linked note) choosing one
+  direction, with the reasoning and what it would require to implement
+- If direction 1 is chosen: a follow-up FEAT/REFACTOR item is opened for the actual
+  `KeyCodec` version bump, scoped separately since it touches the backend cipher
+  domain and needs its own test plan
+- If direction 2 is chosen: confirms whether it works for both PNG and SVG uploads,
+  or documents why it's PNG-only
 <!-- ITEM:END -->

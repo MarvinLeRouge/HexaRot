@@ -3,7 +3,7 @@
   --text-h: #08060d;
   --text-muted: #756d80;
   --bg: #fff;
-  --border: #e5e4e7;
+  --border: #8d8a92;
   --code-bg: #f4f3ec;
   --accent: #aa3bff;
   --accent-bg: rgba(170, 59, 255, 0.1);
@@ -40,7 +40,7 @@
     --text-h: #f3f4f6;
     --text-muted: #8890a0;
     --bg: #16171d;
-    --border: #2e303a;
+    --border: #6f6d78;
     --code-bg: #1f2028;
     --accent: #c084fc;
     --accent-bg: rgba(192, 132, 252, 0.15);
@@ -120,7 +120,9 @@ textarea {
 .btn-primary:disabled,
 .btn-secondary:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  background: var(--border);
+  color: var(--text-muted);
+  border-color: var(--border);
 }
 
 .btn-primary {

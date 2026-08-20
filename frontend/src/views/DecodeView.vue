@@ -18,7 +18,7 @@ watch(
     if (status === 'success') {
       revealResult(resultRef.value, { focus: true })
     } else if (status === 'error') {
-      revealResult(errorRef.value)
+      revealResult(errorRef.value, { focus: true })
     }
   },
 )
@@ -42,6 +42,7 @@ onUnmounted(() => {
           ref="errorRef"
           class="decode-view__error"
           role="alert"
+          tabindex="-1"
         >
           {{ store.errorMessage ? t('decode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
         </p>

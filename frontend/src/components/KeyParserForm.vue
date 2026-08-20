@@ -34,7 +34,7 @@ watch(
     if (status === 'success') {
       revealResult(resultRef.value, { focus: true })
     } else if (status === 'error') {
-      revealResult(errorRef.value)
+      revealResult(errorRef.value, { focus: true })
     }
   },
 )
@@ -78,6 +78,7 @@ watch(
       ref="errorRef"
       class="key-parser-form__error"
       role="alert"
+      tabindex="-1"
     >
       {{ store.parseErrorMessage ? t('key.parser.form.error.prefix', { detail: store.parseErrorMessage }) : t(`errors.${store.parseErrorCode}`) }}
     </p>

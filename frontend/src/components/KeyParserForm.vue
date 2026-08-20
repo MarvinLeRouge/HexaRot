@@ -98,7 +98,7 @@ watch(
       <dd>{{ store.parsedParams.rotationSequence.map((angle) => `${angle}°`).join(', ') }}</dd>
 
       <dt>{{ t('key.parser.result.rotationDirection') }}</dt>
-      <dd>{{ store.parsedParams.rotationDirection }}</dd>
+      <dd>{{ t(`key.generator.form.rotationDirection.${store.parsedParams.rotationDirection}`) }}</dd>
 
       <dt>{{ t('key.parser.result.readingOrder') }}</dt>
       <dd>{{ store.parsedParams.readingOrder }}</dd>

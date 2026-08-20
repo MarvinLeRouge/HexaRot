@@ -16,8 +16,10 @@ onUnmounted(() => {
 <template>
   <div class="key-view">
     <h1>{{ t('key.title') }}</h1>
-    <KeyGeneratorForm />
-    <KeyParserForm />
+    <div class="key-view__body">
+      <KeyGeneratorForm />
+      <KeyParserForm />
+    </div>
   </div>
 </template>
 
@@ -25,7 +27,30 @@ onUnmounted(() => {
 .key-view {
   display: flex;
   flex-direction: column;
+  gap: 24px;
+}
+
+.key-view h1 {
+  align-self: center;
+}
+
+.key-view__body {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   gap: 32px;
+}
+
+@media (min-width: 900px) {
+  .key-view h1 {
+    align-self: flex-start;
+  }
+
+  .key-view__body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+    gap: 24px;
+  }
 }
 </style>

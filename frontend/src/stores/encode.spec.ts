@@ -129,15 +129,16 @@ describe('useEncodeStore', () => {
   })
 
   describe('invalidateResult', () => {
-    it('clears a successful result back to idle', async () => {
+    it('marks a successful result stale without clearing it', async () => {
       vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
       const store = useEncodeStore()
       await store.submit()
 
       store.invalidateResult()
 
-      expect(store.status).toBe('idle')
-      expect(store.result).toBeNull()
+      expect(store.status).toBe('success')
+      expect(store.result).toEqual(MOCK_ENCODE_RESPONSE)
+      expect(store.resultStale).toBe(true)
     })
 
     it('does nothing when there is no successful result to invalidate', () => {
@@ -146,10 +147,10 @@ describe('useEncodeStore', () => {
       store.invalidateResult()
 
       expect(store.status).toBe('idle')
-      expect(store.result).toBeNull()
+      expect(store.resultStale).toBe(false)
     })
 
-    it('does not clear an in-flight request', () => {
+    it('does not mark an in-flight request stale', () => {
       vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
       const store = useEncodeStore()
       void store.submit()
@@ -157,6 +158,19 @@ describe('useEncodeStore', () => {
       store.invalidateResult()
 
       expect(store.status).toBe('loading')
+      expect(store.resultStale).toBe(false)
+    })
+
+    it('a new submit clears the stale flag', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const store = useEncodeStore()
+      await store.submit()
+      store.invalidateResult()
+      expect(store.resultStale).toBe(true)
+
+      await store.submit()
+
+      expect(store.resultStale).toBe(false)
     })
   })
 })

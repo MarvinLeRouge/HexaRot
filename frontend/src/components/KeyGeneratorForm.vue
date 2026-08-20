@@ -35,6 +35,11 @@ watch(
   },
 )
 
+watch(
+  () => [store.pivotBlockSize, store.rotationSequence, store.rotationDirection, store.readingOrder],
+  () => store.invalidateGenerated(),
+)
+
 const copyState = ref<'idle' | 'copied' | 'error'>('idle')
 
 async function copyKey(): Promise<void> {
@@ -126,18 +131,38 @@ async function copyKey(): Promise<void> {
       aria-live="polite"
       :aria-label="t('key.generator.result.regionLabel')"
     >
-      <span class="key-generator-form__result-label">{{ t('key.generator.result.keyLabel') }}</span>
-      <code class="key-generator-form__result-value">{{ store.generatedKey }}</code>
-      <p class="key-generator-form__result-hint">
-        {{ t('key.generator.result.keyHint') }}
-      </p>
-      <button
-        type="button"
-        class="btn-primary"
-        @click="copyKey"
+      <div
+        v-if="store.generatedKeyStale"
+        class="key-generator-form__stale-notice"
+        role="status"
       >
-        {{ copyState === 'copied' ? t('key.generator.result.copied') : copyState === 'error' ? t('key.generator.result.copyError') : t('key.generator.result.copy') }}
-      </button>
+        <p>{{ t('key.generator.result.staleNotice') }}</p>
+        <button
+          type="button"
+          class="btn-primary"
+          @click="handleGenerate"
+        >
+          {{ t('key.generator.result.regenerate') }}
+        </button>
+      </div>
+      <div
+        class="key-generator-form__result-content"
+        :class="{ 'key-generator-form__result-content--stale': store.generatedKeyStale }"
+      >
+        <span class="key-generator-form__result-label">{{ t('key.generator.result.keyLabel') }}</span>
+        <code class="key-generator-form__result-value">{{ store.generatedKey }}</code>
+        <p class="key-generator-form__result-hint">
+          {{ t('key.generator.result.keyHint') }}
+        </p>
+        <button
+          type="button"
+          class="btn-primary"
+          :disabled="store.generatedKeyStale"
+          @click="copyKey"
+        >
+          {{ copyState === 'copied' ? t('key.generator.result.copied') : copyState === 'error' ? t('key.generator.result.copyError') : t('key.generator.result.copy') }}
+        </button>
+      </div>
     </div>
   </form>
 </template>
@@ -175,12 +200,37 @@ async function copyKey(): Promise<void> {
 .key-generator-form__result {
   display: flex;
   flex-direction: column;
+  gap: 16px;
+}
+
+.key-generator-form__stale-notice {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border: 1px solid var(--warning-border);
+  background: var(--warning-bg);
+  border-radius: 8px;
+}
+
+.key-generator-form__stale-notice p {
+  margin: 0;
+  flex: 1;
+}
+
+.key-generator-form__result-content {
+  display: flex;
+  flex-direction: column;
   align-items: flex-start;
   gap: 8px;
   padding: 16px;
   border: 1px solid var(--accent-border);
   border-radius: 8px;
   background: var(--accent-bg);
+}
+
+.key-generator-form__result-content--stale {
+  opacity: 0.5;
 }
 
 .key-generator-form__result-label {

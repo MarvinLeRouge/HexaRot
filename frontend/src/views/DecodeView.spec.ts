@@ -45,6 +45,11 @@ describe('DecodeView', () => {
       expect(wrapper.find('input[type="file"]').exists()).toBe(true)
     })
 
+    it('shows an empty-state placeholder in the output column before any submission', () => {
+      const wrapper = mountView()
+      expect(wrapper.find('.decode-view__output-empty').exists()).toBe(true)
+    })
+
     it('renders the HR key input field', () => {
       const wrapper = mountView()
       expect(wrapper.find('input[type="text"]').exists()).toBe(true)
@@ -143,6 +148,7 @@ describe('DecodeView', () => {
       await flushPromises()
 
       expect(wrapper.find('.decode-view__result').text()).toContain(MOCK_DECODE_RESPONSE.message)
+      expect(wrapper.find('.decode-view__output-empty').exists()).toBe(false)
     })
   })
 

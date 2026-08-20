@@ -52,7 +52,14 @@ onUnmounted(() => {
           v-if="store.status === 'success' && store.result"
           ref="resultRef"
           :result="store.result"
+          :stale="store.resultStale"
         />
+        <p
+          v-if="store.status === 'idle'"
+          class="encode-view__output-empty"
+        >
+          {{ t('encode.result.emptyState') }}
+        </p>
       </div>
     </div>
   </div>
@@ -88,7 +95,26 @@ onUnmounted(() => {
   color: var(--danger);
 }
 
+.encode-view__output-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  margin: 0;
+  padding: 20px;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 @media (min-width: 900px) {
+  .encode-view h1 {
+    align-self: flex-start;
+    width: 100%;
+    max-width: 480px;
+  }
+
   .encode-view__body {
     display: grid;
     grid-template-columns: minmax(360px, 480px) 1fr;

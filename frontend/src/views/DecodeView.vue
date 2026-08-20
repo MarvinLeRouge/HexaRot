@@ -54,6 +54,12 @@ onUnmounted(() => {
         >
           <strong>{{ t('decode.result.label') }}:</strong> {{ store.result }}
         </p>
+        <p
+          v-if="store.status === 'idle'"
+          class="decode-view__output-empty"
+        >
+          {{ t('decode.result.emptyState') }}
+        </p>
       </div>
     </div>
   </div>
@@ -89,7 +95,26 @@ onUnmounted(() => {
   color: var(--danger);
 }
 
+.decode-view__output-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 200px;
+  margin: 0;
+  padding: 20px;
+  border: 2px dashed var(--border);
+  border-radius: 8px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
 @media (min-width: 900px) {
+  .decode-view h1 {
+    align-self: flex-start;
+    width: 100%;
+    max-width: 480px;
+  }
+
   .decode-view__body {
     display: grid;
     grid-template-columns: minmax(360px, 480px) 1fr;

@@ -51,6 +51,17 @@ describe('useDecodeStore', () => {
     })
   })
 
+  it('normalizes a near-miss key before sending it', async () => {
+    vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+    const store = useDecodeStore()
+    store.file = MOCK_PNG_FILE
+    store.keyInput = 'hr1.a1b2'
+
+    await store.submit()
+
+    expect(postJson).toHaveBeenCalledWith('/decode', expect.objectContaining({ key: 'HR1·a1b2' }))
+  })
+
   it('builds the SVG payload with the raw text content when submitting', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
     const store = useDecodeStore()

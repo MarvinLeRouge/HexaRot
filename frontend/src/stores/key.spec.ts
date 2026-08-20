@@ -133,6 +133,16 @@ describe('useKeyStore', () => {
     expect(getJson).toHaveBeenCalledWith('/key/parse', { key: 'HR1·a1b2' })
   })
 
+  it('normalizes a near-miss key before sending it', async () => {
+    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    const store = useKeyStore()
+    store.keyInput = 'hr1.a1b2'
+
+    await store.parse()
+
+    expect(getJson).toHaveBeenCalledWith('/key/parse', { key: 'HR1·a1b2' })
+  })
+
   it('sets parseStatus to loading while the parse request is in flight', () => {
     vi.mocked(getJson).mockReturnValue(new Promise(() => {}))
     const store = useKeyStore()

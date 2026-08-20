@@ -48,7 +48,7 @@
       "key": {
         "label": "HexaRot key",
         "placeholder": "HR1·xxxx",
-        "formatError": "This does not look like a valid HexaRot key."
+        "formatError": "A HexaRot key looks like HR1·a3f9 - \"HR\", a version number, a separator, then 4 characters."
       },
       "submit": {
         "label": "Encode",
@@ -86,7 +86,7 @@
       "key": {
         "label": "HexaRot key",
         "placeholder": "HR1·xxxx",
-        "formatError": "This does not look like a valid HexaRot key."
+        "formatError": "A HexaRot key looks like HR1·a3f9 - \"HR\", a version number, a separator, then 4 characters."
       },
       "size": {
         "label": "Cryptogram size",
@@ -149,7 +149,7 @@
         "key": {
           "label": "HexaRot key",
           "placeholder": "HR1·xxxx",
-          "formatError": "This does not look like a valid HexaRot key."
+          "formatError": "A HexaRot key looks like HR1·a3f9 - \"HR\", a version number, a separator, then 4 characters."
         },
         "submit": {
           "label": "Parse",

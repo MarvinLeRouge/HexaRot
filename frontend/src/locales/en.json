@@ -60,6 +60,7 @@
     },
     "result": {
       "regionLabel": "Encode result",
+      "emptyState": "Your cryptogram and key will appear here.",
       "keyLabel": "Key",
       "keyHint": "This key is required to decode your message and is not stored anywhere. Copy or download it now.",
       "copy": "Copy",
@@ -106,7 +107,8 @@
       }
     },
     "result": {
-      "label": "Decoded message"
+      "label": "Decoded message",
+      "emptyState": "Your decoded message will appear here."
     }
   },
   "key": {

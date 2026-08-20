@@ -37,6 +37,11 @@ describe('EncodeView', () => {
       expect(wrapper.find('textarea').exists()).toBe(true)
     })
 
+    it('shows an empty-state placeholder in the output column before any submission', () => {
+      const wrapper = mountView()
+      expect(wrapper.find('.encode-view__output-empty').exists()).toBe(true)
+    })
+
     it.each([
       ['pivotBlockSize', 'input[type="number"]'],
       ['rotationDirection', 'select[name="rotationDirection"]'],
@@ -160,6 +165,11 @@ describe('EncodeView', () => {
     it('displays the SVG preview after a successful encode response', async () => {
       const wrapper = await submitAndResolve()
       expect(wrapper.find('.encode-result-panel__svg svg').exists()).toBe(true)
+    })
+
+    it('hides the empty-state placeholder once a result exists', async () => {
+      const wrapper = await submitAndResolve()
+      expect(wrapper.find('.encode-view__output-empty').exists()).toBe(false)
     })
 
     it('displays the HR key returned by the API', async () => {

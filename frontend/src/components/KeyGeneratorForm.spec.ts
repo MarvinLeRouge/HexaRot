@@ -123,4 +123,45 @@ describe('KeyGeneratorForm', () => {
       focusSpy.mockRestore()
     })
   })
+
+  describe('stale key invalidation', () => {
+    it('marks the generated key stale, without removing it, when a parameter is edited', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
+      const wrapper = mountForm()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(wrapper.text()).toContain(MOCK_KEY_GENERATE_RESPONSE.key)
+
+      await wrapper.find('input[type="number"]').setValue(99)
+
+      expect(wrapper.text()).toContain(MOCK_KEY_GENERATE_RESPONSE.key)
+      expect(wrapper.find('.key-generator-form__stale-notice').exists()).toBe(true)
+    })
+
+    it('disables Copy while the generated key is stale', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
+      const wrapper = mountForm()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      await wrapper.find('input[type="number"]').setValue(99)
+
+      const copyButton = wrapper.find('.key-generator-form__result-content button')
+      expect(copyButton.attributes('disabled')).toBeDefined()
+    })
+
+    it('clears the stale notice when re-generating', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
+      const wrapper = mountForm()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      await wrapper.find('input[type="number"]').setValue(99)
+      expect(wrapper.find('.key-generator-form__stale-notice').exists()).toBe(true)
+
+      await wrapper.find('.key-generator-form__stale-notice button').trigger('click')
+      await flushPromises()
+
+      expect(wrapper.find('.key-generator-form__stale-notice').exists()).toBe(false)
+    })
+  })
 })

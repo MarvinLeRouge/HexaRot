@@ -21,6 +21,7 @@ interface KeyState {
   readingOrder: ReadingOrder
   generateStatus: KeyStatus
   generatedKey: string | null
+  generatedKeyStale: boolean
   generateErrorMessage: string | null
   generateErrorCode: 'network' | 'unknown' | null
 
@@ -39,6 +40,7 @@ function initialState(): KeyState {
     readingOrder: 'LR-TB',
     generateStatus: 'idle',
     generatedKey: null,
+    generatedKeyStale: false,
     generateErrorMessage: null,
     generateErrorCode: null,
 
@@ -56,6 +58,7 @@ export const useKeyStore = defineStore('key', {
     async generate(): Promise<void> {
       this.generateStatus = 'loading'
       this.generatedKey = null
+      this.generatedKeyStale = false
       this.generateErrorMessage = null
       this.generateErrorCode = null
 
@@ -105,6 +108,11 @@ export const useKeyStore = defineStore('key', {
     },
     reset(): void {
       Object.assign(this, initialState())
+    },
+    /** Marks the generated key stale once the parameters that produced it have changed. */
+    invalidateGenerated(): void {
+      if (this.generateStatus !== 'success') return
+      this.generatedKeyStale = true
     },
   },
 })

@@ -144,7 +144,9 @@
         "keyHint": "This key is not stored anywhere. Copy it now.",
         "copy": "Copy",
         "copied": "Copied!",
-        "copyError": "Copy failed"
+        "copyError": "Copy failed",
+        "staleNotice": "These parameters changed. Re-generate to update this key.",
+        "regenerate": "Re-generate"
       }
     },
     "parser": {

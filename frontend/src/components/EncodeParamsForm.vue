@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useEncodeStore } from '../stores/encode'
 import { READING_ORDERS } from '../constants/reading-orders'
@@ -9,6 +9,21 @@ import LoadingSpinner from './LoadingSpinner.vue'
 
 const store = useEncodeStore()
 const { t } = useI18n()
+
+watch(
+  () => [
+    store.mode,
+    store.message,
+    store.pivotBlockSize,
+    store.rotationSequence,
+    store.rotationDirection,
+    store.readingOrder,
+    store.size,
+    store.overrideWeaknessWarning,
+    store.keyInput,
+  ],
+  () => store.invalidateResult(),
+)
 
 const keyFormatError = computed(() => {
   if (store.mode !== 'key' || store.keyInput.length === 0) return null

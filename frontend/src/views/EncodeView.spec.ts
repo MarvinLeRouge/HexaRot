@@ -183,6 +183,52 @@ describe('EncodeView', () => {
     })
   })
 
+  describe('stale result invalidation', () => {
+    async function submitAndResolve() {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      return wrapper
+    }
+
+    it('clears the result when the message is edited after a successful encode', async () => {
+      const wrapper = await submitAndResolve()
+      expect(wrapper.text()).toContain(MOCK_ENCODE_RESPONSE.key)
+
+      await wrapper.find('textarea').setValue('a completely different message')
+
+      expect(wrapper.text()).not.toContain(MOCK_ENCODE_RESPONSE.key)
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
+    })
+
+    it('clears the result when the pivot block size is edited after a successful encode', async () => {
+      const wrapper = await submitAndResolve()
+
+      await wrapper.find('input[type="number"]').setValue(99)
+
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
+    })
+
+    it('clears the result when the mode is switched after a successful encode', async () => {
+      const wrapper = await submitAndResolve()
+
+      await wrapper.find('input[type="radio"][value="key"]').setValue()
+
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
+    })
+
+    it('does not clear anything before a result exists', async () => {
+      const wrapper = mountView()
+
+      await wrapper.find('textarea').setValue('hello world')
+
+      const store = useEncodeStore()
+      expect(store.status).toBe('idle')
+    })
+  })
+
   describe('warnings and unknown chars', () => {
     it('displays weakness warnings when the API response includes them', async () => {
       vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE_WITH_WARNINGS)

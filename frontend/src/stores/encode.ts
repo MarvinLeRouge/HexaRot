@@ -97,5 +97,11 @@ export const useEncodeStore = defineStore('encode', {
     reset(): void {
       Object.assign(this, initialState())
     },
+    /** Clears a previous result once the parameters that produced it have changed. */
+    invalidateResult(): void {
+      if (this.status !== 'success') return
+      this.status = 'idle'
+      this.result = null
+    },
   },
 })

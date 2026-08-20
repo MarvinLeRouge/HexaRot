@@ -127,4 +127,36 @@ describe('useEncodeStore', () => {
     expect(store.status).toBe('idle')
     expect(store.result).toBeNull()
   })
+
+  describe('invalidateResult', () => {
+    it('clears a successful result back to idle', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const store = useEncodeStore()
+      await store.submit()
+
+      store.invalidateResult()
+
+      expect(store.status).toBe('idle')
+      expect(store.result).toBeNull()
+    })
+
+    it('does nothing when there is no successful result to invalidate', () => {
+      const store = useEncodeStore()
+
+      store.invalidateResult()
+
+      expect(store.status).toBe('idle')
+      expect(store.result).toBeNull()
+    })
+
+    it('does not clear an in-flight request', () => {
+      vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
+      const store = useEncodeStore()
+      void store.submit()
+
+      store.invalidateResult()
+
+      expect(store.status).toBe('loading')
+    })
+  })
 })

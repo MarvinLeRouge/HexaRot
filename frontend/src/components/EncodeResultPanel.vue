@@ -42,17 +42,22 @@ function triggerDownload(blob: Blob, filename: string): void {
   setTimeout(() => URL.revokeObjectURL(url), 0)
 }
 
+function downloadFilename(extension: string): string {
+  const keySlug = props.result.key.replace(/[^0-9A-Za-z]/g, '')
+  return `hexarot-${store.size}-${keySlug}.${extension}`
+}
+
 function downloadPng(): void {
   const byteChars = atob(props.result.png)
   const byteNumbers = new Array<number>(byteChars.length)
   for (let i = 0; i < byteChars.length; i++) {
     byteNumbers[i] = byteChars.charCodeAt(i)
   }
-  triggerDownload(new Blob([new Uint8Array(byteNumbers)], { type: 'image/png' }), 'hexarot-cryptogram.png')
+  triggerDownload(new Blob([new Uint8Array(byteNumbers)], { type: 'image/png' }), downloadFilename('png'))
 }
 
 function downloadSvg(): void {
-  triggerDownload(new Blob([props.result.svg], { type: 'image/svg+xml' }), 'hexarot-cryptogram.svg')
+  triggerDownload(new Blob([props.result.svg], { type: 'image/svg+xml' }), downloadFilename('svg'))
 }
 </script>
 
@@ -97,6 +102,9 @@ function downloadSvg(): void {
       <div class="encode-result-panel__key">
         <span class="encode-result-panel__key-label">{{ t('encode.result.keyLabel') }}</span>
         <code class="encode-result-panel__key-value">{{ result.key }}</code>
+        <p class="encode-result-panel__key-size">
+          {{ t('encode.result.sizeLabel') }}: <strong>{{ t(`encode.form.size.${store.size}`) }}</strong>
+        </p>
         <p class="encode-result-panel__key-hint">
           {{ t('encode.result.keyHint') }}
         </p>
@@ -262,6 +270,12 @@ function downloadSvg(): void {
   padding: 0;
   background: transparent;
   word-break: break-all;
+}
+
+.encode-result-panel__key-size {
+  margin: 0;
+  font-size: 0.9em;
+  color: var(--text);
 }
 
 .encode-result-panel__key-hint {

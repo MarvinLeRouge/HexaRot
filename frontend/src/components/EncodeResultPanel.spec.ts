@@ -29,6 +29,17 @@ describe('EncodeResultPanel', () => {
     vi.mocked(postJson).mockReset()
   })
 
+  describe('cryptogram size', () => {
+    it('displays the size used to produce this result, next to the key', async () => {
+      const wrapper = mountPanel()
+      const store = useEncodeStore()
+      store.size = 'large'
+      await flushPromises()
+
+      expect(wrapper.find('.encode-result-panel__key-size').text()).toContain(en.encode.form.size.large)
+    })
+  })
+
   describe('copy to clipboard', () => {
     it('copies the key and shows "Copied!" on success', async () => {
       Object.assign(navigator, { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } })
@@ -71,7 +82,7 @@ describe('EncodeResultPanel', () => {
       expect(createObjectURL).toHaveBeenCalledOnce()
       const blob = createObjectURL.mock.calls[0][0] as Blob
       expect(blob.type).toBe('image/png')
-      expect(downloadedFilename).toBe('hexarot-cryptogram.png')
+      expect(downloadedFilename).toBe('hexarot-medium-HR1A1B2.png')
     })
 
     it('downloads the SVG as a correctly-typed blob with the expected filename', async () => {
@@ -90,7 +101,26 @@ describe('EncodeResultPanel', () => {
       expect(createObjectURL).toHaveBeenCalledOnce()
       const blob = createObjectURL.mock.calls[0][0] as Blob
       expect(blob.type).toBe('image/svg+xml')
-      expect(downloadedFilename).toBe('hexarot-cryptogram.svg')
+      expect(downloadedFilename).toBe('hexarot-medium-HR1A1B2.svg')
+    })
+
+    it('uses the store size in the download filename', async () => {
+      const createObjectURL = vi.fn().mockReturnValue('blob:png-url')
+      const revokeObjectURL = vi.fn()
+      vi.stubGlobal('URL', { ...URL, createObjectURL, revokeObjectURL })
+      let downloadedFilename = ''
+      vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+        downloadedFilename = this.download
+      })
+
+      const wrapper = mountPanel()
+      const store = useEncodeStore()
+      store.size = 'large'
+      await flushPromises()
+      const [pngButton] = wrapper.findAll('.encode-result-panel__downloads button')
+      await pngButton.trigger('click')
+
+      expect(downloadedFilename).toBe('hexarot-large-HR1A1B2.png')
     })
 
     it('styles Download SVG the same as its Download PNG sibling', () => {

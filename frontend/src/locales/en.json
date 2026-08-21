@@ -112,7 +112,10 @@
       "label": "Decoded message",
       "emptyState": "Your decoded message will appear here.",
       "staleNotice": "These parameters changed. Re-decode to update this message.",
-      "redecode": "Re-decode"
+      "redecode": "Re-decode",
+      "copy": "Copy",
+      "copied": "Copied!",
+      "copyError": "Copy failed"
     }
   },
   "key": {

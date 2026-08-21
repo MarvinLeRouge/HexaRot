@@ -43,8 +43,10 @@ function triggerDownload(blob: Blob, filename: string): void {
 }
 
 function downloadFilename(extension: string): string {
-  const keySlug = props.result.key.replace(/[^0-9A-Za-z]/g, '')
-  return `hexarot-${store.size}-${keySlug}.${extension}`
+  // Never include the key here: this file is the artifact the user hands to
+  // someone else, and a cipher's key must travel on a separate channel from
+  // the cryptogram it decrypts.
+  return `hexarot-${store.size}.${extension}`
 }
 
 function downloadPng(): void {
@@ -205,11 +207,16 @@ function downloadSvg(): void {
 /*
  * The cryptogram's cell colors are the message - dimming them with opacity
  * would display factually wrong colors while claiming to just mark the
- * result "stale". Everything except the preview dims normally; the preview
- * stays at full color fidelity and gets a corner badge instead.
+ * result "stale". The preview stays at full color fidelity and gets a
+ * corner badge instead. The key card gets a dashed outline instead of
+ * opacity too: opacity on text has repeatedly failed WCAG contrast in past
+ * critiques (round 4, 5, 6), and there's no reason "this may be outdated"
+ * should also make the key harder to read.
  */
-.encode-result-panel__content--stale > :not(.encode-result-panel__preview) {
-  opacity: 0.5;
+.encode-result-panel__content--stale .encode-result-panel__key {
+  border-style: dashed;
+  border-color: var(--warning-border);
+  background: transparent;
 }
 
 .encode-result-panel__preview {

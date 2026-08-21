@@ -11,6 +11,7 @@ interface DecodeState {
   size: CryptogramSize
   status: DecodeStatus
   result: string | null
+  resultStale: boolean
   errorMessage: string | null
   errorCode: 'network' | 'unknown' | null
 }
@@ -22,6 +23,7 @@ function initialState(): DecodeState {
     size: 'medium',
     status: 'idle',
     result: null,
+    resultStale: false,
     errorMessage: null,
     errorCode: null,
   }
@@ -61,6 +63,7 @@ export const useDecodeStore = defineStore('decode', {
 
       this.status = 'loading'
       this.result = null
+      this.resultStale = false
       this.errorMessage = null
       this.errorCode = null
 
@@ -91,6 +94,11 @@ export const useDecodeStore = defineStore('decode', {
     },
     reset(): void {
       Object.assign(this, initialState())
+    },
+    /** Marks a previous result stale once the parameters that produced it have changed. */
+    invalidateResult(): void {
+      if (this.status !== 'success') return
+      this.resultStale = true
     },
   },
 })

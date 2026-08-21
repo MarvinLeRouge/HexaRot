@@ -66,6 +66,7 @@
       "copy": "Copy",
       "copied": "Copied!",
       "staleNotice": "These parameters changed. Re-encode to update this cryptogram.",
+      "staleBadge": "Out of date",
       "reencode": "Re-encode",
       "warningsHeading": "Weakness warnings",
       "warningsExplanation": "This combination weakens the cryptogram's rotation pattern. You can proceed anyway, or adjust the pivot block size to remove the warning:",
@@ -108,7 +109,9 @@
     },
     "result": {
       "label": "Decoded message",
-      "emptyState": "Your decoded message will appear here."
+      "emptyState": "Your decoded message will appear here.",
+      "staleNotice": "These parameters changed. Re-decode to update this message.",
+      "redecode": "Re-decode"
     }
   },
   "key": {
@@ -170,13 +173,25 @@
         "pivotBlockSize": "Pivot block size",
         "rotationSequence": "Rotation sequence",
         "rotationDirection": "Rotation direction",
-        "readingOrder": "Reading order"
+        "readingOrder": "Reading order",
+        "staleNotice": "The key changed. Re-parse to update these parameters.",
+        "reparse": "Re-parse"
       }
     }
   },
   "errors": {
     "network": "Couldn't reach the server. Check your connection and try again.",
     "unknown": "Something went wrong. Please try again."
+  },
+  "readingOrder": {
+    "LR-TB": "Left to right, top to bottom",
+    "RL-TB": "Right to left, top to bottom",
+    "TB-LR": "Top to bottom, left to right",
+    "BT-LR": "Bottom to top, left to right",
+    "LR-TB-ALT": "Left to right, top to bottom (alternating rows)",
+    "RL-TB-ALT": "Right to left, top to bottom (alternating rows)",
+    "TB-LR-ALT": "Top to bottom, left to right (alternating columns)",
+    "BT-LR-ALT": "Bottom to top, left to right (alternating columns)"
   },
   "rotationSequence": {
     "grabbed": "Picked up {angle}°, position {position} of {total}. Use arrow keys to move, space to drop, escape to cancel.",

@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, afterEach } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { revealResult } from './reveal-result'
 
 function makeElement(): HTMLElement {
@@ -9,10 +9,6 @@ function makeElement(): HTMLElement {
 }
 
 describe('revealResult', () => {
-  afterEach(() => {
-    vi.unstubAllGlobals()
-  })
-
   it('does nothing when passed null', () => {
     expect(() => revealResult(null)).not.toThrow()
   })
@@ -20,7 +16,7 @@ describe('revealResult', () => {
   it('scrolls the element into view without focusing it by default', () => {
     const el = makeElement()
     revealResult(el)
-    expect(el.scrollIntoView).toHaveBeenCalledWith(expect.objectContaining({ block: 'start' }))
+    expect(el.scrollIntoView).toHaveBeenCalledWith({ behavior: 'auto', block: 'start' })
     expect(el.focus).not.toHaveBeenCalled()
   })
 
@@ -30,25 +26,10 @@ describe('revealResult', () => {
     expect(el.focus).toHaveBeenCalledWith({ preventScroll: true })
   })
 
-  it('scrolls smoothly when the user has no reduced-motion preference', () => {
-    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: false }))
-    const el = makeElement()
-    revealResult(el)
-    expect(el.scrollIntoView).toHaveBeenCalledWith(expect.objectContaining({ behavior: 'smooth' }))
-  })
-
-  it('scrolls instantly when the user prefers reduced motion', () => {
-    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: true }))
-    const el = makeElement()
-    revealResult(el)
-    expect(el.scrollIntoView).toHaveBeenCalledWith(expect.objectContaining({ behavior: 'auto' }))
-  })
-
-  it('scrolls instantly when focus is requested, even with no reduced-motion preference', () => {
-    vi.stubGlobal('matchMedia', vi.fn().mockReturnValue({ matches: false }))
+  it('always scrolls instantly, whether or not focus is requested', () => {
     const el = makeElement()
     revealResult(el, { focus: true })
-    expect(el.scrollIntoView).toHaveBeenCalledWith(expect.objectContaining({ behavior: 'auto' }))
+    expect(el.scrollIntoView).toHaveBeenCalledWith({ behavior: 'auto', block: 'start' })
   })
 
   it('does not throw when scrollIntoView is unavailable', () => {

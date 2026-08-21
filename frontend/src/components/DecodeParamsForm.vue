@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useDecodeStore } from '../stores/decode'
 import { isValidKeyFormat } from '../utils/key-format'
@@ -8,6 +8,11 @@ import LoadingSpinner from './LoadingSpinner.vue'
 
 const store = useDecodeStore()
 const { t } = useI18n()
+
+watch(
+  () => [store.file, store.keyInput, store.size],
+  () => store.invalidateResult(),
+)
 
 const keyFormatError = computed(() => {
   if (store.keyInput.length === 0) return null

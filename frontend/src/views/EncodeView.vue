@@ -19,7 +19,7 @@ watch(
     if (status === 'success') {
       revealResult(resultRef.value?.$el ?? null, { focus: true })
     } else if (status === 'error') {
-      revealResult(errorRef.value)
+      revealResult(errorRef.value, { focus: true })
     }
   },
 )
@@ -45,9 +45,18 @@ onUnmounted(() => {
           ref="errorRef"
           class="encode-view__error"
           role="alert"
+          tabindex="-1"
         >
           {{ store.errorMessage ? t('encode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
         </p>
+        <div
+          v-if="store.status === 'loading'"
+          class="encode-view__output-loading"
+          aria-hidden="true"
+        >
+          <div class="encode-view__skeleton-block encode-view__skeleton-block--preview" />
+          <div class="encode-view__skeleton-block encode-view__skeleton-block--key" />
+        </div>
         <EncodeResultPanel
           v-if="store.status === 'success' && store.result"
           ref="resultRef"
@@ -106,6 +115,44 @@ onUnmounted(() => {
   border-radius: 8px;
   color: var(--text-muted);
   text-align: center;
+}
+
+.encode-view__output-loading {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.encode-view__skeleton-block {
+  border-radius: 8px;
+  background: linear-gradient(90deg, var(--code-bg) 25%, var(--border) 50%, var(--code-bg) 75%);
+  background-size: 200% 100%;
+  animation: encode-view-shimmer 1.5s ease-in-out infinite;
+}
+
+.encode-view__skeleton-block--preview {
+  height: 280px;
+}
+
+.encode-view__skeleton-block--key {
+  height: 120px;
+}
+
+@keyframes encode-view-shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .encode-view__skeleton-block {
+    animation: none;
+    background: var(--code-bg);
+  }
 }
 
 @media (min-width: 900px) {

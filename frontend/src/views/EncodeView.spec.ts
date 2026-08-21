@@ -99,6 +99,17 @@ describe('EncodeView', () => {
       expect(wrapper.find('button[type="submit"]').text()).toBe('Encoding...')
     })
 
+    it('keeps the output column occupied with a skeleton while the API call is in progress', async () => {
+      vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+
+      await wrapper.find('form').trigger('submit')
+
+      expect(wrapper.find('.encode-view__output-loading').exists()).toBe(true)
+      expect(wrapper.find('.encode-view__output-empty').exists()).toBe(false)
+    })
+
     it('hides the loading indicator after the API call resolves', async () => {
       vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
       const wrapper = mountView()

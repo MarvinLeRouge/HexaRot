@@ -30,7 +30,7 @@ watch(
     if (status === 'success') {
       revealResult(resultRef.value, { focus: true })
     } else if (status === 'error') {
-      revealResult(errorRef.value)
+      revealResult(errorRef.value, { focus: true })
     }
   },
 )
@@ -100,7 +100,7 @@ async function copyKey(): Promise<void> {
           v-for="order in READING_ORDERS"
           :key="order"
           :value="order"
-        >{{ order }}</option>
+        >{{ t(`readingOrder.${order}`) }}</option>
       </select>
     </label>
 
@@ -118,6 +118,7 @@ async function copyKey(): Promise<void> {
       ref="errorRef"
       class="key-generator-form__error"
       role="alert"
+      tabindex="-1"
     >
       {{ store.generateErrorMessage ? t('key.generator.form.error.prefix', { detail: store.generateErrorMessage }) : t(`errors.${store.generateErrorCode}`) }}
     </p>

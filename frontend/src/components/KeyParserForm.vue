@@ -193,7 +193,13 @@ watch(
   font-weight: 600;
 }
 
+/*
+ * A dashed outline instead of opacity: opacity on this text has repeatedly
+ * failed WCAG contrast in past critiques (round 4, 5, 6).
+ */
 .key-parser-form__result--stale {
-  opacity: 0.5;
+  padding: 12px;
+  border: 1px dashed var(--warning-border);
+  border-radius: 8px;
 }
 </style>

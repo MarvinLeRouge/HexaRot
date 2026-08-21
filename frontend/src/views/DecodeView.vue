@@ -27,6 +27,21 @@ function redecode(): void {
   void store.submit()
 }
 
+const copyState = ref<'idle' | 'copied' | 'error'>('idle')
+
+async function copyResult(): Promise<void> {
+  if (!store.result) return
+  try {
+    await navigator.clipboard.writeText(store.result)
+    copyState.value = 'copied'
+  } catch {
+    copyState.value = 'error'
+  }
+  setTimeout(() => {
+    copyState.value = 'idle'
+  }, 2000)
+}
+
 onUnmounted(() => {
   store.reset()
 })
@@ -79,12 +94,23 @@ onUnmounted(() => {
               {{ t('decode.result.redecode') }}
             </button>
           </div>
-          <p
-            class="decode-view__result"
-            :class="{ 'decode-view__result--stale': store.resultStale }"
+          <div
+            class="decode-view__result-card"
+            :class="{ 'decode-view__result-card--stale': store.resultStale }"
           >
-            <strong>{{ t('decode.result.label') }}:</strong> {{ store.result }}
-          </p>
+            <span class="decode-view__result-label">{{ t('decode.result.label') }}</span>
+            <p class="decode-view__result">
+              {{ store.result }}
+            </p>
+            <button
+              type="button"
+              class="btn-primary"
+              :disabled="store.resultStale"
+              @click="copyResult"
+            >
+              {{ copyState === 'copied' ? t('decode.result.copied') : copyState === 'error' ? t('decode.result.copyError') : t('decode.result.copy') }}
+            </button>
+          </div>
         </div>
         <p
           v-if="store.status === 'idle'"
@@ -148,8 +174,44 @@ onUnmounted(() => {
   flex: 1;
 }
 
-.decode-view__result--stale {
-  opacity: 0.5;
+.decode-view__result-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 16px;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  background: var(--accent-bg);
+}
+
+.decode-view__result-label {
+  font-size: 0.8em;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-h);
+}
+
+.decode-view__result {
+  margin: 0;
+  width: 100%;
+  font-family: var(--mono);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  max-height: 40vh;
+  overflow-y: auto;
+}
+
+/*
+ * Staleness is signalled by an outline, never by dimming text - opacity on
+ * this text has repeatedly failed WCAG contrast in past critiques (round 4,
+ * 5, 6), and there's no reason a "this answer may be wrong" state should
+ * also make the answer harder to read.
+ */
+.decode-view__result-card--stale {
+  border: 1px dashed var(--warning-border);
+  background: transparent;
 }
 
 .decode-view__output-empty {

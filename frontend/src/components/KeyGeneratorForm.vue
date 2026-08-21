@@ -230,8 +230,14 @@ async function copyKey(): Promise<void> {
   background: var(--accent-bg);
 }
 
+/*
+ * A dashed outline instead of opacity: opacity on this text has repeatedly
+ * failed WCAG contrast in past critiques (round 4, 5, 6).
+ */
 .key-generator-form__result-content--stale {
-  opacity: 0.5;
+  border-style: dashed;
+  border-color: var(--warning-border);
+  background: transparent;
 }
 
 .key-generator-form__result-label {

@@ -82,7 +82,23 @@ describe('EncodeResultPanel', () => {
       expect(createObjectURL).toHaveBeenCalledOnce()
       const blob = createObjectURL.mock.calls[0][0] as Blob
       expect(blob.type).toBe('image/png')
-      expect(downloadedFilename).toBe('hexarot-medium-HR1A1B2.png')
+      expect(downloadedFilename).toBe('hexarot-medium.png')
+    })
+
+    it('never includes the key in the filename, since it must travel on a separate channel', async () => {
+      const createObjectURL = vi.fn().mockReturnValue('blob:png-url')
+      vi.stubGlobal('URL', { ...URL, createObjectURL, revokeObjectURL: vi.fn() })
+      let downloadedFilename = ''
+      vi.spyOn(HTMLAnchorElement.prototype, 'click').mockImplementation(function (this: HTMLAnchorElement) {
+        downloadedFilename = this.download
+      })
+
+      const wrapper = mountPanel()
+      const [pngButton] = wrapper.findAll('.encode-result-panel__downloads button')
+      await pngButton.trigger('click')
+
+      expect(downloadedFilename).not.toContain('A1B2')
+      expect(downloadedFilename).not.toContain(MOCK_ENCODE_RESPONSE.key.replace(/[^0-9A-Za-z]/g, ''))
     })
 
     it('downloads the SVG as a correctly-typed blob with the expected filename', async () => {
@@ -101,7 +117,7 @@ describe('EncodeResultPanel', () => {
       expect(createObjectURL).toHaveBeenCalledOnce()
       const blob = createObjectURL.mock.calls[0][0] as Blob
       expect(blob.type).toBe('image/svg+xml')
-      expect(downloadedFilename).toBe('hexarot-medium-HR1A1B2.svg')
+      expect(downloadedFilename).toBe('hexarot-medium.svg')
     })
 
     it('uses the store size in the download filename', async () => {
@@ -120,7 +136,7 @@ describe('EncodeResultPanel', () => {
       const [pngButton] = wrapper.findAll('.encode-result-panel__downloads button')
       await pngButton.trigger('click')
 
-      expect(downloadedFilename).toBe('hexarot-large-HR1A1B2.png')
+      expect(downloadedFilename).toBe('hexarot-large.png')
     })
 
     it('styles Download SVG the same as its Download PNG sibling', () => {

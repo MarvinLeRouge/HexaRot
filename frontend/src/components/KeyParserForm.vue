@@ -126,7 +126,7 @@ watch(
         <dd>{{ t(`key.generator.form.rotationDirection.${store.parsedParams.rotationDirection}`) }}</dd>
 
         <dt>{{ t('key.parser.result.readingOrder') }}</dt>
-        <dd>{{ store.parsedParams.readingOrder }}</dd>
+        <dd>{{ t(`readingOrder.${store.parsedParams.readingOrder}`) }}</dd>
       </dl>
     </div>
   </form>

@@ -59,7 +59,18 @@ describe('KeyParserForm', () => {
     expect(wrapper.text()).toContain(String(MOCK_KEY_PARSE_RESPONSE.pivotBlockSize))
     expect(wrapper.text()).toContain('0°, 90°, 180°, 270°')
     expect(wrapper.text()).toContain(en.key.generator.form.rotationDirection[MOCK_KEY_PARSE_RESPONSE.rotationDirection])
-    expect(wrapper.text()).toContain(MOCK_KEY_PARSE_RESPONSE.readingOrder)
+    expect(wrapper.text()).toContain(en.readingOrder[MOCK_KEY_PARSE_RESPONSE.readingOrder as keyof typeof en.readingOrder])
+  })
+
+  it('translates the reading order to a human-readable label, not the raw code', async () => {
+    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    const wrapper = mountForm()
+
+    await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.text()).not.toContain(MOCK_KEY_PARSE_RESPONSE.readingOrder)
   })
 
   it('translates the rotation direction to a human-readable label, matching the generator form', async () => {

@@ -124,7 +124,7 @@ function handleSubmit(): void {
             v-for="order in READING_ORDERS"
             :key="order"
             :value="order"
-          >{{ order }}</option>
+          >{{ t(`readingOrder.${order}`) }}</option>
         </select>
       </label>
     </fieldset>

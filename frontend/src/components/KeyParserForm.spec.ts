@@ -9,10 +9,10 @@ import { ApiError } from '../api/client'
 
 vi.mock('../api/client', async () => {
   const actual = await vi.importActual<typeof import('../api/client')>('../api/client')
-  return { ...actual, getJson: vi.fn() }
+  return { ...actual, postJson: vi.fn() }
 })
 
-import { getJson } from '../api/client'
+import { postJson } from '../api/client'
 
 function mountForm() {
   const i18n = createI18n({ legacy: false, locale: 'en', messages: { en } })
@@ -24,7 +24,7 @@ function mountForm() {
 describe('KeyParserForm', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
-    vi.mocked(getJson).mockReset()
+    vi.mocked(postJson).mockReset()
   })
 
   it('renders the key input field', () => {
@@ -38,18 +38,18 @@ describe('KeyParserForm', () => {
   })
 
   it('calls the key parse API with the entered key when the parse button is clicked', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     const wrapper = mountForm()
 
     await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    expect(getJson).toHaveBeenCalledWith('/key/parse', { key: 'HR1·a1b2' })
+    expect(postJson).toHaveBeenCalledWith('/key/parse', { key: 'HR1·a1b2' })
   })
 
   it('displays all decoded parameters after a successful parse response', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     const wrapper = mountForm()
 
     await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
@@ -63,7 +63,7 @@ describe('KeyParserForm', () => {
   })
 
   it('translates the reading order to a human-readable label, not the raw code', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     const wrapper = mountForm()
 
     await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
@@ -74,7 +74,7 @@ describe('KeyParserForm', () => {
   })
 
   it('translates the rotation direction to a human-readable label, matching the generator form', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     const wrapper = mountForm()
 
     await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
@@ -91,11 +91,11 @@ describe('KeyParserForm', () => {
 
     expect(wrapper.find('.key-parser-form__error').exists()).toBe(true)
     expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
-    expect(getJson).not.toHaveBeenCalled()
+    expect(postJson).not.toHaveBeenCalled()
   })
 
   it('displays a clear error message when the API returns 400', async () => {
-    vi.mocked(getJson).mockRejectedValue(new ApiError('unsupported key version', 'http', 400))
+    vi.mocked(postJson).mockRejectedValue(new ApiError('unsupported key version', 'http', 400))
     const wrapper = mountForm()
 
     await wrapper.find('input[type="text"]').setValue('HR9·zzzz')
@@ -107,7 +107,7 @@ describe('KeyParserForm', () => {
 
   describe('stale parsed parameters', () => {
     it('marks the parsed parameters stale, without removing them, when the key input changes', async () => {
-      vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
       const wrapper = mountForm()
       await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
       await wrapper.find('form').trigger('submit')
@@ -121,7 +121,7 @@ describe('KeyParserForm', () => {
     })
 
     it('clears the stale notice when re-parsing', async () => {
-      vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
       const wrapper = mountForm()
       await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
       await wrapper.find('form').trigger('submit')

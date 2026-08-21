@@ -9,7 +9,7 @@ const DEFAULT_ROTATION_SEQUENCE: RotationSequence = Object.freeze([
 const DEFAULT_ROTATION_DIRECTION: 'cw' | 'ccw' = 'cw';
 const DEFAULT_READING_ORDER: KeyParams['readingOrder'] = 'LR-TB';
 
-/** Response shape for GET /key/parse. */
+/** Response shape for POST /key/parse. */
 export interface KeyParseResult {
   pivotBlockSize: number;
   /**

@@ -1,7 +1,7 @@
 # HexaRot — Test Spec: API Domain
 
 Covers: FEAT-011 (POST /encode), FEAT-012 (POST /decode), FEAT-013 (POST /key/generate,
-GET /key/parse).
+POST /key/parse).
 
 All tests in this document are **integration tests**. They use the NestJS testing module
 and supertest. They run against a real, seeded PostgreSQL test database (full Hexahue
@@ -96,16 +96,20 @@ describe('POST /key/generate')
 - it returns 400 when `readingOrder` is an unknown value
 - it returns 400 when `pivotBlockSize` is not a positive integer
 
-**Round-trip with GET /key/parse**
+**Round-trip with POST /key/parse**
 - it generates a key and parses it back to recover the original params without data loss
 
 ---
 
-## 4. GET /key/parse (FEAT-013)
+## 4. POST /key/parse (FEAT-013, REFACTOR-004)
 
 ```
-describe('GET /key/parse')
+describe('POST /key/parse')
 ```
+
+POST rather than GET: the key is a decryption secret, and a GET query string is
+written by default into server access logs, reverse-proxy logs, and browser
+history/cache - a secret must not travel through that channel (REFACTOR-004).
 
 - it returns 200 with all decoded params for a valid HR key
 - it returns the correct pivotBlockSize
@@ -113,8 +117,8 @@ describe('GET /key/parse')
 - it returns the correct rotationDirection ('cw' or 'ccw')
 - it returns the correct readingOrder string
 - it returns 400 for a malformed key string
-- it returns 400 for an empty `key` query param
-- it returns 400 when the `key` query param is missing
+- it returns 400 for an empty `key` field
+- it returns 400 when the `key` field is missing from the body
 
 ---
 

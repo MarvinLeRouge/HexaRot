@@ -112,7 +112,7 @@ describe('Key endpoints (e2e)', () => {
     });
   });
 
-  describe('GET /api/key/parse', () => {
+  describe('POST /api/key/parse', () => {
     it('returns 200 with all decoded params for a valid HR key', async () => {
       const generateRes = await request(app.getHttpServer())
         .post('/api/key/generate')
@@ -125,8 +125,8 @@ describe('Key endpoints (e2e)', () => {
       const { key } = generateRes.body as KeyGenerateResult;
 
       const res = await request(app.getHttpServer())
-        .get('/api/key/parse')
-        .query({ key });
+        .post('/api/key/parse')
+        .send({ key });
 
       expect(res.status).toBe(200);
       const body = res.body as KeyParseResult;
@@ -138,8 +138,8 @@ describe('Key endpoints (e2e)', () => {
 
     it('returns 400 for a malformed key string', async () => {
       const res = await request(app.getHttpServer())
-        .get('/api/key/parse')
-        .query({ key: 'not-a-key' });
+        .post('/api/key/parse')
+        .send({ key: 'not-a-key' });
       expect(res.status).toBe(400);
     });
 
@@ -147,21 +147,23 @@ describe('Key endpoints (e2e)', () => {
       'returns 400 for malformed key: %s',
       async (malformedKey) => {
         const res = await request(app.getHttpServer())
-          .get('/api/key/parse')
-          .query({ key: malformedKey });
+          .post('/api/key/parse')
+          .send({ key: malformedKey });
         expect(res.status).toBe(400);
       },
     );
 
     it('returns 400 for an empty key query param', async () => {
       const res = await request(app.getHttpServer())
-        .get('/api/key/parse')
-        .query({ key: '' });
+        .post('/api/key/parse')
+        .send({ key: '' });
       expect(res.status).toBe(400);
     });
 
-    it('returns 400 when the key query param is missing', async () => {
-      const res = await request(app.getHttpServer()).get('/api/key/parse');
+    it('returns 400 when the key field is missing from the body', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/key/parse')
+        .send({});
       expect(res.status).toBe(400);
     });
   });
@@ -181,8 +183,8 @@ describe('Key endpoints (e2e)', () => {
       const { key } = generateRes.body as KeyGenerateResult;
 
       const parseRes = await request(app.getHttpServer())
-        .get('/api/key/parse')
-        .query({ key });
+        .post('/api/key/parse')
+        .send({ key });
 
       expect(parseRes.status).toBe(200);
       const parseBody = parseRes.body as KeyParseResult;

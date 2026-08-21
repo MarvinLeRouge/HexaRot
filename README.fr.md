@@ -71,7 +71,7 @@ Tous les endpoints sont préfixés par `/api`.
 | `POST` | `/encode` | Encoder un message → cryptogramme PNG + SVG |
 | `POST` | `/decode` | Décoder un cryptogramme → texte en clair |
 | `POST` | `/key/generate` | Générer une clé HR depuis des paramètres |
-| `GET` | `/key/parse?key=HR…` | Analyser une clé HR → paramètres structurés |
+| `POST` | `/key/parse` | Analyser une clé HR → paramètres structurés |
 
 **Exemple — `POST /encode`**
 
@@ -133,10 +133,13 @@ POST /api/key/generate
 }
 ```
 
-**Exemple — `GET /key/parse`**
+**Exemple — `POST /key/parse`**
 
-```
-GET /api/key/parse?key=HR1·57C3
+```json
+POST /api/key/parse
+{
+  "key": "HR1·57C3"
+}
 ```
 
 ```json

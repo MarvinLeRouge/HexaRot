@@ -6,16 +6,15 @@ import { MOCK_KEY_GENERATE_RESPONSE, MOCK_KEY_PARSE_RESPONSE } from '../__fixtur
 
 vi.mock('../api/client', async () => {
   const actual = await vi.importActual<typeof import('../api/client')>('../api/client')
-  return { ...actual, postJson: vi.fn(), getJson: vi.fn() }
+  return { ...actual, postJson: vi.fn() }
 })
 
-import { postJson, getJson } from '../api/client'
+import { postJson } from '../api/client'
 
 describe('useKeyStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.mocked(postJson).mockReset()
-    vi.mocked(getJson).mockReset()
   })
 
   it('initialises with default parameter values and no result or error on either side', () => {
@@ -109,7 +108,7 @@ describe('useKeyStore', () => {
 
   it('clears the previous generated key when a new generate is dispatched, without touching parse state', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
-    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     const store = useKeyStore()
     await store.generate()
     store.keyInput = 'HR1·a1b2'
@@ -123,28 +122,28 @@ describe('useKeyStore', () => {
     expect(store.parsedParams).toEqual(MOCK_KEY_PARSE_RESPONSE)
   })
 
-  it('calls getJson with the entered key when parse is dispatched', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+  it('calls postJson with the entered key when parse is dispatched', async () => {
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     const store = useKeyStore()
     store.keyInput = 'HR1·a1b2'
 
     await store.parse()
 
-    expect(getJson).toHaveBeenCalledWith('/key/parse', { key: 'HR1·a1b2' })
+    expect(postJson).toHaveBeenCalledWith('/key/parse', { key: 'HR1·a1b2' })
   })
 
   it('normalizes a near-miss key before sending it', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     const store = useKeyStore()
     store.keyInput = 'hr1.a1b2'
 
     await store.parse()
 
-    expect(getJson).toHaveBeenCalledWith('/key/parse', { key: 'HR1·a1b2' })
+    expect(postJson).toHaveBeenCalledWith('/key/parse', { key: 'HR1·a1b2' })
   })
 
   it('sets parseStatus to loading while the parse request is in flight', () => {
-    vi.mocked(getJson).mockReturnValue(new Promise(() => {}))
+    vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
     const store = useKeyStore()
     store.keyInput = 'HR1·a1b2'
 
@@ -154,7 +153,7 @@ describe('useKeyStore', () => {
   })
 
   it('stores the parsed params and sets parseStatus to success on a successful parse', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     const store = useKeyStore()
     store.keyInput = 'HR1·a1b2'
 
@@ -166,7 +165,7 @@ describe('useKeyStore', () => {
   })
 
   it('stores the error message and sets parseStatus to error on a failed parse', async () => {
-    vi.mocked(getJson).mockRejectedValue(new ApiError('unsupported key version', 'http', 400))
+    vi.mocked(postJson).mockRejectedValue(new ApiError('unsupported key version', 'http', 400))
     const store = useKeyStore()
     store.keyInput = 'HR9·zzzz'
 
@@ -178,7 +177,7 @@ describe('useKeyStore', () => {
   })
 
   it('sets parseErrorCode to network and leaves parseErrorMessage null on a network failure', async () => {
-    vi.mocked(getJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+    vi.mocked(postJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
     const store = useKeyStore()
     store.keyInput = 'HR1·a1b2'
 
@@ -190,7 +189,7 @@ describe('useKeyStore', () => {
   })
 
   it('sets parseErrorCode to unknown and leaves parseErrorMessage null on a non-ApiError failure', async () => {
-    vi.mocked(getJson).mockRejectedValue(new Error('unexpected'))
+    vi.mocked(postJson).mockRejectedValue(new Error('unexpected'))
     const store = useKeyStore()
     store.keyInput = 'HR1·a1b2'
 
@@ -202,7 +201,7 @@ describe('useKeyStore', () => {
   })
 
   it('clears the previous parsed params when a new parse is dispatched, without touching generate state', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
     const store = useKeyStore()
     store.keyInput = 'HR1·a1b2'
@@ -210,7 +209,7 @@ describe('useKeyStore', () => {
     await store.generate()
     expect(store.generatedKey).toBe(MOCK_KEY_GENERATE_RESPONSE.key)
 
-    vi.mocked(getJson).mockReturnValue(new Promise(() => {}))
+    vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
     void store.parse()
 
     expect(store.parsedParams).toBeNull()
@@ -219,7 +218,7 @@ describe('useKeyStore', () => {
 
   it('restores default state when reset is called', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
-    vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     const store = useKeyStore()
     await store.generate()
     store.keyInput = 'HR1·a1b2'

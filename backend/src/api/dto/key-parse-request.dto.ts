@@ -1,7 +1,7 @@
 import { IsString, IsNotEmpty } from 'class-validator';
 
-/** Query params for GET /key/parse. */
-export class KeyParseQueryDto {
+/** Request body for POST /key/parse. */
+export class KeyParseRequestDto {
   @IsString()
   @IsNotEmpty()
   key!: string;

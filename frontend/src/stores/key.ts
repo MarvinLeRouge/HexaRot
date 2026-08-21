@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { postJson, getJson, ApiError } from '../api/client'
+import { postJson, ApiError } from '../api/client'
 import { normalizeKeyInput } from '../utils/key-format'
 import type { ReadingOrder } from '../constants/reading-orders'
 
@@ -94,7 +94,7 @@ export const useKeyStore = defineStore('key', {
       this.parseErrorCode = null
 
       try {
-        this.parsedParams = await getJson<KeyParseResult>('/key/parse', { key: normalizeKeyInput(this.keyInput) })
+        this.parsedParams = await postJson<KeyParseResult>('/key/parse', { key: normalizeKeyInput(this.keyInput) })
         this.parseStatus = 'success'
       } catch (err) {
         if (err instanceof ApiError && err.code === 'http') {

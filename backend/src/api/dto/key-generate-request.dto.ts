@@ -25,7 +25,7 @@ export class KeyGenerateRequestDto {
 
   /**
    * Permutation indices (0-3), NOT angles - each index maps to
-   * [0, 90, 180, 270] degrees respectively. Contrast with GET /key/parse's
+   * [0, 90, 180, 270] degrees respectively. Contrast with POST /key/parse's
    * response, which returns this same concept as literal angle values.
    */
   @IsOptional()

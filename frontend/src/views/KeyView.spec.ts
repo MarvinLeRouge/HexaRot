@@ -10,10 +10,10 @@ import { ApiError } from '../api/client'
 
 vi.mock('../api/client', async () => {
   const actual = await vi.importActual<typeof import('../api/client')>('../api/client')
-  return { ...actual, postJson: vi.fn(), getJson: vi.fn() }
+  return { ...actual, postJson: vi.fn() }
 })
 
-import { postJson, getJson } from '../api/client'
+import { postJson } from '../api/client'
 
 function mountView() {
   const i18n = createI18n({ legacy: false, locale: 'en', messages: { en } })
@@ -26,7 +26,6 @@ describe('KeyView', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
     vi.mocked(postJson).mockReset()
-    vi.mocked(getJson).mockReset()
   })
 
   describe('key generator section', () => {
@@ -98,18 +97,18 @@ describe('KeyView', () => {
     })
 
     it('calls the key parse API when the parse button is clicked', async () => {
-      vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
       const wrapper = mountView()
 
       await wrapper.find('.key-parser-form input[type="text"]').setValue('HR1·a1b2')
       await wrapper.find('.key-parser-form').trigger('submit')
       await flushPromises()
 
-      expect(getJson).toHaveBeenCalledWith('/key/parse', { key: 'HR1·a1b2' })
+      expect(postJson).toHaveBeenCalledWith('/key/parse', { key: 'HR1·a1b2' })
     })
 
     it('displays all decoded parameters after a successful parse response', async () => {
-      vi.mocked(getJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
       const wrapper = mountView()
 
       await wrapper.find('.key-parser-form input[type="text"]').setValue('HR1·a1b2')
@@ -125,11 +124,11 @@ describe('KeyView', () => {
       await wrapper.find('.key-parser-form input[type="text"]').setValue(MALFORMED_KEY)
 
       expect(wrapper.find('.key-parser-form__error').exists()).toBe(true)
-      expect(getJson).not.toHaveBeenCalled()
+      expect(postJson).not.toHaveBeenCalled()
     })
 
     it('displays a clear error message when the API returns 400', async () => {
-      vi.mocked(getJson).mockRejectedValue(new ApiError('unsupported key version', 'http', 400))
+      vi.mocked(postJson).mockRejectedValue(new ApiError('unsupported key version', 'http', 400))
       const wrapper = mountView()
 
       await wrapper.find('.key-parser-form input[type="text"]').setValue('HR9·zzzz')

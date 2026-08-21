@@ -1,10 +1,10 @@
-import { Controller, Post, Get, Body, Query, HttpCode } from '@nestjs/common';
+import { Controller, Post, Body, HttpCode } from '@nestjs/common';
 import { KeyService } from './key.service';
 import type { KeyParseResult } from './key.service';
 import { KeyGenerateRequestDto } from './dto/key-generate-request.dto';
-import { KeyParseQueryDto } from './dto/key-parse-query.dto';
+import { KeyParseRequestDto } from './dto/key-parse-request.dto';
 
-/** Handles POST /key/generate and GET /key/parse - key generation and parsing, no cipher/rendering pipeline involvement. */
+/** Handles POST /key/generate and POST /key/parse - key generation and parsing, no cipher/rendering pipeline involvement. */
 @Controller('key')
 export class KeyController {
   constructor(private readonly keyService: KeyService) {}
@@ -24,11 +24,17 @@ export class KeyController {
   /**
    * Parses a key string into its constituent parameters.
    *
-   * @param query - Validated query parameters containing the key string.
+   * POST rather than GET: the key is a decryption secret, and a GET query
+   * string is written by default into server access logs, reverse-proxy
+   * logs, and browser history/cache - a durable, shared leak channel a
+   * secret must not travel through.
+   *
+   * @param dto - Validated request body containing the key string.
    * @returns The decoded key parameters.
    */
-  @Get('parse')
-  parse(@Query() query: KeyParseQueryDto): KeyParseResult {
-    return this.keyService.parse(query.key);
+  @Post('parse')
+  @HttpCode(200)
+  parse(@Body() dto: KeyParseRequestDto): KeyParseResult {
+    return this.keyService.parse(dto.key);
   }
 }

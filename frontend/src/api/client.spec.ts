@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
-import { postJson, getJson, ApiError } from './client'
+import { postJson, ApiError } from './client'
 
 function jsonResponse(body: unknown, status = 200): Response {
   return new Response(JSON.stringify(body), {
@@ -56,34 +56,5 @@ describe('postJson', () => {
     vi.mocked(fetch).mockRejectedValue(new TypeError('Failed to fetch'))
 
     await expect(postJson('/encode', {})).rejects.toBeInstanceOf(ApiError)
-  })
-})
-
-describe('getJson', () => {
-  beforeEach(() => {
-    vi.stubGlobal('fetch', vi.fn())
-  })
-
-  afterEach(() => {
-    vi.unstubAllGlobals()
-  })
-
-  it('appends query parameters to the URL', async () => {
-    vi.mocked(fetch).mockResolvedValue(jsonResponse({ ok: true }))
-
-    await getJson('/key/parse', { key: 'HR1·a1b2' })
-
-    expect(fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/key/parse?key=HR1%C2%B7a1b2'),
-      expect.objectContaining({ method: 'GET' }),
-    )
-  })
-
-  it('returns the parsed JSON body on a successful response', async () => {
-    vi.mocked(fetch).mockResolvedValue(jsonResponse({ pivotBlockSize: 5 }))
-
-    const result = await getJson<{ pivotBlockSize: number }>('/key/parse', { key: 'HR1·a1b2' })
-
-    expect(result).toEqual({ pivotBlockSize: 5 })
   })
 })

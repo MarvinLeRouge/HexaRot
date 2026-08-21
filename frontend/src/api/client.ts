@@ -63,14 +63,3 @@ export async function postJson<TResponse>(path: string, body: unknown): Promise<
   })
   return handleResponse<TResponse>(response)
 }
-
-export async function getJson<TResponse>(
-  path: string,
-  query?: Record<string, string>,
-): Promise<TResponse> {
-  const search = query ? `?${new URLSearchParams(query).toString()}` : ''
-  const response = await doFetch(`${resolveBaseUrl()}${path}${search}`, {
-    method: 'GET',
-  })
-  return handleResponse<TResponse>(response)
-}

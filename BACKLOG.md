@@ -1642,3 +1642,300 @@ spike before committing to either:
 - If direction 2 is chosen: confirms whether it works for both PNG and SVG uploads,
   or documents why it's PNG-only
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-004] Stop sending the decryption key in a URL query string
+
+- **type:** refactor
+- **id:** REFACTOR-004
+- **milestone:** v2
+- **status:** ready
+- **priority:** critical
+- **domain:** security
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [GET-with-secrets-in-query-string anti-pattern, request-body-vs-query-param API design, key-format client-side parsing]
+- **labels:** [refactor, domain:security, priority:critical, milestone:v2]
+
+#### Description
+
+Found by critique #7 (`.impeccable/critique/2026-08-21T15-56-57Z__hexarot-frontend-encode-decode-key-views.md`,
+score 14/40). `frontend/src/stores/key.ts`'s `parse()` action calls
+`getJson('/key/parse', { key: ... })`, which `frontend/src/api/client.ts` turns into
+`GET /api/key/parse?key=HR1%C2%B7a1b2` - the decryption key ends up in the URL. A GET
+query string is written by default into server access logs, any reverse-proxy logs
+(this project routes through Traefik locally - see CHORE-006), and the browser's own
+history/cache. This is the same failure class the previous fix batch closed for
+downloaded filenames (critique #6, "a cipher's key must travel on a separate channel
+from the cryptogram it decrypts") - that principle wasn't carried to this second,
+more durable and more shared leak channel.
+
+Two candidate directions:
+
+1. Change `POST /api/key/parse` to accept the key in a JSON body instead of a query
+   parameter - a backend route + frontend caller change, no crypto-format change.
+2. Parse the key entirely client-side and drop the server round trip - only viable if
+   `KeyCodec`'s decode algorithm (currently backend-only) is ported or shared with the
+   frontend, which is a larger undertaking than it first appears.
+
+Direction 1 is the recommended default: smaller, contained, no duplication of
+crypto-domain logic across the frontend/backend boundary.
+
+#### Acceptance criteria
+
+- The key is no longer present in any URL sent by the frontend (encode's key-mode
+  submit already uses POST body - only `/key/parse` is affected)
+- `GET /api/key/parse` either stops being served or the frontend no longer calls it
+- Manually confirmed: no key material appears in the Network tab's request URL for
+  the key-parser flow
+- Existing key-parser tests (frontend and backend) updated for the new request shape
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-005] Keep Copy and Download enabled while a result is stale
+
+- **type:** refactor
+- **id:** REFACTOR-005
+- **milestone:** v2
+- **status:** backlog
+- **priority:** high
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** REFACTOR-007
+- **learning:** [disabled-state UX for "may be outdated" vs "is invalid" data]
+- **labels:** [refactor, domain:frontend, priority:high, milestone:v2]
+
+#### Description
+
+Found by critique #7 (`.impeccable/critique/2026-08-21T15-56-57Z__hexarot-frontend-encode-decode-key-views.md`).
+All four stale result surfaces (Encode, Decode, Key generator, Key parser) disable
+their Copy and Download actions the moment any form field changes, on top of a result
+whose key hint explicitly says "Neither is stored anywhere - copy or download them
+now." A user who edits a typo after encoding loses the only way to save the artifact
+still on screen. Staleness means "this may not reflect your current form state," not
+"this is invalid" - the underlying result blob is still perfectly good.
+
+**Depends on REFACTOR-007**: today, disabling downloads while stale is the only thing
+preventing the live-bound `store.size` bug (see REFACTOR-007) from shipping a
+mismatched size into a downloaded filename. Re-enabling downloads before REFACTOR-007
+snapshots the size would turn a latent bug into an active one - do REFACTOR-007 first.
+
+#### Acceptance criteria
+
+- Copy and Download remain enabled (not `:disabled`) while a result is stale, on all
+  four surfaces
+- The stale notice still appears and still offers the re-submit action
+- Existing stale-state tests updated to assert the buttons stay enabled instead of
+  disabled
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-006] Stop destroying the previous result on a failed submit
+
+- **type:** refactor
+- **id:** REFACTOR-006
+- **milestone:** v2
+- **status:** ready
+- **priority:** high
+- **domain:** frontend
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [optimistic-clear vs preserve-until-success state transitions in Pinia]
+- **labels:** [refactor, domain:frontend, priority:high, milestone:v2]
+
+#### Description
+
+Found by critique #7 (`.impeccable/critique/2026-08-21T15-56-57Z__hexarot-frontend-encode-decode-key-views.md`),
+confirmed with DOM sampling at 40ms into a failing request. `stores/encode.ts`,
+`stores/decode.ts`, and `stores/key.ts` (both `generate()` and `parse()`) all null
+their result field the instant `status` flips to `loading`, before the request is
+even sent. A transient failure on a re-submit (typo, flaky network) destroys the
+previous successful, unrecoverable result - worst on the key generator, whose own
+hint says "This key is not stored anywhere. Copy it now."
+
+#### Acceptance criteria
+
+- On all four submit paths (encode, decode, key generate, key parse), the previous
+  result stays visible and intact while a new request is in flight and after a
+  failed request - only a *successful* response replaces it
+- The error message still displays (alongside or instead of the stale result, per
+  whatever layout REFACTOR-005's surrounding work settles on)
+- Existing "shows a loading indicator" / "sets status to error" tests updated to also
+  assert the previous result is still present
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-007] Snapshot the cryptogram size into the encode result
+
+- **type:** refactor
+- **id:** REFACTOR-007
+- **milestone:** v2
+- **status:** ready
+- **priority:** high
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [snapshotting request params into a result object vs reading live form state]
+- **labels:** [refactor, domain:frontend, priority:high, milestone:v2]
+
+#### Description
+
+Found by critique #7 (`.impeccable/critique/2026-08-21T15-56-57Z__hexarot-frontend-encode-decode-key-views.md`).
+`EncodeResultPanel.vue` renders `t(\`encode.form.size.\${store.size}\`)` and builds the
+download filename from `store.size` - both read the *live* form field, not a snapshot
+of the size that actually produced the displayed result. Verified live: encode at
+Small, change the size dropdown to Large without re-encoding, and the panel shows
+"Cryptogram size: Large" beside the Small key and cryptogram. The panel's own hint
+says the user needs both the key and the size to decode - displaying the wrong one
+next to a real key is the single highest-consequence bug found across all seven
+critique rounds.
+
+#### Acceptance criteria
+
+- `EncodeResult` (or the store's success state) carries the `size` that was actually
+  submitted with the request, separate from the live `store.size` form field
+- `EncodeResultPanel.vue`'s size label and `downloadFilename()` both read the
+  snapshotted value, never `store.size`
+- Regression test: encode at one size, change the size field without re-encoding,
+  assert the displayed size and any download filename still reflect the original size
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-008] Copy button includes the cryptogram size alongside the key
+
+- **type:** refactor
+- **id:** REFACTOR-008
+- **milestone:** v2
+- **status:** backlog
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** REFACTOR-007
+- **learning:** [clipboard payload design when a hint promises more than one value]
+- **labels:** [refactor, domain:frontend, priority:medium, milestone:v2]
+
+#### Description
+
+Found by critique #7 (`.impeccable/critique/2026-08-21T15-56-57Z__hexarot-frontend-encode-decode-key-views.md`).
+`EncodeResultPanel.vue`'s Copy button calls
+`navigator.clipboard.writeText(props.result.key)` - key only. The adjacent hint text
+says "You'll need both this key and the cryptogram size... copy or download them
+now." Clipboard is the dominant path for sharing a key; the button currently delivers
+only half of what its own copy promises. Depends on REFACTOR-007 so there is a
+snapshotted, trustworthy size value to copy.
+
+#### Acceptance criteria
+
+- Copy writes both the key and the size to the clipboard in one readable string
+  (e.g. `HR1·a3f9 · Large`)
+- The button label or the copied format makes clear both values are included
+- Existing copy tests updated to assert the size is present in the clipboard payload
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-009] Fix Encode form horizontal overflow on mobile
+
+- **type:** refactor
+- **id:** REFACTOR-009
+- **milestone:** v2
+- **status:** ready
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [fieldset min-inline-size default, box-sizing content-box vs border-box in a flex form]
+- **labels:** [refactor, domain:frontend, priority:medium, milestone:v2]
+
+#### Description
+
+Found by critique #7 (`.impeccable/critique/2026-08-21T15-56-57Z__hexarot-frontend-encode-decode-key-views.md`),
+root-caused and fix verified live. At a real 360px viewport, Encode overflows the
+page horizontally by 112px; Key and Decode do not. Cause: `.encode-params-form__group`
+is a `<fieldset>` with computed `min-inline-size: min-content` (the UA default, which
+ordinary width rules can't override) and `box-sizing: content-box`, so it refuses to
+shrink below its widest child - the reading-order `<select>`, 407px wide. Key has no
+fieldset wrapper and already uses `border-box`, which is exactly why it's already
+clean. Injecting `min-inline-size: 0; box-sizing: border-box` on the fieldset dropped
+the overflow from 112px to 0px in live testing.
+
+#### Acceptance criteria
+
+- `frontend/src/components/EncodeParamsForm.vue`'s fieldset(s) get
+  `min-inline-size: 0` and `box-sizing: border-box`
+- At a 360px viewport, `#app.scrollWidth === #app.clientWidth` (no horizontal
+  overflow) on `/encode`
+- No visual regression on desktop widths (≥900px) where the two-column layout applies
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-010] Stop the "Out of date" badge from overlapping cryptogram cells
+
+- **type:** refactor
+- **id:** REFACTOR-010
+- **milestone:** v2
+- **status:** ready
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [positioning a status badge relative to a fluid-width image without occluding its content]
+- **labels:** [refactor, domain:frontend, priority:medium, milestone:v2]
+
+#### Description
+
+Found by critique #6 and re-measured by critique #7
+(`.impeccable/critique/2026-08-21T15-56-57Z__hexarot-frontend-encode-decode-key-views.md`).
+`.encode-result-panel__stale-badge` is `position: absolute; top: 8px; right: 8px`
+inside a preview box whose padding shrinks below the SVG's own footprint at narrow
+widths. Measured at 360px: 2 of 36 cryptogram cells overlapped (24-38% of their
+area), and the badge's translucent background measurably tints the colors underneath
+(8-10 point RGB shift). This directly contradicts the component's own design
+rationale (`EncodeResultPanel.vue`'s comment on why the preview isn't dimmed when
+stale) - the cryptogram's cell colors are the message, and the badge is currently
+allowed to sit on top of them.
+
+#### Acceptance criteria
+
+- The stale badge never visually overlaps the rendered cryptogram cells, at any
+  preview width down to the smallest supported viewport
+- Verified at both a wide (≥900px) and narrow (~360px) viewport
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-011] Make the decoded-message scroll container keyboard-reachable
+
+- **type:** refactor
+- **id:** REFACTOR-011
+- **milestone:** v2
+- **status:** ready
+- **priority:** low
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [WCAG 2.1.1 keyboard-operability for a scrollable overflow region]
+- **labels:** [refactor, domain:frontend, priority:low, milestone:v2]
+
+#### Description
+
+Found by critique #7 (`.impeccable/critique/2026-08-21T15-56-57Z__hexarot-frontend-encode-decode-key-views.md`) -
+a regression introduced by critique #6's decode-readability fix. `.decode-view__result`
+has `overflow-y: auto` (needed for long messages) but no `tabindex`, `role`, or
+`aria-label`, so it's not part of the keyboard tab order. Verified live: with a
+7200-character decoded message, a keyboard-only user can reach the first ~260px
+(scrollHeight 3836 vs clientHeight 260) and no more - roughly 7% of the content.
+
+#### Acceptance criteria
+
+- `.decode-view__result` (or its scrollable wrapper) is keyboard-focusable
+  (`tabindex="0"`) and scrollable via arrow keys once focused
+- Has an `aria-label` identifying it as the decoded message
+- Manually verified with keyboard-only navigation that the full message is reachable
+<!-- ITEM:END -->

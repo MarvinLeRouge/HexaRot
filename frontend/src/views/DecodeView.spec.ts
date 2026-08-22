@@ -180,6 +180,20 @@ describe('DecodeView', () => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(MOCK_DECODE_RESPONSE.message)
       expect(wrapper.find('.decode-view__result-card button').text()).toBe(en.decode.result.copied)
     })
+
+    it('makes the decoded message keyboard-focusable and labelled, so long messages remain reachable', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+      const wrapper = mountView()
+      await selectFile(wrapper, MOCK_PNG_FILE)
+      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+      await wrapper.find('form').trigger('submit')
+      await vi.waitFor(() => expect(wrapper.find('.decode-view__result').exists()).toBe(true))
+      await flushPromises()
+
+      const result = wrapper.find('.decode-view__result')
+      expect(result.attributes('tabindex')).toBe('0')
+      expect(result.attributes('aria-label')).toBe(en.decode.result.label)
+    })
   })
 
   describe('stale result', () => {

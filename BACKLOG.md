@@ -1914,7 +1914,7 @@ allowed to sit on top of them.
 - **type:** refactor
 - **id:** REFACTOR-011
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** low
 - **domain:** frontend
 - **complexity:** S

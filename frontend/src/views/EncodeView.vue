@@ -50,7 +50,7 @@ onUnmounted(() => {
           {{ store.errorMessage ? t('encode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
         </p>
         <div
-          v-if="store.status === 'loading'"
+          v-if="store.status === 'loading' && !store.result"
           class="encode-view__output-loading"
           aria-hidden="true"
         >
@@ -58,7 +58,7 @@ onUnmounted(() => {
           <div class="encode-view__skeleton-block encode-view__skeleton-block--key" />
         </div>
         <EncodeResultPanel
-          v-if="store.status === 'success' && store.result"
+          v-if="store.result"
           ref="resultRef"
           :result="store.result"
           :stale="store.resultStale"

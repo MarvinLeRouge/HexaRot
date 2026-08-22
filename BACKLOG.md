@@ -1737,7 +1737,7 @@ snapshots the size would turn a latent bug into an active one - do REFACTOR-007 
 - **type:** refactor
 - **id:** REFACTOR-006
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** frontend
 - **complexity:** M

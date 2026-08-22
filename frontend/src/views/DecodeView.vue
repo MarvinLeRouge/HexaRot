@@ -66,14 +66,14 @@ onUnmounted(() => {
           {{ store.errorMessage ? t('decode.form.error.prefix', { detail: store.errorMessage }) : t(`errors.${store.errorCode}`) }}
         </p>
         <div
-          v-if="store.status === 'loading'"
+          v-if="store.status === 'loading' && !store.result"
           class="decode-view__output-loading"
           aria-hidden="true"
         >
           <div class="decode-view__skeleton-block" />
         </div>
         <div
-          v-if="store.status === 'success' && store.result"
+          v-if="store.result"
           ref="resultRef"
           class="decode-view__result-region"
           role="region"

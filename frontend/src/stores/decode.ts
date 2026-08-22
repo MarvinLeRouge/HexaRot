@@ -62,10 +62,11 @@ export const useDecodeStore = defineStore('decode', {
       if (!file) return
 
       this.status = 'loading'
-      this.result = null
-      this.resultStale = false
       this.errorMessage = null
       this.errorCode = null
+      // `result` and `resultStale` are deliberately left untouched here: a
+      // failed submit should not destroy a previous successful result. Only
+      // a successful response replaces it, below.
 
       try {
         const format = detectFormat(file)
@@ -78,6 +79,7 @@ export const useDecodeStore = defineStore('decode', {
           size: this.size,
         })
         this.result = response.message
+        this.resultStale = false
         this.status = 'success'
       } catch (err) {
         if (err instanceof ApiError && err.code === 'http') {

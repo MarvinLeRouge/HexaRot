@@ -103,7 +103,7 @@ describe('useEncodeStore', () => {
     expect(store.errorMessage).toBeNull()
   })
 
-  it('clears the previous result when a new submit is dispatched', async () => {
+  it('keeps the previous result visible while a new submit is in flight', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
     const store = useEncodeStore()
     await store.submit()
@@ -112,7 +112,21 @@ describe('useEncodeStore', () => {
     vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
     void store.submit()
 
-    expect(store.result).toBeNull()
+    expect(store.result).toEqual(MOCK_ENCODE_RESPONSE)
+    expect(store.status).toBe('loading')
+  })
+
+  it('keeps the previous result when a new submit fails', async () => {
+    vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+    const store = useEncodeStore()
+    await store.submit()
+    expect(store.result).toEqual(MOCK_ENCODE_RESPONSE)
+
+    vi.mocked(postJson).mockRejectedValue(new ApiError('invalid parameters', 'http', 400))
+    await store.submit()
+
+    expect(store.result).toEqual(MOCK_ENCODE_RESPONSE)
+    expect(store.status).toBe('error')
   })
 
   it('restores default state when reset is called', async () => {

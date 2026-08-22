@@ -1602,7 +1602,7 @@ before writing the fix.
 - **type:** chore
 - **id:** CHORE-009
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** low
 - **domain:** backend
 - **complexity:** M
@@ -1641,6 +1641,40 @@ spike before committing to either:
   domain and needs its own test plan
 - If direction 2 is chosen: confirms whether it works for both PNG and SVG uploads,
   or documents why it's PNG-only
+
+#### Recommendation (resolved 2026-08-22)
+
+**Direction 1 - pack the size into the key.** This item's original framing turned out
+to overstate the cost: it does **not** require a breaking version bump.
+
+`KeyCodec`'s V1 payload is 4 base36 characters (`backend/src/key/key-codec.ts:31-102`),
+representing up to `36^4 - 1 = 1,679,615` (21 bits' worth of range). The currently
+assigned fields only use bits 0-16 (17 bits): `pivotBlockSize` (0-7), `readingOrderIndex`
+(8-10), `rotationDirection` (bit 11), `rotationSequenceIndex` (12-16). Bits 17-20 (4 bits)
+are unused. `size` is the same 3-value enum (`small`/`medium`/`large`) used everywhere
+else in the app - not a numeric magnitude - so it needs an *index* into 3 values, which
+fits in 2 bits (0-3, one value spare) at bits 17-18. The resulting max payload value is
+`2^19 - 1 = 524,287`, comfortably under the 4-character format's `1,679,615` ceiling.
+**No payload-length change, no version bump, no new versioning story required** - this
+is a backward-compatible additive extension of the existing V1 format, the same way
+`rotationDirection` fits in 1 bit for 2 values and `readingOrderIndex` fits in 3 bits
+for 8 values.
+
+Direction 2 (infer size from image pixel dimensions) was ruled out. Both renderers
+compute `dimensions_px = gridCells(messageLength, pivotBlockSize, symbolWidth/Height) *
+casePixels(size)` (`backend/src/renderer/palette.ts:21-26`, `build-grid.ts:28-88`,
+`png-renderer.ts:32-34`, `svg-renderer.ts:28-30,44`). Grid cell counts vary with message
+length and `pivotBlockSize`, so the same `size` yields different pixel dimensions across
+messages, and different `size` values can coincidentally produce identical pixel
+dimensions (the 8:16:32 px/cell ratios are 1:2:4, so e.g. `large` on a small grid equals
+`small` on a 4x-larger grid). This ambiguity is already acknowledged in the codebase:
+`DecodeRequestDto.size` is a required field (unlike Encode's optional one), and
+`png-parser.ts`'s own doc comment notes the parser cannot structurally distinguish
+some `casePixels` values from image content alone. SVG's `viewBox` uses the same
+scaled-pixel space as PNG, not an independent abstract unit, so it doesn't help either.
+
+**Follow-up item opened: FEAT-022** (KeyCodec size field), scoped separately per this
+item's acceptance criteria.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
@@ -1938,4 +1972,72 @@ has `overflow-y: auto` (needed for long messages) but no `tabindex`, `role`, or
   (`tabindex="0"`) and scrollable via arrow keys once focused
 - Has an `aria-label` identifying it as the decoded message
 - Manually verified with keyboard-only navigation that the full message is reachable
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-022] Pack the cryptogram size into the key (KeyCodec)
+
+- **type:** feat
+- **id:** FEAT-022
+- **milestone:** v2
+- **status:** ready
+- **priority:** medium
+- **domain:** backend
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** CHORE-009
+- **learning:** [KeyCodec bit-packing, backward-compatible payload extension, key/size round-trip]
+- **labels:** [feat, domain:backend, priority:medium, milestone:v2]
+
+#### Description
+
+Implements the direction chosen by CHORE-009's investigation: bind the cryptogram
+size to the key itself, closing the original UX gap where decode requires the user
+to independently recall which size was used at encode time.
+
+`KeyCodec`'s V1 payload (`backend/src/key/key-codec.ts`) currently packs
+`pivotBlockSize` (bits 0-7), `readingOrderIndex` (8-10), `rotationDirection` (bit 11),
+and `rotationSequenceIndex` (12-16) into a 4-character base36 string. Add a 2-bit
+`sizeIndex` field at bits 17-18 (`small=0`, `medium=1`, `large=2`; value `3` reserved -
+`decode()` should reject it the same way an out-of-range rotation sequence index is
+rejected today). This stays within the format's existing 4-character budget - no
+version bump, no length change (see CHORE-009's recommendation for the bit-budget
+math).
+
+**Touchpoints to update:**
+- `KeyParams` interface gains a required `size: CaseSize` field; `pack()`/`unpack()`
+  extended accordingly.
+- `KeyService.generate()` and the `KeyGenerateRequestDto` need a `size` input (default
+  `'medium'`, matching Encode's own default).
+- `KeyService.parse()`'s `KeyParseResult` gains `size` in its response.
+- `EncodeService.encode()`: when generating a new key (params mode), the key must now
+  embed the *actual* `size` used for that encode request, not a default.
+
+**Open design question for the implementer to resolve** (not decided by this item):
+when Encode's "existing key" mode is used, the request also carries its own separate
+`size` field - should the key's embedded size take precedence, must the two match
+(validation error on mismatch), or does the explicit request field simply override
+what's in the key? Pick one and document the reasoning; there's no clearly-correct
+default here without seeing how the frontend wants to present it.
+
+Frontend UX changes (e.g. auto-filling Decode's size field once a key is parsed) are
+explicitly **out of scope** for this item - keep this backend/key-format change
+separate from any frontend work, per the project's established preference for not
+mixing domains in one item. Open a separate frontend follow-up once this lands, if
+that UX improvement is still wanted.
+
+#### Acceptance criteria
+
+- `KeyCodec.encode()`/`decode()` round-trip `size` losslessly alongside the existing
+  four fields, verified for all three size values
+- Existing key strings generated before this change still decode without throwing
+  (backward compatible - bits 17-18 read as `0`/`small` for old keys, which is an
+  acceptable, non-breaking default since no prior key ever encoded real size
+  information)
+- `decode()` rejects a key whose `sizeIndex` unpacks to the reserved value `3`
+- `POST /key/generate` and `POST /key/parse` both round-trip `size` through their
+  request/response shapes
+- `POST /encode` embeds the actual requested `size` into any key it generates
+- Unit tests for the bit-packing (mirroring the existing `rotationSequenceIndex`/
+  `readingOrderIndex` test coverage) plus e2e coverage for the two updated endpoints
 <!-- ITEM:END -->

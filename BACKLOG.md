@@ -1843,7 +1843,7 @@ snapshotted, trustworthy size value to copy.
 - **type:** refactor
 - **id:** REFACTOR-009
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** S

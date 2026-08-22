@@ -99,7 +99,11 @@ onUnmounted(() => {
             :class="{ 'decode-view__result-card--stale': store.resultStale }"
           >
             <span class="decode-view__result-label">{{ t('decode.result.label') }}</span>
-            <p class="decode-view__result">
+            <p
+              class="decode-view__result"
+              tabindex="0"
+              :aria-label="t('decode.result.label')"
+            >
               {{ store.result }}
             </p>
             <button

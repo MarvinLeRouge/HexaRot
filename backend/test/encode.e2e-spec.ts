@@ -11,6 +11,15 @@ import {
   MALFORMED_KEY_STRINGS,
 } from './fixtures/api.fixtures';
 
+/** Reads width/height from a base64 PNG's IHDR chunk (bytes 16-23). */
+function pngDimensions(base64Png: string): { width: number; height: number } {
+  const buffer = Buffer.from(base64Png, 'base64');
+  return {
+    width: buffer.readUInt32BE(16),
+    height: buffer.readUInt32BE(20),
+  };
+}
+
 describe('POST /api/encode (e2e)', () => {
   let app: INestApplication;
 
@@ -118,6 +127,51 @@ describe('POST /api/encode (e2e)', () => {
         expect(res.status).toBe(200);
       },
     );
+
+    it('embeds the requested size into a newly generated key', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({ ...VALID_ENCODE_BODY, size: 'large' });
+
+      expect(res.status).toBe(200);
+      const body = res.body as EncodeResult;
+
+      const parseRes = await request(app.getHttpServer())
+        .post('/api/key/parse')
+        .send({ key: body.key });
+      expect(parseRes.status).toBe(200);
+      expect((parseRes.body as { size: string }).size).toBe('large');
+    });
+
+    it('renders at the key\'s own embedded size, ignoring a differing request size', async () => {
+      // VALID_KEY_STRING embeds size 'medium' - so requesting 'large'
+      // alongside it must still render at 'medium', matching a direct
+      // 'medium' params-mode request. Grid padding is randomised per call,
+      // so compare PNG pixel dimensions (IHDR), not raw byte length.
+      const withKeyRes = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({ ...VALID_ENCODE_BODY_WITH_KEY, size: 'large' });
+      const withMediumParamsRes = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({ ...VALID_ENCODE_BODY, size: 'medium' });
+      const withLargeParamsRes = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({ ...VALID_ENCODE_BODY, size: 'large' });
+
+      expect(withKeyRes.status).toBe(200);
+      expect(withMediumParamsRes.status).toBe(200);
+      expect(withLargeParamsRes.status).toBe(200);
+      const withKeyBody = withKeyRes.body as EncodeResult;
+      const withMediumParamsBody = withMediumParamsRes.body as EncodeResult;
+      const withLargeParamsBody = withLargeParamsRes.body as EncodeResult;
+
+      expect(pngDimensions(withKeyBody.png)).toEqual(
+        pngDimensions(withMediumParamsBody.png),
+      );
+      expect(pngDimensions(withKeyBody.png)).not.toEqual(
+        pngDimensions(withLargeParamsBody.png),
+      );
+    });
   });
 
   describe('weakness warning', () => {

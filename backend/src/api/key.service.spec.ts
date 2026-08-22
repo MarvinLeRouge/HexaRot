@@ -65,6 +65,21 @@ describe('KeyService', () => {
       const dto = { rotationSequence: [0, 0, 1, 2] } as KeyGenerateRequestDto;
       expect(() => service.generate(dto)).toThrow(BadRequestException);
     });
+
+    it('defaults to size "medium" when no body is provided', () => {
+      const result = service.generate({} as KeyGenerateRequestDto);
+      const decoded = KeyCodec.decode(result.key);
+      expect(decoded.size).toBe('medium');
+    });
+
+    it.each(['small', 'medium', 'large'] as const)(
+      'embeds the requested size %s into the generated key',
+      (size) => {
+        const result = service.generate({ size } as KeyGenerateRequestDto);
+        const decoded = KeyCodec.decode(result.key);
+        expect(decoded.size).toBe(size);
+      },
+    );
   });
 
   describe('parse', () => {
@@ -75,12 +90,14 @@ describe('KeyService', () => {
         rotationSequence: [0, 1, 2, 3],
         rotationDirection: 'cw',
         readingOrder: 'LR-TB',
+        size: 'large',
       });
       const result = service.parse(key);
       expect(result.pivotBlockSize).toBe(5);
       expect(result.rotationSequence).toEqual([0, 90, 180, 270]);
       expect(result.rotationDirection).toBe('cw');
       expect(result.readingOrder).toBe('LR-TB');
+      expect(result.size).toBe('large');
     });
 
     it('returns the correct rotationSequence as an array of angles for a non-identity sequence', () => {
@@ -90,6 +107,7 @@ describe('KeyService', () => {
         rotationSequence: [3, 1, 0, 2],
         rotationDirection: 'cw',
         readingOrder: 'LR-TB',
+        size: 'medium',
       });
       const result = service.parse(key);
       expect(result.rotationSequence).toEqual([270, 90, 0, 180]);

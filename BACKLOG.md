@@ -1980,7 +1980,7 @@ has `overflow-y: auto` (needed for long messages) but no `tabindex`, `role`, or
 - **type:** feat
 - **id:** FEAT-022
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** backend
 - **complexity:** M
@@ -2040,4 +2040,21 @@ that UX improvement is still wanted.
 - `POST /encode` embeds the actual requested `size` into any key it generates
 - Unit tests for the bit-packing (mirroring the existing `rotationSequenceIndex`/
   `readingOrderIndex` test coverage) plus e2e coverage for the two updated endpoints
+
+#### Resolution (2026-08-22)
+
+Open design question resolved: **the key is authoritative**. When `POST /encode`
+is called in "existing key" mode, the key's own embedded `size` is always used for
+rendering, and a differing `dto.size` in the same request body is silently ignored -
+consistent with how `pivotBlockSize`/`rotationSequence`/`rotationDirection`/
+`readingOrder` already behave in that mode. This keeps a key fully self-sufficient:
+it never describes a cryptogram rendered at a different size than what it says.
+The cost is that Encode's frontend size selector becomes silently ineffective in
+key-mode until a frontend follow-up surfaces this (not part of this item's scope).
+
+Implemented in `backend/src/key/key-codec.ts` (`sizeIndex` at bits 17-18, no
+version bump needed), `backend/src/api/key.service.ts`,
+`backend/src/api/dto/key-generate-request.dto.ts`, and
+`backend/src/api/encode.service.ts`. `DecodeService`/`DecodeRequestDto` needed no
+changes (out of scope, doesn't construct `KeyParams` literals).
 <!-- ITEM:END -->

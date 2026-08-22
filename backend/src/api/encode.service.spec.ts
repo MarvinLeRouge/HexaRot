@@ -58,6 +58,23 @@ describe('EncodeService', () => {
       expect(decoded.readingOrder).toBe('LR-TB');
     });
 
+    it('embeds the actual requested size into a newly generated key', async () => {
+      const service = makeService();
+      const result = await service.encode({
+        ...VALID_PARAMS_DTO,
+        size: 'large',
+      });
+      const decoded = KeyCodec.decode(result.key);
+      expect(decoded.size).toBe('large');
+    });
+
+    it('defaults a newly generated key to size "medium" when size is omitted', async () => {
+      const service = makeService();
+      const result = await service.encode(VALID_PARAMS_DTO);
+      const decoded = KeyCodec.decode(result.key);
+      expect(decoded.size).toBe('medium');
+    });
+
     it('uses the provided key and ignores individual params when key is present', async () => {
       const service = makeService();
       const key = KeyCodec.encode({
@@ -66,11 +83,34 @@ describe('EncodeService', () => {
         rotationSequence: [3, 2, 1, 0],
         rotationDirection: 'ccw',
         readingOrder: 'RL-TB',
+        size: 'large',
       });
       const dto = { message: 'ABC', key } as EncodeRequestDto;
 
       const result = await service.encode(dto);
       expect(result.key).toBe(key);
+    });
+
+    it("renders at the key's own embedded size in key mode, ignoring a differing dto.size", async () => {
+      const service = makeService();
+      const key = KeyCodec.encode({
+        version: 1,
+        pivotBlockSize: 5,
+        rotationSequence: [0, 1, 2, 3],
+        rotationDirection: 'cw',
+        readingOrder: 'LR-TB',
+        size: 'large',
+      });
+      const renderSpy = jest.spyOn(PngRenderer.prototype, 'render');
+
+      await service.encode({
+        message: 'ABC',
+        key,
+        size: 'small',
+      } as EncodeRequestDto);
+
+      expect(renderSpy).toHaveBeenCalledWith(expect.anything(), 'large');
+      renderSpy.mockRestore();
     });
 
     it.each(['small', 'medium', 'large'] as const)(

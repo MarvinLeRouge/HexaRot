@@ -8,6 +8,7 @@ const DEFAULT_ROTATION_SEQUENCE: RotationSequence = Object.freeze([
 ]) as unknown as RotationSequence;
 const DEFAULT_ROTATION_DIRECTION: 'cw' | 'ccw' = 'cw';
 const DEFAULT_READING_ORDER: KeyParams['readingOrder'] = 'LR-TB';
+const DEFAULT_SIZE: KeyParams['size'] = 'medium';
 
 /** Response shape for POST /key/parse. */
 export interface KeyParseResult {
@@ -20,6 +21,7 @@ export interface KeyParseResult {
   rotationSequence: number[];
   rotationDirection: 'cw' | 'ccw';
   readingOrder: KeyParams['readingOrder'];
+  size: KeyParams['size'];
 }
 
 @Injectable()
@@ -34,6 +36,7 @@ export class KeyService {
       readingOrder:
         (dto.readingOrder as KeyParams['readingOrder']) ??
         DEFAULT_READING_ORDER,
+      size: dto.size ?? DEFAULT_SIZE,
     };
 
     try {
@@ -56,6 +59,7 @@ export class KeyService {
       rotationSequence: keyParams.rotationSequence.map((index) => index * 90),
       rotationDirection: keyParams.rotationDirection,
       readingOrder: keyParams.readingOrder,
+      size: keyParams.size,
     };
   }
 }

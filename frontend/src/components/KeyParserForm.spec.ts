@@ -135,4 +135,23 @@ describe('KeyParserForm', () => {
       expect(wrapper.find('.key-parser-form__stale-notice').exists()).toBe(false)
     })
   })
+
+  describe('failed re-parse', () => {
+    it('keeps the previous parsed parameters visible when a re-parse fails', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
+      const wrapper = mountForm()
+      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(wrapper.text()).toContain(String(MOCK_KEY_PARSE_RESPONSE.pivotBlockSize))
+
+      vi.mocked(postJson).mockRejectedValue(new ApiError('unsupported key version', 'http', 400))
+      await wrapper.find('input[type="text"]').setValue('HR9·zzzz')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(wrapper.text()).toContain(String(MOCK_KEY_PARSE_RESPONSE.pivotBlockSize))
+      expect(wrapper.text()).toContain('unsupported key version')
+    })
+  })
 })

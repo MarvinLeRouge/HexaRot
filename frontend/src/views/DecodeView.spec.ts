@@ -210,9 +210,10 @@ describe('DecodeView', () => {
       expect(wrapper.find('.decode-view__stale-notice').exists()).toBe(true)
 
       await wrapper.find('.decode-view__stale-notice button').trigger('click')
-      await flushPromises()
 
-      expect(wrapper.find('.decode-view__stale-notice').exists()).toBe(false)
+      // FileReader resolves via a browser task, not a microtask, so a single
+      // flushPromises() tick is not guaranteed to be enough - poll instead.
+      await vi.waitFor(() => expect(wrapper.find('.decode-view__stale-notice').exists()).toBe(false))
     })
 
     it('disables Copy while the decoded message is stale', async () => {

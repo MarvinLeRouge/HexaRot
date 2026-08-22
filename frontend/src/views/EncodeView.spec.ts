@@ -323,7 +323,7 @@ describe('EncodeView', () => {
       expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
     })
 
-    it('clears the previous result when a new submission is made', async () => {
+    it('keeps the previous result visible while a new submission is in flight', async () => {
       vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
       const wrapper = mountView()
       await wrapper.find('textarea').setValue('hello world')
@@ -334,7 +334,24 @@ describe('EncodeView', () => {
       vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
       await wrapper.find('form').trigger('submit')
 
-      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(false)
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(true)
+      expect(wrapper.find('.encode-view__output-loading').exists()).toBe(false)
+    })
+
+    it('keeps the previous result visible when a new submission fails', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(true)
+
+      vi.mocked(postJson).mockRejectedValue(new ApiError('message must not be empty', 'http', 400))
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(wrapper.find('.encode-result-panel__svg').exists()).toBe(true)
+      expect(wrapper.find('.encode-view__error').exists()).toBe(true)
     })
   })
 

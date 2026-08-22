@@ -128,7 +128,7 @@ describe('useDecodeStore', () => {
     expect(store.errorMessage).toBeNull()
   })
 
-  it('clears the previous result when a new submit is dispatched', async () => {
+  it('keeps the previous result while a new submit is in flight', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
     const store = useDecodeStore()
     store.file = MOCK_PNG_FILE
@@ -139,7 +139,23 @@ describe('useDecodeStore', () => {
     vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
     void store.submit()
 
-    expect(store.result).toBeNull()
+    expect(store.result).toBe(MOCK_DECODE_RESPONSE.message)
+    expect(store.status).toBe('loading')
+  })
+
+  it('keeps the previous result when a new submit fails', async () => {
+    vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+    const store = useDecodeStore()
+    store.file = MOCK_PNG_FILE
+    store.keyInput = 'HR1·a1b2'
+    await store.submit()
+    expect(store.result).toBe(MOCK_DECODE_RESPONSE.message)
+
+    vi.mocked(postJson).mockRejectedValue(new ApiError('key does not match', 'http', 400))
+    await store.submit()
+
+    expect(store.result).toBe(MOCK_DECODE_RESPONSE.message)
+    expect(store.status).toBe('error')
   })
 
   it('sets errorCode to unknown and status to error when the file cannot be read', async () => {

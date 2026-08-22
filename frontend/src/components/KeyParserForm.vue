@@ -89,7 +89,7 @@ watch(
     </p>
 
     <div
-      v-if="store.parseStatus === 'success' && store.parsedParams"
+      v-if="store.parsedParams"
       ref="resultRef"
       class="key-parser-form__result-region"
       role="region"

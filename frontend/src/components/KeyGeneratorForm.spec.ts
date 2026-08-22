@@ -164,4 +164,21 @@ describe('KeyGeneratorForm', () => {
       expect(wrapper.find('.key-generator-form__stale-notice').exists()).toBe(false)
     })
   })
+
+  describe('failed re-generate', () => {
+    it('keeps the previous generated key visible when a re-generate fails', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
+      const wrapper = mountForm()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+      expect(wrapper.text()).toContain(MOCK_KEY_GENERATE_RESPONSE.key)
+
+      vi.mocked(postJson).mockRejectedValue(new ApiError('invalid parameters', 'http', 400))
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(wrapper.text()).toContain(MOCK_KEY_GENERATE_RESPONSE.key)
+      expect(wrapper.find('.key-generator-form__error').exists()).toBe(true)
+    })
+  })
 })

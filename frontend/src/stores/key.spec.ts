@@ -106,11 +106,11 @@ describe('useKeyStore', () => {
     expect(store.generateErrorMessage).toBeNull()
   })
 
-  it('clears the previous generated key when a new generate is dispatched, without touching parse state', async () => {
+  it('keeps the previous generated key while a new generate is in flight, without touching parse state', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
-    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     const store = useKeyStore()
     await store.generate()
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
     store.keyInput = 'HR1·a1b2'
     await store.parse()
     expect(store.parsedParams).toEqual(MOCK_KEY_PARSE_RESPONSE)
@@ -118,7 +118,8 @@ describe('useKeyStore', () => {
     vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
     void store.generate()
 
-    expect(store.generatedKey).toBeNull()
+    expect(store.generatedKey).toBe(MOCK_KEY_GENERATE_RESPONSE.key)
+    expect(store.generateStatus).toBe('loading')
     expect(store.parsedParams).toEqual(MOCK_KEY_PARSE_RESPONSE)
   })
 
@@ -200,19 +201,20 @@ describe('useKeyStore', () => {
     expect(store.parseErrorMessage).toBeNull()
   })
 
-  it('clears the previous parsed params when a new parse is dispatched, without touching generate state', async () => {
+  it('keeps the previous parsed params while a new parse is in flight, without touching generate state', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_KEY_PARSE_RESPONSE)
-    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
     const store = useKeyStore()
     store.keyInput = 'HR1·a1b2'
     await store.parse()
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
     await store.generate()
     expect(store.generatedKey).toBe(MOCK_KEY_GENERATE_RESPONSE.key)
 
     vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
     void store.parse()
 
-    expect(store.parsedParams).toBeNull()
+    expect(store.parsedParams).toEqual(MOCK_KEY_PARSE_RESPONSE)
+    expect(store.parseStatus).toBe('loading')
     expect(store.generatedKey).toBe(MOCK_KEY_GENERATE_RESPONSE.key)
   })
 

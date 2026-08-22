@@ -59,10 +59,12 @@ export const useKeyStore = defineStore('key', {
   actions: {
     async generate(): Promise<void> {
       this.generateStatus = 'loading'
-      this.generatedKey = null
-      this.generatedKeyStale = false
       this.generateErrorMessage = null
       this.generateErrorCode = null
+      // `generatedKey` and `generatedKeyStale` are deliberately left
+      // untouched here: a failed generate should not destroy a previous
+      // successful, unrecoverable key. Only a successful response replaces
+      // it, below.
 
       try {
         const response = await postJson<{ key: string }>('/key/generate', {
@@ -72,6 +74,7 @@ export const useKeyStore = defineStore('key', {
           readingOrder: this.readingOrder,
         })
         this.generatedKey = response.key
+        this.generatedKeyStale = false
         this.generateStatus = 'success'
       } catch (err) {
         if (err instanceof ApiError && err.code === 'http') {
@@ -88,13 +91,15 @@ export const useKeyStore = defineStore('key', {
     },
     async parse(): Promise<void> {
       this.parseStatus = 'loading'
-      this.parsedParams = null
-      this.parsedParamsStale = false
       this.parseErrorMessage = null
       this.parseErrorCode = null
+      // `parsedParams` and `parsedParamsStale` are deliberately left
+      // untouched here: a failed parse should not destroy a previous
+      // successful result. Only a successful response replaces it, below.
 
       try {
         this.parsedParams = await postJson<KeyParseResult>('/key/parse', { key: normalizeKeyInput(this.keyInput) })
+        this.parsedParamsStale = false
         this.parseStatus = 'success'
       } catch (err) {
         if (err instanceof ApiError && err.code === 'http') {

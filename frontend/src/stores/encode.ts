@@ -69,10 +69,11 @@ export const useEncodeStore = defineStore('encode', {
   actions: {
     async submit(): Promise<void> {
       this.status = 'loading'
-      this.result = null
-      this.resultStale = false
       this.errorMessage = null
       this.errorCode = null
+      // `result` and `resultStale` are deliberately left untouched here: a
+      // failed submit should not destroy a previous successful, unrecoverable
+      // result. Only a successful response replaces it, below.
 
       const payload =
         this.mode === 'key'
@@ -95,6 +96,7 @@ export const useEncodeStore = defineStore('encode', {
       try {
         const response = await postJson<EncodeApiResult>('/encode', payload)
         this.result = { ...response, size: this.size }
+        this.resultStale = false
         this.status = 'success'
       } catch (err) {
         if (err instanceof ApiError && err.code === 'http') {

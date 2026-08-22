@@ -124,7 +124,7 @@ async function copyKey(): Promise<void> {
     </p>
 
     <div
-      v-if="store.generateStatus === 'success' && store.generatedKey"
+      v-if="store.generatedKey"
       ref="resultRef"
       class="key-generator-form__result"
       role="region"

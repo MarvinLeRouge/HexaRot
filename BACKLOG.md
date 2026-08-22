@@ -1879,7 +1879,7 @@ the overflow from 112px to 0px in live testing.
 - **type:** refactor
 - **id:** REFACTOR-010
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** S

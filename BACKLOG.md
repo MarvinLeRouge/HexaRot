@@ -1810,7 +1810,7 @@ critique rounds.
 - **type:** refactor
 - **id:** REFACTOR-008
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** S

@@ -50,15 +50,28 @@ describe('EncodeResultPanel', () => {
   })
 
   describe('copy to clipboard', () => {
-    it('copies the key and shows "Copied!" on success', async () => {
+    it('copies the key and size together, and shows "Copied!" on success', async () => {
       Object.assign(navigator, { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } })
       const wrapper = mountPanel()
 
       await wrapper.find('.encode-result-panel__key button').trigger('click')
       await flushPromises()
 
-      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(MOCK_ENCODE_RESPONSE.key)
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(`${MOCK_ENCODE_RESPONSE.key} · ${en.encode.form.size.medium}`)
       expect(wrapper.find('.encode-result-panel__key button').text()).toBe(en.encode.result.copied)
+    })
+
+    it('copies the snapshotted result size, not the live form field', async () => {
+      Object.assign(navigator, { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } })
+      const wrapper = mountPanel({ result: { ...MOCK_ENCODE_RESPONSE, size: 'large' } })
+      const store = useEncodeStore()
+      store.size = 'small'
+      await flushPromises()
+
+      await wrapper.find('.encode-result-panel__key button').trigger('click')
+      await flushPromises()
+
+      expect(navigator.clipboard.writeText).toHaveBeenCalledWith(`${MOCK_ENCODE_RESPONSE.key} · ${en.encode.form.size.large}`)
     })
 
     it('shows "Copy failed" when the clipboard write rejects', async () => {

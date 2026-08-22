@@ -45,6 +45,7 @@ export class EncodeService {
         rotationSequence: dto.rotationSequence as RotationSequence,
         rotationDirection: dto.rotationDirection as 'cw' | 'ccw',
         readingOrder: dto.readingOrder as KeyParams['readingOrder'],
+        size: dto.size ?? 'medium',
       };
       try {
         key = KeyCodec.encode(keyParams);
@@ -70,9 +71,16 @@ export class EncodeService {
       keyParams.readingOrder,
     );
 
-    const size = dto.size ?? 'medium';
-    const pngBuffer = await this.pngRenderer.render(rotatedGrid, size);
-    const svgString = this.svgRenderer.render(rotatedGrid, size);
+    // Always render at the key's own size - keyParams.size is either the
+    // caller's requested size (params mode, embedded into the new key) or
+    // whatever the provided key already encodes (key mode). This keeps the
+    // key authoritative: it never describes a cryptogram rendered at a
+    // different size than what it says.
+    const pngBuffer = await this.pngRenderer.render(
+      rotatedGrid,
+      keyParams.size,
+    );
+    const svgString = this.svgRenderer.render(rotatedGrid, keyParams.size);
 
     return {
       png: pngBuffer.toString('base64'),

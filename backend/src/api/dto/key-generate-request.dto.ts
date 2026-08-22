@@ -44,4 +44,8 @@ export class KeyGenerateRequestDto {
   @IsOptional()
   @IsIn(READING_ORDERS)
   readingOrder?: string;
+
+  @IsOptional()
+  @IsIn(['small', 'medium', 'large'])
+  size?: 'small' | 'medium' | 'large';
 }

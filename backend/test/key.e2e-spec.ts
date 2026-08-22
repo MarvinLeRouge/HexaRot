@@ -110,6 +110,13 @@ describe('Key endpoints (e2e)', () => {
         .send({ pivotBlockSize: 0 });
       expect(res.status).toBe(400);
     });
+
+    it('returns 400 when size is not small, medium, or large', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/key/generate')
+        .send({ size: 'huge' });
+      expect(res.status).toBe(400);
+    });
   });
 
   describe('POST /api/key/parse', () => {
@@ -194,6 +201,39 @@ describe('Key endpoints (e2e)', () => {
       );
       expect(parseBody.rotationDirection).toBe(requestBody.rotationDirection);
       expect(parseBody.readingOrder).toBe(requestBody.readingOrder);
+    });
+
+    it.each(['small', 'medium', 'large'])(
+      'round-trips size %s through generate and parse',
+      async (size) => {
+        const generateRes = await request(app.getHttpServer())
+          .post('/api/key/generate')
+          .send({ size });
+        const { key } = generateRes.body as KeyGenerateResult;
+
+        const parseRes = await request(app.getHttpServer())
+          .post('/api/key/parse')
+          .send({ key });
+
+        expect(parseRes.status).toBe(200);
+        const parseBody = parseRes.body as KeyParseResult;
+        expect(parseBody.size).toBe(size);
+      },
+    );
+
+    it('defaults to size "medium" when generate is called without a size', async () => {
+      const generateRes = await request(app.getHttpServer())
+        .post('/api/key/generate')
+        .send({});
+      const { key } = generateRes.body as KeyGenerateResult;
+
+      const parseRes = await request(app.getHttpServer())
+        .post('/api/key/parse')
+        .send({ key });
+
+      expect(parseRes.status).toBe(200);
+      const parseBody = parseRes.body as KeyParseResult;
+      expect(parseBody.size).toBe('medium');
     });
   });
 });

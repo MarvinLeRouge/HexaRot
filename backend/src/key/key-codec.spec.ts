@@ -13,6 +13,7 @@ const BASE_PARAMS: KeyParams = {
   rotationSequence: [0, 1, 2, 3],
   rotationDirection: 'cw',
   readingOrder: 'LR-TB',
+  size: 'medium',
 };
 
 const ALL_READING_ORDERS: ReadingOrder[] = [
@@ -153,6 +154,14 @@ describe('KeyCodec round-trip', () => {
     }
   });
 
+  it('round-trips all three case sizes', () => {
+    for (const size of ['small', 'medium', 'large'] as const) {
+      const params = { ...BASE_PARAMS, size };
+      const decoded = KeyCodec.decode(KeyCodec.encode(params));
+      expect(decoded.size).toBe(size);
+    }
+  });
+
   it('produces different keys for different params', () => {
     const key1 = KeyCodec.encode({ ...BASE_PARAMS, pivotBlockSize: 5 });
     const key2 = KeyCodec.encode({ ...BASE_PARAMS, pivotBlockSize: 7 });
@@ -171,5 +180,25 @@ describe('KeyCodec.decode - out-of-range payload values', () => {
 
   it('throws for a structurally valid key that unpacks to pivotBlockSize=0', () => {
     expect(() => KeyCodec.decode('HR1·0000')).toThrow(Error);
+  });
+
+  it('throws for a structurally valid key that unpacks to the reserved size index (3)', () => {
+    // Payload = pivotBlockSize=1 | orderIndex=0 | dirBit=0 | seqIndex=0 | sizeIndex=3<<17
+    expect(() => KeyCodec.decode('HR1·8FEP')).toThrow(Error);
+  });
+});
+
+describe('KeyCodec backward compatibility', () => {
+  it('decodes a pre-FEAT-022 key (no size bits ever set) as size "small", without throwing', () => {
+    // A key encoded before the size field existed never set bits 17-18, so
+    // they read back as 0 ("small") rather than the reserved value 3 - this
+    // must keep decoding cleanly, not throw.
+    const legacyPayload =
+      BASE_PARAMS.pivotBlockSize | (0 << 8) | (0 << 11) | (0 << 12);
+    const legacyKey = `HR1·${legacyPayload.toString(36).toUpperCase().padStart(4, '0')}`;
+
+    const decoded = KeyCodec.decode(legacyKey);
+
+    expect(decoded.size).toBe('small');
   });
 });

@@ -14,6 +14,7 @@ export const VALID_KEY_STRING = KeyCodec.encode({
   rotationSequence: [0, 1, 2, 3],
   rotationDirection: 'cw',
   readingOrder: 'LR-TB',
+  size: 'medium',
 });
 
 export const VALID_ENCODE_BODY_WITH_KEY = {

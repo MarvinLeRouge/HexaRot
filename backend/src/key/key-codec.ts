@@ -1,4 +1,5 @@
 import type { ReadingOrder } from '../reading-order/reading-order-strategy.interface';
+import type { CaseSize } from '../shared/types/case-size.type';
 
 export type { ReadingOrder };
 
@@ -24,6 +25,8 @@ export interface KeyParams {
   rotationDirection: 'cw' | 'ccw';
   /** Block traversal order. */
   readingOrder: ReadingOrder;
+  /** Rendered case size used to produce (and required to decode) the cryptogram. */
+  size: CaseSize;
 }
 
 // ─── Constants ────────────────────────────────────────────────────────────────
@@ -46,6 +49,9 @@ export const READING_ORDERS: ReadingOrder[] = [
   'BT-LR-ALT',
 ];
 
+/** All 3 case sizes, indexed 0-2. Index 3 is reserved (unused). */
+export const CASE_SIZES: CaseSize[] = ['small', 'medium', 'large'];
+
 /**
  * All 24 permutations of [0, 1, 2, 3] in lexicographic order.
  * Index 0 = [0,1,2,3], index 23 = [3,2,1,0].
@@ -66,11 +72,13 @@ function buildPermutations(arr: number[]): RotationSequence[] {
 
 // ─── Bit layout ───────────────────────────────────────────────────────────────
 //
-// The payload is a 17-bit integer encoded as a 4-digit base36 string:
+// The payload is a 19-bit integer encoded as a 4-digit base36 string (which has
+// room for up to 21 bits, `36^4 - 1 = 1,679,615`; bits 19-20 remain free):
 //   bits  0–7  → pivotBlockSize  (uint8, 1–255)
 //   bits  8–10 → readingOrderIndex (0–7)
 //   bit  11    → rotationDirection (0 = cw, 1 = ccw)
 //   bits 12–16 → rotationSequenceIndex (0–23)
+//   bits 17–18 → sizeIndex (0–2; 3 is reserved)
 
 function pack(params: KeyParams): number {
   const seqIndex = ROTATION_SEQUENCES.findIndex((s) =>
@@ -78,12 +86,14 @@ function pack(params: KeyParams): number {
   );
   const orderIndex = READING_ORDERS.indexOf(params.readingOrder);
   const dirBit = params.rotationDirection === 'ccw' ? 1 : 0;
+  const sizeIndex = CASE_SIZES.indexOf(params.size);
 
   return (
     params.pivotBlockSize |
     (orderIndex << 8) |
     (dirBit << 11) |
-    (seqIndex << 12)
+    (seqIndex << 12) |
+    (sizeIndex << 17)
   );
 }
 
@@ -92,12 +102,14 @@ function unpack(payload: number): Omit<KeyParams, 'version'> {
   const orderIndex = (payload >> 8) & 0x07;
   const dirBit = (payload >> 11) & 0x01;
   const seqIndex = (payload >> 12) & 0x1f;
+  const sizeIndex = (payload >> 17) & 0x03;
 
   return {
     pivotBlockSize,
     readingOrder: READING_ORDERS[orderIndex],
     rotationDirection: dirBit === 1 ? 'ccw' : 'cw',
     rotationSequence: ROTATION_SEQUENCES[seqIndex],
+    size: CASE_SIZES[sizeIndex],
   };
 }
 
@@ -151,7 +163,7 @@ export class KeyCodec {
    * Deserialises a key string to its parameters.
    *
    * @throws {Error} If the key string is malformed or has an unknown version.
-   * @throws {Error} If the key unpacks to a semantically invalid pivotBlockSize or rotation sequence index.
+   * @throws {Error} If the key unpacks to a semantically invalid pivotBlockSize, rotation sequence index, or size index.
    */
   static decode(key: string): KeyParams {
     if (!KeyCodec.validate(key)) {
@@ -171,6 +183,11 @@ export class KeyCodec {
     if (!unpacked.rotationSequence) {
       throw new Error(
         `Invalid key format: "${key}" (unpacks to an out-of-range rotation sequence index)`,
+      );
+    }
+    if (!unpacked.size) {
+      throw new Error(
+        `Invalid key format: "${key}" (unpacks to a reserved size index)`,
       );
     }
 

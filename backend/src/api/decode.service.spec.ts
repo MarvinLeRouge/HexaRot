@@ -132,6 +132,7 @@ describe('DecodeService', () => {
         rotationSequence: [0, 1, 2, 3],
         rotationDirection: 'cw',
         readingOrder: 'LR-TB',
+        size: 'medium',
       });
       const dto = {
         cryptogram: Buffer.from('not a png', 'utf-8').toString('base64'),
@@ -152,6 +153,7 @@ describe('DecodeService', () => {
         rotationSequence: [0, 1, 2, 3],
         rotationDirection: 'cw',
         readingOrder: 'LR-TB',
+        size: 'medium',
       });
       const dto = {
         cryptogram: 'not svg at all',
@@ -173,6 +175,7 @@ describe('DecodeService', () => {
         rotationSequence: [0, 1, 2, 3],
         rotationDirection: 'cw',
         readingOrder: 'LR-TB',
+        size: 'medium',
       });
       const dto = {
         cryptogram: encoded.png,

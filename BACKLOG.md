@@ -1073,7 +1073,7 @@ Write `README.md` (English) and `README.fr.md` (French). Each file must include:
 - **type:** feat
 - **id:** FEAT-017
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** XL
@@ -1165,7 +1165,7 @@ encoding (new reading order values in the key codec).
 - **type:** feat
 - **id:** FEAT-020
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** S

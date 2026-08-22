@@ -827,7 +827,7 @@ vue-i18n keys (English only in V1, keys must be structured for future French add
 - **type:** feat
 - **id:** FEAT-015
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** frontend
 - **complexity:** M
@@ -853,6 +853,16 @@ All UI strings are routed through vue-i18n keys.
 - API error (malformed cryptogram, wrong key) is shown to the user
 - Loading state is shown during API call
 - All visible strings use i18n keys
+
+#### Resolution (2026-08-22)
+
+Already implemented - status was stale. `DecodeView.vue`, `DecodeParamsForm.vue`,
+and `DecodeUploadArea.vue` (`frontend/src/views/`, `frontend/src/components/`)
+cover every acceptance criterion: click and drag-and-drop upload, HR key input with
+client-side format validation before the API call, decoded message display, API
+error handling, loading state, and full i18n coverage. 46 tests across
+`DecodeView.spec.ts`, `DecodeUploadArea.spec.ts`, and `decode.spec.ts` (store) all
+pass. No code change needed - this item corrects the tracking only.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->

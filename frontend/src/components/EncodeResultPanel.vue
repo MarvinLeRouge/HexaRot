@@ -94,14 +94,14 @@ function downloadSvg(): void {
       :class="{ 'encode-result-panel__content--stale': stale }"
     >
       <div class="encode-result-panel__preview">
-        <!-- eslint-disable-next-line vue/no-v-html, vue/max-attributes-per-line -- result.svg is generated exclusively by this project's own backend renderer, never from user input, so it is a trusted string. -->
-        <div class="encode-result-panel__svg" v-html="result.svg" />
         <span
           v-if="stale"
           class="encode-result-panel__stale-badge"
         >
           {{ t('encode.result.staleBadge') }}
         </span>
+        <!-- eslint-disable-next-line vue/no-v-html, vue/max-attributes-per-line -- result.svg is generated exclusively by this project's own backend renderer, never from user input, so it is a trusted string. -->
+        <div class="encode-result-panel__svg" v-html="result.svg" />
       </div>
 
       <div class="encode-result-panel__key">
@@ -220,19 +220,25 @@ function downloadSvg(): void {
 }
 
 .encode-result-panel__preview {
-  position: relative;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
   padding: 20px;
   border: 1px solid var(--border);
   border-radius: 8px;
   box-shadow: var(--shadow);
 }
 
+/*
+ * Stacked above the cryptogram rather than overlaid on it: an absolutely
+ * positioned badge in the corner overlapped the actual cells at narrow
+ * preview widths, tinting and occluding the cipher's own color data - the
+ * exact thing this badge exists to avoid doing (see the opacity comment
+ * below).
+ */
 .encode-result-panel__stale-badge {
-  position: absolute;
-  top: 8px;
-  right: 8px;
+  align-self: flex-end;
   padding: 2px 8px;
   border: 1px solid var(--warning-border);
   border-radius: 4px;

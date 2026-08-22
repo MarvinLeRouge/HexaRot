@@ -13,8 +13,9 @@ vi.mock('../api/client', async () => {
 
 import { postJson } from '../api/client'
 import { useEncodeStore } from '../stores/encode'
+import type { EncodeResult } from '../stores/encode'
 
-function mountPanel(props: { stale?: boolean } = {}) {
+function mountPanel(props: { stale?: boolean; result?: EncodeResult } = {}) {
   const i18n = createI18n({ legacy: false, locale: 'en', messages: { en } })
   return mount(EncodeResultPanel, {
     props: { result: MOCK_ENCODE_RESPONSE, ...props },
@@ -30,13 +31,21 @@ describe('EncodeResultPanel', () => {
   })
 
   describe('cryptogram size', () => {
-    it('displays the size used to produce this result, next to the key', async () => {
-      const wrapper = mountPanel()
+    it('displays the size that produced this result, next to the key', () => {
+      const wrapper = mountPanel({ result: { ...MOCK_ENCODE_RESPONSE, size: 'large' } })
+
+      expect(wrapper.find('.encode-result-panel__key-size').text()).toContain(en.encode.form.size.large)
+    })
+
+    it('keeps showing the result size even after the live form field changes', async () => {
+      const wrapper = mountPanel({ result: { ...MOCK_ENCODE_RESPONSE, size: 'small' } })
       const store = useEncodeStore()
+
       store.size = 'large'
       await flushPromises()
 
-      expect(wrapper.find('.encode-result-panel__key-size').text()).toContain(en.encode.form.size.large)
+      expect(wrapper.find('.encode-result-panel__key-size').text()).toContain(en.encode.form.size.small)
+      expect(wrapper.find('.encode-result-panel__key-size').text()).not.toContain(en.encode.form.size.large)
     })
   })
 
@@ -120,7 +129,7 @@ describe('EncodeResultPanel', () => {
       expect(downloadedFilename).toBe('hexarot-medium.svg')
     })
 
-    it('uses the store size in the download filename', async () => {
+    it('uses the result size in the download filename, not the live form field', async () => {
       const createObjectURL = vi.fn().mockReturnValue('blob:png-url')
       const revokeObjectURL = vi.fn()
       vi.stubGlobal('URL', { ...URL, createObjectURL, revokeObjectURL })
@@ -129,9 +138,9 @@ describe('EncodeResultPanel', () => {
         downloadedFilename = this.download
       })
 
-      const wrapper = mountPanel()
+      const wrapper = mountPanel({ result: { ...MOCK_ENCODE_RESPONSE, size: 'large' } })
       const store = useEncodeStore()
-      store.size = 'large'
+      store.size = 'small'
       await flushPromises()
       const [pngButton] = wrapper.findAll('.encode-result-panel__downloads button')
       await pngButton.trigger('click')

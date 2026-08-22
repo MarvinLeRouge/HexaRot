@@ -1698,7 +1698,7 @@ crypto-domain logic across the frontend/backend boundary.
 - **type:** refactor
 - **id:** REFACTOR-005
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** high
 - **domain:** frontend
 - **complexity:** S
@@ -1773,7 +1773,7 @@ hint says "This key is not stored anywhere. Copy it now."
 - **type:** refactor
 - **id:** REFACTOR-007
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** frontend
 - **complexity:** S
@@ -1810,7 +1810,7 @@ critique rounds.
 - **type:** refactor
 - **id:** REFACTOR-008
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** S

@@ -45,8 +45,10 @@ function triggerDownload(blob: Blob, filename: string): void {
 function downloadFilename(extension: string): string {
   // Never include the key here: this file is the artifact the user hands to
   // someone else, and a cipher's key must travel on a separate channel from
-  // the cryptogram it decrypts.
-  return `hexarot-${store.size}.${extension}`
+  // the cryptogram it decrypts. Uses the snapshotted result size, not the
+  // live form field, so a filename never claims a size that doesn't match
+  // the cryptogram actually inside it.
+  return `hexarot-${props.result.size}.${extension}`
 }
 
 function downloadPng(): void {
@@ -105,7 +107,7 @@ function downloadSvg(): void {
         <span class="encode-result-panel__key-label">{{ t('encode.result.keyLabel') }}</span>
         <code class="encode-result-panel__key-value">{{ result.key }}</code>
         <p class="encode-result-panel__key-size">
-          {{ t('encode.result.sizeLabel') }}: <strong>{{ t(`encode.form.size.${store.size}`) }}</strong>
+          {{ t('encode.result.sizeLabel') }}: <strong>{{ t(`encode.form.size.${result.size}`) }}</strong>
         </p>
         <p class="encode-result-panel__key-hint">
           {{ t('encode.result.keyHint') }}

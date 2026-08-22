@@ -105,7 +105,6 @@ onUnmounted(() => {
             <button
               type="button"
               class="btn-primary"
-              :disabled="store.resultStale"
               @click="copyResult"
             >
               {{ copyState === 'copied' ? t('decode.result.copied') : copyState === 'error' ? t('decode.result.copyError') : t('decode.result.copy') }}

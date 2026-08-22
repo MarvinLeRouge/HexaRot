@@ -169,14 +169,14 @@ describe('EncodeResultPanel', () => {
       expect(downloadButtons[1].attributes('disabled')).toBeUndefined()
     })
 
-    it('shows a notice and disables Copy and both downloads when stale', () => {
+    it('shows a notice but keeps Copy and both downloads enabled when stale, so a still-valid result can still be saved', () => {
       const wrapper = mountPanel({ stale: true })
 
       expect(wrapper.find('.encode-result-panel__stale-notice').exists()).toBe(true)
-      expect(wrapper.find('.encode-result-panel__key button').attributes('disabled')).toBeDefined()
+      expect(wrapper.find('.encode-result-panel__key button').attributes('disabled')).toBeUndefined()
       const downloadButtons = wrapper.findAll('.encode-result-panel__downloads button')
-      expect(downloadButtons[0].attributes('disabled')).toBeDefined()
-      expect(downloadButtons[1].attributes('disabled')).toBeDefined()
+      expect(downloadButtons[0].attributes('disabled')).toBeUndefined()
+      expect(downloadButtons[1].attributes('disabled')).toBeUndefined()
     })
 
     it('marks the preview with a badge when stale, so the cryptogram itself keeps its true colors', () => {

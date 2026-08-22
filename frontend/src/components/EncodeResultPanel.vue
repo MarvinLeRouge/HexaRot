@@ -115,7 +115,6 @@ function downloadSvg(): void {
         <button
           type="button"
           class="btn-primary"
-          :disabled="stale"
           @click="copyKey"
         >
           {{ copyState === 'copied' ? t('encode.result.copied') : copyState === 'error' ? t('encode.result.copyError') : t('encode.result.copy') }}
@@ -158,7 +157,6 @@ function downloadSvg(): void {
         <button
           type="button"
           class="btn-secondary"
-          :disabled="stale"
           @click="downloadPng"
         >
           {{ t('encode.result.downloadPng') }}
@@ -166,7 +164,6 @@ function downloadSvg(): void {
         <button
           type="button"
           class="btn-secondary"
-          :disabled="stale"
           @click="downloadSvg"
         >
           {{ t('encode.result.downloadSvg') }}

@@ -158,7 +158,6 @@ async function copyKey(): Promise<void> {
         <button
           type="button"
           class="btn-primary"
-          :disabled="store.generatedKeyStale"
           @click="copyKey"
         >
           {{ copyState === 'copied' ? t('key.generator.result.copied') : copyState === 'error' ? t('key.generator.result.copyError') : t('key.generator.result.copy') }}

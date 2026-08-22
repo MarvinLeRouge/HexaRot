@@ -216,7 +216,7 @@ describe('DecodeView', () => {
       await vi.waitFor(() => expect(wrapper.find('.decode-view__stale-notice').exists()).toBe(false))
     })
 
-    it('disables Copy while the decoded message is stale', async () => {
+    it('keeps Copy enabled while the decoded message is stale, so a still-valid message can still be saved', async () => {
       vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
       const wrapper = mountView()
       await selectFile(wrapper, MOCK_PNG_FILE)
@@ -227,7 +227,7 @@ describe('DecodeView', () => {
 
       await wrapper.find('input[type="text"]').setValue('HR1·b2c3')
 
-      expect(wrapper.find('.decode-view__result-card button').attributes('disabled')).toBeDefined()
+      expect(wrapper.find('.decode-view__result-card button').attributes('disabled')).toBeUndefined()
     })
   })
 

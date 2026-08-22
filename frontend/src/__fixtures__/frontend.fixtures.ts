@@ -12,6 +12,7 @@ export const MOCK_ENCODE_RESPONSE: EncodeResult = {
   key: 'HR1·A1B2',
   warnings: [],
   unknownChars: [],
+  size: 'medium',
 }
 
 export const MOCK_ENCODE_RESPONSE_WITH_WARNINGS: EncodeResult = {

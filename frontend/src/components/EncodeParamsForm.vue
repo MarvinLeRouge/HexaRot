@@ -212,6 +212,15 @@ function handleSubmit(): void {
   border-radius: 8px;
   padding: 16px;
   margin: 0;
+  /*
+   * A <fieldset> defaults to min-inline-size: min-content (a UA default
+   * that ordinary width rules can't override) with box-sizing: content-box,
+   * so it refuses to shrink below its widest child - here, the reading
+   * order <select>'s longest option text. Without this, the fieldset (and
+   * the whole page) overflows horizontally on narrow viewports.
+   */
+  min-inline-size: 0;
+  box-sizing: border-box;
 }
 
 .encode-params-form__group legend {

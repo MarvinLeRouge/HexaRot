@@ -138,7 +138,7 @@ describe('KeyGeneratorForm', () => {
       expect(wrapper.find('.key-generator-form__stale-notice').exists()).toBe(true)
     })
 
-    it('disables Copy while the generated key is stale', async () => {
+    it('keeps Copy enabled while the generated key is stale, so a still-valid key can still be saved', async () => {
       vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
       const wrapper = mountForm()
       await wrapper.find('form').trigger('submit')
@@ -147,7 +147,7 @@ describe('KeyGeneratorForm', () => {
       await wrapper.find('input[type="number"]').setValue(99)
 
       const copyButton = wrapper.find('.key-generator-form__result-content button')
-      expect(copyButton.attributes('disabled')).toBeDefined()
+      expect(copyButton.attributes('disabled')).toBeUndefined()
     })
 
     it('clears the stale notice when re-generating', async () => {

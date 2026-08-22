@@ -1698,7 +1698,7 @@ crypto-domain logic across the frontend/backend boundary.
 - **type:** refactor
 - **id:** REFACTOR-005
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** frontend
 - **complexity:** S

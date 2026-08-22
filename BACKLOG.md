@@ -1649,7 +1649,7 @@ spike before committing to either:
 - **type:** refactor
 - **id:** REFACTOR-004
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** critical
 - **domain:** security
 - **complexity:** M

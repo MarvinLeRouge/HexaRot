@@ -70,6 +70,8 @@ automatically from Conventional Commits history.
 - Pass token to checkout to allow BACKLOG.md auto-commit
 - Add PostgreSQL service to backend CI job for integration tests
 - Add real backend e2e coverage collection and Codecov reporting
+- Add automated changelog PR workflow
+- Remove duplicate --config flag from git-cliff-action args
 
 ### Documentation
 
@@ -110,6 +112,25 @@ automatically from Conventional Commits history.
 - Rewrite frontend README with HexaRot-specific content
 - Add code of conduct
 - Add security policy
+- Generate initial changelog from commit history
+- Extract roadmap into its own file
+- Add public product context
+- Document the current frontend design system
+- Add operations runbook
+- Add backend architecture guide
+- Add frontend architecture guide
+- Extract API reference into its own file
+- Trim README roadmap and API sections to pointers
+- Add end-user guide
+- Add backend developer guide
+- Add frontend developer guide
+- Record the no-message-length-exposure decision
+- Record the key-off-query-string decision
+- Record the Prisma CommonJS output decision
+- Record the Traefik local dev routing decision
+- Record the stale-result handling decision
+- Add bug report issue template
+- Add feature request issue template
 
 ### Features
 
@@ -210,6 +231,7 @@ automatically from Conventional Commits history.
 - Auto-promote ready items [skip ci]
 - Mark FEAT-015 done - already implemented
 - Auto-promote ready items [skip ci]
+- Add git-cliff configuration for changelog generation
 
 ### Refactoring
 

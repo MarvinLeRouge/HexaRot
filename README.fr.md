@@ -64,92 +64,10 @@ L'API est disponible sur `http://hexarot.marvinlerouge.local/api`.
 
 ## API
 
-Tous les endpoints sont préfixés par `/api`.
-
-| Méthode | Route | Description |
-|---|---|---|
-| `POST` | `/encode` | Encoder un message → cryptogramme PNG + SVG |
-| `POST` | `/decode` | Décoder un cryptogramme → texte en clair |
-| `POST` | `/key/generate` | Générer une clé HR depuis des paramètres |
-| `POST` | `/key/parse` | Analyser une clé HR → paramètres structurés |
-
-**Exemple — `POST /encode`**
-
-```json
-POST /api/encode
-{
-  "message": "HELLO WORLD",
-  "pivotBlockSize": 5,
-  "rotationSequence": [0, 1, 2, 3],
-  "rotationDirection": "cw",
-  "readingOrder": "LR-TB",
-  "size": "medium"
-}
-```
-
-```json
-{
-  "png": "<PNG encodé en base64>",
-  "svg": "<chaîne SVG>",
-  "key": "HR1·57C3",
-  "warnings": [],
-  "unknownChars": []
-}
-```
-
-**Exemple — `POST /decode`**
-
-```json
-POST /api/decode
-{
-  "cryptogram": "<PNG encodé en base64 ou chaîne SVG brute>",
-  "format": "png",
-  "key": "HR1·57C3",
-  "size": "medium"
-}
-```
-
-```json
-{
-  "message": "HELLO WORLD"
-}
-```
-
-**Exemple — `POST /key/generate`**
-
-```json
-POST /api/key/generate
-{
-  "pivotBlockSize": 5,
-  "rotationSequence": [0, 1, 2, 3],
-  "rotationDirection": "cw",
-  "readingOrder": "LR-TB"
-}
-```
-
-```json
-{
-  "key": "HR1·57C3"
-}
-```
-
-**Exemple — `POST /key/parse`**
-
-```json
-POST /api/key/parse
-{
-  "key": "HR1·57C3"
-}
-```
-
-```json
-{
-  "pivotBlockSize": 5,
-  "rotationSequence": [0, 90, 180, 270],
-  "rotationDirection": "cw",
-  "readingOrder": "LR-TB"
-}
-```
+Tous les endpoints sont préfixés par `/api` : `POST /encode`, `POST /decode`,
+`POST /key/generate`, `POST /key/parse`. Voir
+[docs/api/api_endpoints.fr.md](docs/api/api_endpoints.fr.md) pour la référence
+complète, avec des exemples de requêtes/réponses.
 
 ---
 
@@ -218,27 +136,11 @@ frontend/
 
 ## Roadmap
 
-### V1
-
-- ✅ Infra (NestJS, Vue.js, Docker Compose, Prisma)
-- ✅ CI (GitHub Actions — pipeline de tests, synchronisation du backlog)
-- ✅ Alphabet (interface VisualAlphabet + implémentation Hexahue)
-- ✅ Cipher (pré-traitement, construction de grille, pas d'en-tête de métadonnées, choix délibéré anti-fuite)
-- ✅ Moteur de rotation
-- ✅ Codec de clé (encodage / décodage / validation base36)
-- ✅ Stratégies d'ordre de lecture (4 directions + mode alterné)
-- ✅ Renderers (PNG + SVG)
-- ✅ Endpoints API (encode, decode, key)
-- ✅ Frontend (vues encodage, décodage, clé toutes terminées, passe UI/UX terminée)
-- ✅ Tests & couverture (suites unitaires/e2e backend + frontend, reporting Codecov, seuil global ≥85% confirmé)
-
-### V2
-
-- ⬜ Interface française (i18n)
-- ⬜ Mode de décodage animé
-- ⬜ Ordre de lecture en spirale
-- ⬜ Score de corrélation
-- ⬜ Authentification utilisateur
+La V1 est terminée : infra, pipeline de chiffrement, codec de clé, API, frontend
+et couverture de tests sont tous faits. La V2 vise une interface française, un
+mode de décodage animé, un ordre de lecture en spirale, un score de corrélation
+et l'authentification utilisateur. Voir [docs/roadmap.fr.md](docs/roadmap.fr.md)
+pour le détail complet.
 
 ---
 

@@ -1,0 +1,38 @@
+name: Changelog
+
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - CHANGELOG.md
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update-changelog:
+    name: Regenerate CHANGELOG.md
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Generate changelog
+        uses: orhun/git-cliff-action@v4
+        with:
+          config: cliff.toml
+          args: --config cliff.toml -o CHANGELOG.md
+
+      - name: Open pull request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "docs: update changelog"
+          title: "docs: update changelog"
+          body: Automated changelog update, generated from Conventional Commits history on main.
+          branch: chore/update-changelog
+          delete-branch: true

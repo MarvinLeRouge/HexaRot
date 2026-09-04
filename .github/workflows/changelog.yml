@@ -1,38 +1,45 @@
-name: Changelog
+name: Update Changelog
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
     paths-ignore:
-      - CHANGELOG.md
+      - "CHANGELOG.md"
+  workflow_dispatch: {}
 
 permissions:
   contents: write
   pull-requests: write
 
 jobs:
-  update-changelog:
-    name: Regenerate CHANGELOG.md
+  changelog:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          # git-cliff needs the full commit history, not a shallow clone
           fetch-depth: 0
 
-      - name: Generate changelog
-        uses: orhun/git-cliff-action@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
-          config: cliff.toml
-          args: -o CHANGELOG.md
+          node-version: "20"
 
-      - name: Open pull request
-        uses: peter-evans/create-pull-request@v6
+      - name: Regenerate changelog
+        run: npx --yes git-cliff@2.13.1 --config cliff.toml --output CHANGELOG.md
+
+      # main is protected: no direct push, so open a PR instead of committing
+      # straight to it. Reuses the same branch across runs, updating the
+      # existing open PR rather than piling up new ones.
+      - name: Open pull request if changed
+        uses: peter-evans/create-pull-request@v7
         with:
-          commit-message: "docs: update changelog"
-          title: "docs: update changelog"
-          body: Automated changelog update, generated from Conventional Commits history on main.
+          add-paths: CHANGELOG.md
+          commit-message: "chore(changelog): update CHANGELOG.md"
+          title: "chore(changelog): update CHANGELOG.md"
+          body: Automated CHANGELOG.md regeneration via git-cliff, triggered by a push to main.
           branch: chore/update-changelog
           delete-branch: true
+          labels: changelog

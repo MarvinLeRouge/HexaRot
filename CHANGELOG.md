@@ -72,6 +72,7 @@ automatically from Conventional Commits history.
 - Add real backend e2e coverage collection and Codecov reporting
 - Add automated changelog PR workflow
 - Remove duplicate --config flag from git-cliff-action args
+- Homogenize changelog workflow
 
 ### Documentation
 
@@ -131,6 +132,7 @@ automatically from Conventional Commits history.
 - Record the stale-result handling decision
 - Add bug report issue template
 - Add feature request issue template
+- Update changelog
 
 ### Features
 

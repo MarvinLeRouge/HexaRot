@@ -115,6 +115,8 @@ longueur d'origine.
 
 ## Architecture
 
+Voir [docs/architecture.fr.md](docs/architecture.fr.md) pour la vue d'ensemble, [docs/architecture/backend_architecture.fr.md](docs/architecture/backend_architecture.fr.md) et [docs/architecture/frontend_architecture.fr.md](docs/architecture/frontend_architecture.fr.md) pour les détails d'implémentation.
+
 ```
 backend/
 ├── alphabet/        # Interface VisualAlphabet + implémentation HexahueAlphabet

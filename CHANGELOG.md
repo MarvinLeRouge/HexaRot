@@ -136,6 +136,7 @@ automatically from Conventional Commits history.
 - Homogenize contributing guide and code of conduct
 - Add ADR index
 - Add architecture summary page
+- Link architecture decision records from README
 
 ### Features
 
@@ -237,6 +238,7 @@ automatically from Conventional Commits history.
 - Mark FEAT-015 done - already implemented
 - Auto-promote ready items [skip ci]
 - Add git-cliff configuration for changelog generation
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md

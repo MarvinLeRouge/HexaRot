@@ -114,7 +114,7 @@ with a `?` placeholder rather than storing or leaking the original length anywhe
 
 ## Architecture
 
-See [docs/architecture.md](docs/architecture.md) for the overview, [docs/architecture/backend_architecture.md](docs/architecture/backend_architecture.md) and [docs/architecture/frontend_architecture.md](docs/architecture/frontend_architecture.md) for implementation details.
+See [docs/architecture.md](docs/architecture.md) for the overview, [docs/architecture/backend_architecture.md](docs/architecture/backend_architecture.md) and [docs/architecture/frontend_architecture.md](docs/architecture/frontend_architecture.md) for implementation details, and [docs/adr/](docs/adr/) for architecture decision records.
 
 ```
 backend/

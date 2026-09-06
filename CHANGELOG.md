@@ -134,6 +134,7 @@ automatically from Conventional Commits history.
 - Add feature request issue template
 - Update changelog
 - Homogenize contributing guide and code of conduct
+- Add ADR index
 
 ### Features
 
@@ -235,6 +236,7 @@ automatically from Conventional Commits history.
 - Mark FEAT-015 done - already implemented
 - Auto-promote ready items [skip ci]
 - Add git-cliff configuration for changelog generation
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 
 ### Refactoring

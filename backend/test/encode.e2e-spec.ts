@@ -143,7 +143,7 @@ describe('POST /api/encode (e2e)', () => {
       expect((parseRes.body as { size: string }).size).toBe('large');
     });
 
-    it('renders at the key\'s own embedded size, ignoring a differing request size', async () => {
+    it("renders at the key's own embedded size, ignoring a differing request size", async () => {
       // VALID_KEY_STRING embeds size 'medium' - so requesting 'large'
       // alongside it must still render at 'medium', matching a direct
       // 'medium' params-mode request. Grid padding is randomised per call,

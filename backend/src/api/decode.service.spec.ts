@@ -39,7 +39,7 @@ const BASE_ENCODE_DTO: EncodeRequestDto = {
   rotationDirection: 'cw',
   readingOrder: 'LR-TB',
   size: 'medium',
-} as EncodeRequestDto;
+};
 
 describe('DecodeService', () => {
   describe('round-trip', () => {
@@ -52,7 +52,7 @@ describe('DecodeService', () => {
         format: 'png',
         key: encoded.key,
         size: 'medium',
-      } as DecodeRequestDto;
+      };
 
       const result = await decodeService.decode(decodeDto);
       expect(result.message.startsWith('ABC')).toBe(true);
@@ -67,7 +67,7 @@ describe('DecodeService', () => {
         format: 'svg',
         key: encoded.key,
         size: 'medium',
-      } as DecodeRequestDto;
+      };
 
       const result = await decodeService.decode(decodeDto);
       expect(result.message.startsWith('ABC')).toBe(true);
@@ -86,7 +86,7 @@ describe('DecodeService', () => {
           format: 'png',
           key: encoded.key,
           size: 'medium',
-        } as DecodeRequestDto);
+        });
         expect(result.message.startsWith('ABC')).toBe(true);
       },
     );
@@ -104,7 +104,7 @@ describe('DecodeService', () => {
           format: 'png',
           key: encoded.key,
           size: 'medium',
-        } as DecodeRequestDto);
+        });
         expect(result.message.startsWith('ABC')).toBe(true);
       },
     );

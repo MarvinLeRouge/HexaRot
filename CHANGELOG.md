@@ -244,6 +244,8 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Add type-checking to pre-commit and CI on both layers
+- Update CHANGELOG.md
+- Add Dependabot config for npm and GitHub Actions
 
 ### Refactoring
 

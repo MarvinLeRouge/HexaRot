@@ -263,6 +263,8 @@ automatically from Conventional Commits history.
 - Migrate frontend to Vitest 5
 - Bump @eslint/js to ^10.0.1 and eslint to ^10.9.1
 - Migrate to NestJS 12 (runtime packages)
+- Update CHANGELOG.md
+- Bump @nestjs/cli from 11.0.16 to 12.0.0 in /backend
 
 ### Refactoring
 

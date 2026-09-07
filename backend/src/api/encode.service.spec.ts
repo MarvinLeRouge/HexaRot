@@ -30,7 +30,7 @@ const VALID_PARAMS_DTO: EncodeRequestDto = {
   rotationSequence: [0, 1, 2, 3],
   rotationDirection: 'cw',
   readingOrder: 'LR-TB',
-} as EncodeRequestDto;
+};
 
 describe('EncodeService', () => {
   describe('happy path', () => {
@@ -107,7 +107,7 @@ describe('EncodeService', () => {
         message: 'ABC',
         key,
         size: 'small',
-      } as EncodeRequestDto);
+      });
 
       expect(renderSpy).toHaveBeenCalledWith(expect.anything(), 'large');
       renderSpy.mockRestore();

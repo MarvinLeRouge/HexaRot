@@ -44,7 +44,9 @@ export async function parsePng(
     height = raw.info.height;
     channels = raw.info.channels;
   } catch (err) {
-    throw new RangeError(`Invalid PNG image: ${(err as Error).message}`);
+    throw new RangeError(`Invalid PNG image: ${(err as Error).message}`, {
+      cause: err,
+    });
   }
 
   if (width % casePixels !== 0 || height % casePixels !== 0) {

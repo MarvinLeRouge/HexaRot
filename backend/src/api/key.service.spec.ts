@@ -24,7 +24,7 @@ describe('KeyService', () => {
     });
 
     it('returns a valid HR key string with default parameters when no body is provided', () => {
-      const result = service.generate({} as KeyGenerateRequestDto);
+      const result = service.generate({});
       expect(result.key).toMatch(/^HR1·[0-9A-Z]{4}$/);
       const decoded = KeyCodec.decode(result.key);
       expect(decoded.pivotBlockSize).toBe(5);
@@ -45,7 +45,7 @@ describe('KeyService', () => {
     ])('returns a valid HR key string for reading order %s', (readingOrder) => {
       const result = service.generate({
         readingOrder,
-      } as KeyGenerateRequestDto);
+      });
       const decoded = KeyCodec.decode(result.key);
       expect(decoded.readingOrder).toBe(readingOrder);
     });
@@ -55,7 +55,7 @@ describe('KeyService', () => {
       (rotationDirection) => {
         const result = service.generate({
           rotationDirection,
-        } as KeyGenerateRequestDto);
+        });
         const decoded = KeyCodec.decode(result.key);
         expect(decoded.rotationDirection).toBe(rotationDirection);
       },
@@ -67,7 +67,7 @@ describe('KeyService', () => {
     });
 
     it('defaults to size "medium" when no body is provided', () => {
-      const result = service.generate({} as KeyGenerateRequestDto);
+      const result = service.generate({});
       const decoded = KeyCodec.decode(result.key);
       expect(decoded.size).toBe('medium');
     });
@@ -75,7 +75,7 @@ describe('KeyService', () => {
     it.each(['small', 'medium', 'large'] as const)(
       'embeds the requested size %s into the generated key',
       (size) => {
-        const result = service.generate({ size } as KeyGenerateRequestDto);
+        const result = service.generate({ size });
         const decoded = KeyCodec.decode(result.key);
         expect(decoded.size).toBe(size);
       },

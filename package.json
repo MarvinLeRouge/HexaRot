@@ -22,11 +22,11 @@
   },
   "lint-staged": {
     "backend/src/**/*.ts": [
-      "backend/node_modules/.bin/eslint --fix --flag unstable_config_lookup_from_file",
+      "backend/node_modules/.bin/eslint --fix",
       "bash -c 'cd backend && npm run typecheck'"
     ],
     "frontend/src/**/*.{ts,vue}": [
-      "frontend/node_modules/.bin/eslint --fix --no-warn-ignored --flag unstable_config_lookup_from_file",
+      "frontend/node_modules/.bin/eslint --fix --no-warn-ignored",
       "bash -c 'cd frontend && npm run typecheck'"
     ]
   }

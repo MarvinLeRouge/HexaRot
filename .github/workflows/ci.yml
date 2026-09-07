@@ -72,7 +72,7 @@ jobs:
         run: npm run test:e2e:cov
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           use_oidc: true
           flags: backend
@@ -115,7 +115,7 @@ jobs:
         run: npm run test:cov
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           use_oidc: true
           flags: frontend

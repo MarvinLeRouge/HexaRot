@@ -55,6 +55,7 @@ automatically from Conventional Commits history.
 - Fix Encode form horizontal overflow on mobile (REFACTOR-009)
 - Stop the "Out of date" badge from overlapping cryptogram cells (REFACTOR-010)
 - Make the decoded message keyboard-scrollable (REFACTOR-011)
+- Regenerate Prisma client automatically after install
 
 ### CI/CD
 
@@ -246,6 +247,22 @@ automatically from Conventional Commits history.
 - Add type-checking to pre-commit and CI on both layers
 - Update CHANGELOG.md
 - Add Dependabot config for npm and GitHub Actions
+- Bump @eslint/js from 9.39.4 to 10.0.1 in /backend
+- Update CHANGELOG.md
+- Bump codecov/codecov-action from 5 to 7
+- Bump peter-evans/create-pull-request from 7 to 8
+- Bump actions/checkout from 4 to 7
+- Bump lint-staged from 16.4.0 to 17.4.1
+- Bump actions/setup-node from 4 to 7
+- Bump vue in /frontend in the vue group
+- Bump the npm-minor-patch group
+- Bump pinia from 3.0.4 to 4.0.3 in /frontend
+- Bump eslint from 9.39.4 to 10.9.1 in /frontend
+- Bump the npm-minor-patch group in /backend with 11 updates
+- Migrate backend to Prisma 7
+- Migrate frontend to Vitest 5
+- Bump @eslint/js to ^10.0.1 and eslint to ^10.9.1
+- Migrate to NestJS 12 (runtime packages)
 
 ### Refactoring
 

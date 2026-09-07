@@ -18,7 +18,7 @@
   "homepage": "https://github.com/MarvinLeRouge/HexaRot#readme",
   "devDependencies": {
     "husky": "^9.1.7",
-    "lint-staged": "^16.4.0"
+    "lint-staged": "^17.4.1"
   },
   "lint-staged": {
     "backend/src/**/*.ts": [

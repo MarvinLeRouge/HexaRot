@@ -14,7 +14,7 @@ const HEXAHUE_CHARS = [
   ' ',
 ];
 
-const mockAlphabet: Pick<VisualAlphabet, 'getSupportedChars'> = {
+const mockAlphabet: VisualAlphabet = {
   getSupportedChars: () => HEXAHUE_CHARS,
 } as VisualAlphabet;
 

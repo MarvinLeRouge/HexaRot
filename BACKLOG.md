@@ -1414,13 +1414,13 @@ applicable. Existing i18n keys and API contracts are unaffected.
 - **type:** chore
 - **id:** CHORE-008
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** security
 - **complexity:** M
 - **parent:** ~
 - **depends-on:** FEAT-011, FEAT-012, FEAT-013, FEAT-021, REFACTOR-001
-- **learning:** [OWASP Top 10:2025, input validation boundaries, rate limiting, secure header configuration, dependency vulnerability scanning]
+- **learning:** [OWASP Top 10:2025, input validation boundaries, rate limiting, secure header configuration, dependency vulnerability scanning, fail-closed startup validation]
 - **labels:** [chore, domain:security, priority:high, milestone:v2]
 
 #### Description
@@ -1442,6 +1442,41 @@ new backlog item rather than silently dropped.
 - No secrets or sensitive data found logged, exposed in error responses, or committed
 - Dependency audit (`npm audit` or equivalent) run on both backend and frontend, with
   high/critical findings addressed or explicitly deferred with rationale
+
+#### Resolution (2026-09-08)
+
+Findings, all fixed inline unless noted:
+
+- Missing HTTP security headers: fixed by adding Helmet (`app.use(helmet())` in
+  `backend/src/main.ts`).
+- `JWT_SECRET` silently accepted missing/placeholder/short values: fixed with a
+  fail-fast `resolveJwtSecret()` startup guard in `backend/src/auth/auth.module.ts`
+  (rejects unset, the documented `change_me` placeholder, and anything under 32 chars).
+- Seed admin account silently fell back to a documented placeholder email/password:
+  fixed by requiring `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD` explicitly and rejecting
+  the placeholder password in `backend/prisma/seed.ts` (CI env updated to match).
+- Reachable production `qs`/body-parser dependency vulnerabilities (backend) and
+  dev-tooling vulnerabilities (frontend): fixed via non-breaking `npm audit fix` on
+  both sides; frontend now at 0 vulnerabilities.
+- `EncodeRequestDto.message` had no upper bound, so hitting the cipher layer's
+  existing `MAX_MESSAGE_LENGTH` (0xffff) internal cap surfaced as a raw 500 instead
+  of a clean validation error: fixed by adding `@MaxLength(MAX_MESSAGE_LENGTH)` to
+  the DTO.
+- Rate limiting confirmed in place: `register`, `login`, `resend-verification` all
+  carry `@Throttle({ limit: 5, ttl: 60000 })`; `verify-email` relies on the global
+  default (20/60s), which is safe since its token is a 256-bit random value
+  (`randomBytes(32)`), making brute force infeasible regardless of rate limit.
+- JWT and verification-token handling reviewed against OWASP session management
+  guidance: bcrypt (12 rounds) password hashing, sha256-hashed verification tokens,
+  timing-safe login via a precomputed dummy hash, per-request `active` re-check in
+  `JwtAuthGuard` - no changes needed.
+- No secrets or sensitive data found logged, exposed in error responses, or
+  committed (grepped for `err.message`/`error.message`/`e.message` and
+  `passwordHash` usage across `src/`).
+- Remaining backend `npm audit` findings (`lodash`, `mysql2`, `deepmerge-ts`,
+  `@prisma/config`) are nested exclusively under the `prisma` CLI's own dependency
+  tree, unreachable from any runtime code path; deferred with rationale as
+  **CHORE-010** rather than forcing an unjustified breaking `prisma` downgrade.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
@@ -2071,4 +2106,46 @@ version bump needed), `backend/src/api/key.service.ts`,
 `backend/src/api/dto/key-generate-request.dto.ts`, and
 `backend/src/api/encode.service.ts`. `DecodeService`/`DecodeRequestDto` needed no
 changes (out of scope, doesn't construct `KeyParams` literals).
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CHORE-010] Revisit deferred prisma-CLI npm audit findings
+
+- **type:** chore
+- **id:** CHORE-010
+- **milestone:** ~
+- **status:** backlog
+- **priority:** low
+- **domain:** backend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [npm audit transitive-dependency reachability]
+- **labels:** [chore, domain:backend, priority:low]
+
+#### Description
+
+Deferred finding from CHORE-008's security hardening audit. `npm audit` on
+`backend/` reports vulnerabilities in packages (`lodash`, `mysql2`,
+`deepmerge-ts`, `@prisma/config`) that are nested exclusively under the
+`prisma` CLI's own dependency tree, not under the runtime
+`@prisma/client`/`@prisma/adapter-pg` packages the app actually imports.
+These are dev-time-only, unreachable from any deployed code path (no
+production Dockerfile currently runs the `prisma` CLI at runtime; migrations
+are applied via `prisma migrate deploy` in CI/dev only). `npm audit fix --force`
+would downgrade `prisma` to a version incompatible with the project's
+Prisma 7 usage, which is not justified for an unreachable finding.
+
+Revisit when either: Prisma publishes a patched release that resolves these
+transitively without a breaking downgrade, or a production Dockerfile is
+introduced that invokes the `prisma` CLI at runtime (changing the
+reachability analysis).
+
+#### Acceptance criteria
+
+- `npm audit` on `backend/` run again; findings re-triaged against current
+  reachability
+- If still unreachable and unpatched, re-defer with an updated rationale and
+  date
+- If reachable or patched, fix and close
 <!-- ITEM:END -->

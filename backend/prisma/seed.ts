@@ -54,8 +54,18 @@ const HEXAHUE_DATA = [
  * has exactly one admin account by design (see FEAT-021 spec, Decision 1).
  */
 async function seedAdminUser(client: PrismaClient): Promise<void> {
-  const email = process.env.SEED_ADMIN_EMAIL ?? 'admin@hexarot.local';
-  const password = process.env.SEED_ADMIN_PASSWORD ?? 'change_me_admin';
+  const email = process.env.SEED_ADMIN_EMAIL;
+  const password = process.env.SEED_ADMIN_PASSWORD;
+  if (!email || !password) {
+    throw new Error(
+      'SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD must both be set to seed the admin account',
+    );
+  }
+  if (password === 'change_me_admin') {
+    throw new Error(
+      'SEED_ADMIN_PASSWORD must not be the documented placeholder value from .env.example - set a real password',
+    );
+  }
   const passwordHash = await hash(password, 12);
 
   await client.user.upsert({

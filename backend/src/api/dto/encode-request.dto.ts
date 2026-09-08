@@ -5,6 +5,7 @@ import {
   IsInt,
   Min,
   Max,
+  MaxLength,
   IsIn,
   IsArray,
   ArrayMinSize,
@@ -13,6 +14,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { READING_ORDERS } from '../../key/key-codec';
+import { MAX_MESSAGE_LENGTH } from '../../cipher/header';
 
 /**
  * Request body for POST /encode. Either `key` is provided (individual
@@ -26,6 +28,7 @@ import { READING_ORDERS } from '../../key/key-codec';
 export class EncodeRequestDto {
   @IsString()
   @IsNotEmpty()
+  @MaxLength(MAX_MESSAGE_LENGTH)
   message!: string;
 
   @IsOptional()

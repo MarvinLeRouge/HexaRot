@@ -1,7 +1,8 @@
 import { Module } from '@nestjs/common';
 import { APP_GUARD } from '@nestjs/core';
-import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
+import { AppThrottlerGuard } from './app-throttler.guard';
 import { AppService } from './app.service';
 import { PrismaModule } from './prisma/prisma.module';
 import { AlphabetModule } from './alphabet/alphabet.module';
@@ -35,7 +36,7 @@ import { RolesGuard } from './auth/roles.guard';
   controllers: [AppController],
   providers: [
     AppService,
-    { provide: APP_GUARD, useClass: ThrottlerGuard },
+    { provide: APP_GUARD, useClass: AppThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },
     { provide: APP_GUARD, useClass: RolesGuard },
   ],

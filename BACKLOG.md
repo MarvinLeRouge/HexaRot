@@ -2146,7 +2146,7 @@ changes (out of scope, doesn't construct `KeyParams` literals).
 
 - **type:** chore
 - **id:** CHORE-010
-- **milestone:** ~
+- **milestone:** v2
 - **status:** backlog
 - **priority:** low
 - **domain:** backend

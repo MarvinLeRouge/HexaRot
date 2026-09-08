@@ -16,6 +16,7 @@ describe('NodemailerMailerService', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     process.env = {
+      ...ORIGINAL_ENV,
       SMTP_HOST: 'smtp-relay.brevo.com',
       SMTP_PORT: '587',
       SMTP_USER: 'brevo-user',

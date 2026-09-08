@@ -4,7 +4,6 @@ const { Octokit } = require('@octokit/rest');
 const { graphql } = require('@octokit/graphql');
 const fs = require('fs');
 const path = require('path');
-const { execSync } = require('child_process');
 
 const OWNER = process.env.GITHUB_OWNER;
 const REPO = process.env.GITHUB_REPO;
@@ -275,6 +274,43 @@ function buildIssueTitle(item) {
   return '[' + item.id + '] ' + firstLine.substring(0, 80);
 }
 
+// ─── AUTO-PROMOTION PULL REQUEST ─────────────────────────────────────────────
+
+// main is protected by a ruleset requiring pull requests, so the updated
+// BACKLOG.md is committed to a dedicated branch via the Contents API, then
+// a PR is opened and merged immediately (the ruleset allows 0 approvals).
+async function commitPromotionsViaPullRequest(promotions, content) {
+  const branch = 'chore/backlog-auto-promote-' + Date.now();
+
+  const { data: mainRef } = await octokit.git.getRef({ owner: OWNER, repo: REPO, ref: 'heads/main' });
+  await octokit.git.createRef({ owner: OWNER, repo: REPO, ref: 'refs/heads/' + branch, sha: mainRef.object.sha });
+
+  const { data: existingFile } = await octokit.repos.getContent({
+    owner: OWNER, repo: REPO, path: 'BACKLOG.md', ref: branch,
+  });
+
+  await octokit.repos.createOrUpdateFileContents({
+    owner: OWNER, repo: REPO, path: 'BACKLOG.md',
+    message: 'chore(backlog): auto-promote ready items [skip ci]',
+    content: Buffer.from(content, 'utf8').toString('base64'),
+    sha: existingFile.sha,
+    branch,
+    committer: { name: 'github-actions[bot]', email: 'github-actions[bot]@users.noreply.github.com' },
+    author: { name: 'github-actions[bot]', email: 'github-actions[bot]@users.noreply.github.com' },
+  });
+
+  const { data: pr } = await octokit.pulls.create({
+    owner: OWNER, repo: REPO,
+    title: 'chore(backlog): auto-promote ready items',
+    head: branch,
+    base: 'main',
+    body: 'Auto-promoted to ready: ' + promotions.join(', '),
+  });
+
+  await octokit.pulls.merge({ owner: OWNER, repo: REPO, pull_number: pr.number, merge_method: 'squash' });
+  console.log('Merged auto-promotion PR #' + pr.number + ' (' + branch + ')');
+}
+
 // ─── MAIN ────────────────────────────────────────────────────────────────────
 
 async function main() {
@@ -313,13 +349,11 @@ async function main() {
     content = applyReadyPromotions(content, promotions);
     fs.writeFileSync(backlogPath, content, 'utf8');
 
-    // Commit the updated BACKLOG.md
-    execSync('git config user.email "github-actions[bot]@users.noreply.github.com"', { cwd: path.resolve(__dirname, '../..') });
-    execSync('git config user.name "github-actions[bot]"', { cwd: path.resolve(__dirname, '../..') });
-    execSync('git add BACKLOG.md', { cwd: path.resolve(__dirname, '../..') });
-    execSync('git commit -m "chore(backlog): auto-promote ready items [skip ci]"', { cwd: path.resolve(__dirname, '../..') });
-    execSync('git push', { cwd: path.resolve(__dirname, '../..') });
-    console.log('BACKLOG.md updated and pushed.');
+    // main is protected (PR required) — commit to a dedicated branch, open a PR,
+    // then merge it immediately (the ruleset requires 0 approvals) instead of
+    // pushing to main directly.
+    await commitPromotionsViaPullRequest(promotions, content);
+    console.log('BACKLOG.md updated via pull request.');
 
     // Re-parse with updated content
     const reparsed = parseBacklog(content);

@@ -1414,7 +1414,7 @@ applicable. Existing i18n keys and API contracts are unaffected.
 - **type:** chore
 - **id:** CHORE-008
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** high
 - **domain:** security
 - **complexity:** M

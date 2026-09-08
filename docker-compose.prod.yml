@@ -1,0 +1,72 @@
+name: hexarot
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: hexarot-postgres
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - internal
+
+  backend:
+    image: ghcr.io/marvinlerouge/hexarot/backend:${IMAGE_TAG:-latest}
+    container_name: hexarot-backend
+    expose:
+      - "3000"
+    env_file:
+      - ../shared/env/app.env
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.hexarot-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.hexarot-api.entrypoints=websecure"
+      - "traefik.http.routers.hexarot-api.tls=true"
+      - "traefik.http.routers.hexarot-api.tls.certresolver=letsencrypt"
+      - "traefik.http.routers.hexarot-api.middlewares=hexarot-strip-api"
+      - "traefik.http.routers.hexarot-api.service=hexarot-backend"
+      - "traefik.http.middlewares.hexarot-strip-api.stripprefix.prefixes=/api"
+      - "traefik.http.services.hexarot-backend.loadbalancer.server.port=3000"
+    networks:
+      - traefik-public
+      - internal
+
+  frontend:
+    image: ghcr.io/marvinlerouge/hexarot/frontend:${IMAGE_TAG:-latest}
+    container_name: hexarot-frontend
+    expose:
+      - "80"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+      - "traefik.http.routers.hexarot-frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.hexarot-frontend.entrypoints=websecure"
+      - "traefik.http.routers.hexarot-frontend.tls=true"
+      - "traefik.http.routers.hexarot-frontend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.hexarot-frontend.loadbalancer.server.port=80"
+    networks:
+      - traefik-public
+
+volumes:
+  postgres_data:
+
+networks:
+  internal:
+    driver: bridge
+  traefik-public:
+    external: true

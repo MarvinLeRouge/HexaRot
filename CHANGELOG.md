@@ -292,6 +292,8 @@ automatically from Conventional Commits history.
 - Mark CHORE-008 ready now that all dependencies are done
 - Update CHANGELOG.md
 - OWASP Top 10 hardening audit (CHORE-008)
+- Update CHANGELOG.md
+- Add production Dockerfiles and docker-compose.prod.yml
 
 ### Refactoring
 

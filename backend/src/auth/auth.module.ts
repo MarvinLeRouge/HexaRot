@@ -12,10 +12,17 @@ import { MailerModule } from '../mailer/mailer.module';
 @Module({
   imports: [
     JwtModule.registerAsync({
-      useFactory: () => ({
-        secret: process.env.JWT_SECRET,
-        signOptions: { expiresIn: Number(process.env.JWT_EXPIRES_IN ?? 3600) },
-      }),
+      useFactory: () => {
+        const parsedExpiresIn = Number(process.env.JWT_EXPIRES_IN);
+        const expiresIn =
+          Number.isFinite(parsedExpiresIn) && parsedExpiresIn > 0
+            ? parsedExpiresIn
+            : 3600;
+        return {
+          secret: process.env.JWT_SECRET,
+          signOptions: { expiresIn },
+        };
+      },
     }),
     MailerModule,
   ],

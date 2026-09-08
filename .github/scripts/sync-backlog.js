@@ -188,7 +188,8 @@ async function ensureLabel(name, color) {
   const labelColor = color || 'ededed';
   try {
     await octokit.issues.getLabel({ owner: OWNER, repo: REPO, name });
-  } catch (_e) {
+  } catch (e) {
+    if (e.status !== 404) throw e;
     await octokit.issues.createLabel({ owner: OWNER, repo: REPO, name, color: labelColor });
     console.log('Created label: ' + name);
   }

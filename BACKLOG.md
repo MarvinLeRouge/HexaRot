@@ -1301,7 +1301,7 @@ psql access) — it is not routed through Traefik.
 - **type:** chore
 - **id:** CHORE-007
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** infra
 - **complexity:** M
@@ -1333,6 +1333,39 @@ server and does not run any deployment.
 - No credentials hardcoded; all secrets come from environment variables / env file
 - `docker-compose.prod.yml` builds and starts locally against the production images
   when manually tested with a locally-built image tag
+
+#### Resolution (2026-09-08)
+
+Implemented `backend/Dockerfile` and `frontend/Dockerfile` with `base` → `dev`/`build` →
+`production` multi-stage targets, replacing the standalone `Dockerfile.dev` files.
+`docker-compose.prod.yml` added at repo root, pulling `ghcr.io/.../backend:${IMAGE_TAG:-latest}`
+and `:frontend`, routed through Traefik's `websecure` entrypoint with
+`tls.certresolver=letsencrypt` on `Host(\`${DOMAIN}\`)`, backend under `/api` with the
+prefix stripped — mirroring the pattern already in production use on HiveMind. Secrets
+come from an external env file (`../shared/env/app.env`, injected via both `env_file:`
+on the backend service and `--env-file` at `docker compose` invocation time), no
+hardcoded credentials.
+
+Full stack smoke-tested locally end to end (locally-built `:test` images, dummy
+credentials, throwaway Postgres volume): `docker compose -f docker-compose.prod.yml
+--env-file ... up -d` starts postgres (healthy), backend, and frontend; `GET /api`
+returns 200 and the frontend serves the SPA correctly.
+
+Two latent bugs surfaced and fixed along the way, both pre-existing and independent of
+Docker itself:
+- `backend/package.json`'s `start:prod` (`node dist/main`) never matched the actual
+  `nest build` output. `tsconfig.build.json` has no `rootDir`, and `prisma.config.ts`
+  plus the `generated/prisma` client both live outside `src/`, so TypeScript infers the
+  build's common root as the whole `backend/` directory — output lands at
+  `dist/src/main.js`, not `dist/main.js`. Narrowing `rootDir` to `./src` was tried and
+  rejected: it breaks compilation of files importing `generated/prisma/client`, which
+  is intentionally outside `src/` (see `CLAUDE.md`). Fixed `start:prod` and the
+  Dockerfile `CMD` to point at the real path (`dist/src/main`) instead.
+- Prisma 7's CLI requires `prisma.config.ts` at the project root for `migrate deploy`
+  to know the datasource URL. The production image didn't have it. Copying the
+  compiled `dist/prisma.config.js` failed ("Failed to parse syntax") — Prisma's config
+  loader expects to load the TS source directly. Fixed by copying the raw
+  `prisma.config.ts` into the production image instead of a compiled artifact.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->

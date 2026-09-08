@@ -2147,7 +2147,7 @@ changes (out of scope, doesn't construct `KeyParams` literals).
 - **type:** chore
 - **id:** CHORE-010
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** low
 - **domain:** backend
 - **complexity:** S
@@ -2181,4 +2181,30 @@ reachability analysis).
 - If still unreachable and unpatched, re-defer with an updated rationale and
   date
 - If reachable or patched, fix and close
+
+#### Resolution (2026-09-08)
+
+`npm audit` re-run on `backend/`: same 4 high severity findings as CHORE-008
+(`deepmerge-ts`, `mysql2`, nested under `@prisma/config` under `prisma@7.10.0`).
+`npm audit fix --force` still proposes downgrading `prisma` to `6.19.3`,
+incompatible with the project's `@prisma/client@7.10.0` usage — still not
+justified for these findings.
+
+`@prisma/client` only lists `prisma` as a peer dependency (`*`), never
+`require()`s it; the production runtime path (`node dist/src/main`) never
+touches the CLI's code.
+
+One nuance versus the original deferral rationale: CHORE-007 (production
+Dockerfiles) shipped since this item was created. `prisma` is a
+`dependencies` entry, not `devDependencies`, so `npm ci --omit=dev` in
+`backend/Dockerfile`'s production stage does install it, and
+`prisma.config.ts` is copied into that image specifically so `prisma
+migrate deploy` can be run against it as a one-off deployment step. So the
+CLI is present and usable in the production image now — but the container's
+own `CMD` (`node dist/src/main`) still never invokes it automatically at
+startup, so the "unreachable from any deployed/running code path" analysis
+still holds. Re-defer criterion updated accordingly: revisit again if a
+deploy process is introduced that runs `prisma migrate deploy` as part of
+the running production container itself (rather than as a separate one-off
+invocation against the image), or when Prisma publishes a non-breaking fix.
 <!-- ITEM:END -->

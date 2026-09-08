@@ -64,6 +64,7 @@ automatically from Conventional Commits history.
 - Don't fail registration when the verification email fails to send
 - Move codecov ignore list to the correct top-level key
 - Set valid milestone on CHORE-010
+- Open a pull request instead of pushing auto-promotions to main
 
 ### CI/CD
 
@@ -296,6 +297,7 @@ automatically from Conventional Commits history.
 - OWASP Top 10 hardening audit (CHORE-008)
 - Update CHANGELOG.md
 - Add production Dockerfiles and docker-compose.prod.yml
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 

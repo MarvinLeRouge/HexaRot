@@ -65,6 +65,7 @@ automatically from Conventional Commits history.
 - Move codecov ignore list to the correct top-level key
 - Set valid milestone on CHORE-010
 - Open a pull request instead of pushing auto-promotions to main
+- Only create a label in sync-backlog when it truly doesn't exist
 
 ### CI/CD
 
@@ -303,6 +304,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Auto-promote ready items [skip ci] (#179)
+- Update CHANGELOG.md
 
 ### Refactoring
 

@@ -149,6 +149,7 @@ automatically from Conventional Commits history.
 - Add FEAT-021 implementation plan
 - Update FEAT-021 acceptance criteria to match what shipped
 - Correct FEAT-021 public-route list in acceptance criteria
+- Mark CHORE-007 done with resolution notes
 
 ### Features
 
@@ -294,6 +295,7 @@ automatically from Conventional Commits history.
 - OWASP Top 10 hardening audit (CHORE-008)
 - Update CHANGELOG.md
 - Add production Dockerfiles and docker-compose.prod.yml
+- Update CHANGELOG.md
 
 ### Refactoring
 

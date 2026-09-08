@@ -121,6 +121,30 @@ describe('AuthService', () => {
         createdAt: BASE_USER.createdAt,
       });
     });
+
+    it('still resolves with the created user when sending the verification email fails', async () => {
+      const prisma = makePrismaMock();
+      prisma.user.findUnique.mockResolvedValue(null);
+      prisma.user.create.mockResolvedValue(BASE_USER);
+      const { service, mailer } = makeService(prisma);
+      mailer.sendVerificationEmail.mockRejectedValue(
+        new Error('SMTP connection refused'),
+      );
+
+      const result = await service.register({
+        email: 'user@example.com',
+        password: 'correct-horse-battery-staple',
+      });
+
+      expect(result).toEqual({
+        id: 'user-1',
+        email: 'user@example.com',
+        role: 'USER',
+        emailVerified: false,
+        active: true,
+        createdAt: BASE_USER.createdAt,
+      });
+    });
   });
 
   describe('verifyEmail', () => {

@@ -4,6 +4,7 @@ import {
   ForbiddenException,
   Inject,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -40,6 +41,8 @@ const DUMMY_PASSWORD_HASH = hashSync(
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly jwtService: JwtService,
@@ -69,7 +72,9 @@ export class AuthService {
       throw err;
     }
 
-    await this.issueVerificationToken(user.id, user.email);
+    await this.issueVerificationToken(user.id, user.email, {
+      suppressMailerErrors: true,
+    });
 
     return this.toPublicUser(user);
   }
@@ -151,6 +156,7 @@ export class AuthService {
   private async issueVerificationToken(
     userId: string,
     email: string,
+    options: { suppressMailerErrors?: boolean } = {},
   ): Promise<void> {
     await this.prisma.verificationToken.deleteMany({ where: { userId } });
 
@@ -161,6 +167,17 @@ export class AuthService {
     await this.prisma.verificationToken.create({
       data: { userId, tokenHash, expiresAt },
     });
+
+    if (options.suppressMailerErrors) {
+      try {
+        await this.mailer.sendVerificationEmail(email, rawToken);
+      } catch (err) {
+        this.logger.error(
+          `Failed to send verification email to ${email}: ${(err as Error).message}`,
+        );
+      }
+      return;
+    }
 
     await this.mailer.sendVerificationEmail(email, rawToken);
   }

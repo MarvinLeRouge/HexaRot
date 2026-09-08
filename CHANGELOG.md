@@ -62,6 +62,7 @@ automatically from Conventional Commits history.
 - Default JWT expiry when JWT_EXPIRES_IN is empty or invalid
 - Return 409 instead of 500 on a registration race
 - Don't fail registration when the verification email fails to send
+- Move codecov ignore list to the correct top-level key
 
 ### CI/CD
 
@@ -289,6 +290,8 @@ automatically from Conventional Commits history.
 - Add jwt, throttler, bcryptjs, nodemailer dependencies
 - Wire JWT, SMTP, and admin seed env vars
 - Mark CHORE-008 ready now that all dependencies are done
+- Update CHANGELOG.md
+- OWASP Top 10 hardening audit (CHORE-008)
 
 ### Refactoring
 

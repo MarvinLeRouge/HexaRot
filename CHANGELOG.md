@@ -152,6 +152,7 @@ automatically from Conventional Commits history.
 - Update FEAT-021 acceptance criteria to match what shipped
 - Correct FEAT-021 public-route list in acceptance criteria
 - Mark CHORE-007 done with resolution notes
+- Mark CHORE-010 done with resolution notes
 
 ### Features
 
@@ -300,6 +301,8 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
+- Update CHANGELOG.md
+- Auto-promote ready items [skip ci] (#179)
 
 ### Refactoring
 

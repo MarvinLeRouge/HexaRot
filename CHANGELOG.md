@@ -56,6 +56,12 @@ automatically from Conventional Commits history.
 - Stop the "Out of date" badge from overlapping cryptogram cells (REFACTOR-010)
 - Make the decoded message keyboard-scrollable (REFACTOR-011)
 - Regenerate Prisma client automatically after install
+- Remap postgres host port to 5435 to avoid cross-project collision
+- Restore full env spread in mailer test setup
+- Skip global rate limiting under NODE_ENV=test
+- Default JWT expiry when JWT_EXPIRES_IN is empty or invalid
+- Return 409 instead of 500 on a registration race
+- Don't fail registration when the verification email fails to send
 
 ### CI/CD
 
@@ -138,6 +144,10 @@ automatically from Conventional Commits history.
 - Add ADR index
 - Add architecture summary page
 - Link architecture decision records from README
+- Add FEAT-021 user authentication design spec
+- Add FEAT-021 implementation plan
+- Update FEAT-021 acceptance criteria to match what shipped
+- Correct FEAT-021 public-route list in acceptance criteria
 
 ### Features
 
@@ -192,6 +202,16 @@ automatically from Conventional Commits history.
 - Give the output column an empty state and align the title
 - Bring Key view to parity with Encode and Decode
 - Pack the cryptogram size into the key (FEAT-022)
+- Add User, VerificationToken, and Role to the schema
+- Add mailer module with nodemailer and no-op implementations
+- Add register, login, verify-email, resend-verification DTOs
+- Add Public and Roles decorators
+- Add JwtAuthGuard and RolesGuard
+- Add AuthService with register, verify, resend, login, me
+- Add AuthController and AuthModule
+- Add admin user moderation module
+- Register global JwtAuthGuard, RolesGuard, and ThrottlerGuard
+- Seed the single admin account from env vars
 
 ### Miscellaneous
 
@@ -265,6 +285,10 @@ automatically from Conventional Commits history.
 - Migrate to NestJS 12 (runtime packages)
 - Update CHANGELOG.md
 - Bump @nestjs/cli from 11.0.16 to 12.0.0 in /backend
+- Update CHANGELOG.md
+- Add jwt, throttler, bcryptjs, nodemailer dependencies
+- Wire JWT, SMTP, and admin seed env vars
+- Mark CHORE-008 ready now that all dependencies are done
 
 ### Refactoring
 
@@ -293,5 +317,7 @@ automatically from Conventional Commits history.
 - Enforce coverage thresholds on the algorithmic core
 - Make the e2e suite hit a real seeded database
 - Enforce coverage thresholds, close two real test gaps
+- Add end-to-end coverage for register/verify/login/admin flows
+- Fix vacuous route-protection assertion in e2e suite
 
 

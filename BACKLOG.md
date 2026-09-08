@@ -1194,7 +1194,7 @@ translation file and implementing the language switcher in the UI.
 - **type:** feat
 - **id:** FEAT-021
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** api
 - **complexity:** XL
@@ -1246,6 +1246,10 @@ at implementation time.
 - Expired JWTs are rejected with a 401 response
 - `.env.example` documents `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`,
   `FRONTEND_BASE_URL`
+- Every route except `POST /auth/register`, `POST /auth/verify-email`, `POST /auth/resend-verification`, `POST /auth/login` requires a valid JWT by default, including `encode`/`decode`/`key` routes
+- A `Role` enum (`USER`, `ADMIN`) exists
+- Exactly one admin account is seeded from `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD`, with no promotion endpoint
+- `GET /admin/users`, `PATCH /admin/users/:id`, `DELETE /admin/users/:id` exist, are admin-only, and block self-deactivation/self-deletion
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->

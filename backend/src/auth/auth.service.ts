@@ -15,7 +15,7 @@ import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 import { ResendVerificationDto } from './dto/resend-verification.dto';
-import { Role, User } from '../../generated/prisma/client';
+import { Prisma, Role, User } from '../../generated/prisma/client';
 
 /** Public-safe user shape: never includes passwordHash. */
 export interface PublicUser {
@@ -55,9 +55,19 @@ export class AuthService {
     }
 
     const passwordHash = await hash(dto.password, BCRYPT_ROUNDS);
-    const user = await this.prisma.user.create({
-      data: { email: dto.email, passwordHash },
-    });
+    let user: User;
+    try {
+      user = await this.prisma.user.create({
+        data: { email: dto.email, passwordHash },
+      });
+    } catch (err) {
+      if (isUniqueEmailConstraintError(err)) {
+        throw new ConflictException(
+          'An account with this email already exists',
+        );
+      }
+      throw err;
+    }
 
     await this.issueVerificationToken(user.id, user.email);
 
@@ -169,4 +179,20 @@ export class AuthService {
       createdAt: user.createdAt,
     };
   }
+}
+
+/**
+ * Narrows an unknown catch value to a Prisma unique-constraint violation
+ * (error code P2002), the case that fires when a concurrent registration
+ * for the same email wins the race against this service's pre-check.
+ */
+function isUniqueEmailConstraintError(
+  err: unknown,
+): err is Prisma.PrismaClientKnownRequestError {
+  return (
+    typeof err === 'object' &&
+    err !== null &&
+    'code' in err &&
+    (err as { code?: unknown }).code === 'P2002'
+  );
 }

@@ -68,6 +68,22 @@ describe('AuthService', () => {
       ).rejects.toBeInstanceOf(ConflictException);
     });
 
+    it('returns a conflict when the create call loses a registration race (P2002)', async () => {
+      const prisma = makePrismaMock();
+      prisma.user.findUnique.mockResolvedValue(null);
+      prisma.user.create.mockRejectedValue({
+        code: 'P2002',
+      });
+      const { service } = makeService(prisma);
+
+      await expect(
+        service.register({
+          email: 'user@example.com',
+          password: 'correct-horse-battery-staple',
+        }),
+      ).rejects.toBeInstanceOf(ConflictException);
+    });
+
     it('hashes the password, creates the user, and sends a verification email', async () => {
       const prisma = makePrismaMock();
       prisma.user.findUnique.mockResolvedValue(null);

@@ -35,6 +35,8 @@ jobs:
     env:
       DATABASE_URL: postgresql://hexarot:hexarot_password@localhost:5432/hexarot_test
       JWT_SECRET: test_jwt_secret_do_not_use_in_production
+      SEED_ADMIN_EMAIL: ci-admin@hexarot.local
+      SEED_ADMIN_PASSWORD: ci_test_admin_password_do_not_use_in_production
 
     defaults:
       run:

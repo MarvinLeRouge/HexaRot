@@ -1374,7 +1374,7 @@ Docker itself:
 - **type:** ci
 - **id:** CI-004
 - **milestone:** v1
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** infra
 - **complexity:** M
@@ -2147,7 +2147,7 @@ changes (out of scope, doesn't construct `KeyParams` literals).
 - **type:** chore
 - **id:** CHORE-010
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** low
 - **domain:** backend
 - **complexity:** S

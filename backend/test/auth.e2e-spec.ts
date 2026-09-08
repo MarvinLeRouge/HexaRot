@@ -93,12 +93,15 @@ describe('Auth (e2e)', () => {
     expect(meRes.body).toMatchObject({ email, role: 'USER' });
 
     await request(app.getHttpServer())
-      .get('/api/key/parse')
-      .query({ key: 'not-a-real-key' })
+      .post('/api/key/parse')
+      .send({ key: 'not-a-real-key' })
       .set('Authorization', `Bearer ${accessToken}`)
-      .expect((res) => {
-        expect(res.status).not.toBe(401);
-      });
+      .expect(400);
+
+    await request(app.getHttpServer())
+      .post('/api/key/parse')
+      .send({ key: 'not-a-real-key' })
+      .expect(401);
   });
 
   it('rejects login with a wrong password', async () => {

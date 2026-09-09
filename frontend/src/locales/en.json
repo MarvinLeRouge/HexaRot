@@ -254,7 +254,29 @@
   },
   "admin": {
     "users": {
-      "title": "User management"
+      "title": "User management",
+      "table": {
+        "email": "Email",
+        "role": "Role",
+        "verified": "Verified",
+        "active": "Active",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "actions": {
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "delete": "Delete"
+      },
+      "confirmDelete": {
+        "title": "Delete this account?",
+        "body": "This will permanently delete {email}'s account. This cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      },
+      "error": {
+        "prefix": "Couldn't complete this action: {detail}"
+      }
     }
   },
   "errors": {

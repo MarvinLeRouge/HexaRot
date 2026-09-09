@@ -2142,6 +2142,49 @@ changes (out of scope, doesn't construct `KeyParams` literals).
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
+### [FEAT-023] Frontend authentication + admin UI + backend password complexity
+
+- **type:** feat
+- **id:** FEAT-023
+- **milestone:** v2
+- **status:** in-progress
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** XL
+- **parent:** ~
+- **depends-on:** FEAT-021
+- **learning:** [Vue Router navigation guards, Pinia store composition around a shared token module, avoiding circular imports between an API client and a store, live password-strength feedback, confirm-before-destructive-action UI pattern]
+- **labels:** [feat, domain:frontend, priority:medium, milestone:v2]
+FEAT-021 gated every API route except the four auth endpoints and `GET /` behind a
+valid JWT, but the frontend had zero auth integration: no login/register views, no
+token attachment, no route guarding. This item closes that gap: a full
+register/verify-email/login/resend-verification flow, route guards on
+`encode`/`decode`/`key` matching the backend's deny-by-default posture, and a basic
+admin UI (list/deactivate/reactivate/delete) for the account-moderation endpoints
+FEAT-021 shipped but no frontend ever consumed. Also adds backend-enforced password
+complexity (lowercase, uppercase, digit, special character) on top of the existing
+12-72 character length bounds, since it only matters once a register UI exists to
+exercise it.
+- User can register with email + password; sees a "check your email" panel, no
+  auto-login
+- `RegisterDto.password` rejects passwords missing a lowercase letter, uppercase
+  letter, digit, or special character with a 400 response
+- User can follow the verification link and see a success or error state; an
+  expired/invalid token surfaces a resend-verification form inline
+- User can log in; a distinguishable message is shown for invalid credentials,
+  unverified email, and a disabled account (no account enumeration)
+- Visiting `/encode`, `/decode`, `/key`, or `/admin/users` without a valid session
+  redirects to `/login?redirect=<path>`; a successful login returns the user to
+  that path
+- The access token is attached to every API request; a `401` on an authenticated
+  request clears the session and redirects to `/login`
+- Admin-only `/admin/users` lists users and lets an admin toggle active/inactive
+  or delete an account (with a confirmation dialog before delete); self-action
+  errors from the backend are surfaced as returned
+- The "Admin" nav link is visible only to a logged-in admin
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
 ### [CHORE-010] Revisit deferred prisma-CLI npm audit findings
 
 - **type:** chore

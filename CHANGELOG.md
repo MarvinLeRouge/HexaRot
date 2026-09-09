@@ -66,6 +66,7 @@ automatically from Conventional Commits history.
 - Set valid milestone on CHORE-010
 - Open a pull request instead of pushing auto-promotions to main
 - Only create a label in sync-backlog when it truly doesn't exist
+- Read postgres readiness check from container env, not app.env
 
 ### CI/CD
 
@@ -84,6 +85,7 @@ automatically from Conventional Commits history.
 - Add automated changelog PR workflow
 - Remove duplicate --config flag from git-cliff-action args
 - Homogenize changelog workflow
+- Add build and deploy pipeline for GHCR and VPS
 
 ### Documentation
 
@@ -305,10 +307,12 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Auto-promote ready items [skip ci] (#179)
 - Update CHANGELOG.md
+- Update CHANGELOG.md
 
 ### Refactoring
 
 - Consolidate colour and size guards into shared palette helpers
+- Align SMTP env var names with cross-project convention
 
 ### Styling
 

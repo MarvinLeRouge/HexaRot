@@ -196,6 +196,12 @@
       },
       "success": "If an account with this email exists, a verification email has been sent."
     },
+    "verifyEmail": {
+      "title": "Email verification",
+      "success": "Your email address has been verified. You can now log in.",
+      "loginLink": "Go to login",
+      "error": "This verification link is invalid or has expired."
+    },
     "login": {
       "title": "Log in",
       "form": {

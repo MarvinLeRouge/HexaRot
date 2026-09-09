@@ -19,9 +19,10 @@ describe('NodemailerMailerService', () => {
       ...ORIGINAL_ENV,
       SMTP_HOST: 'smtp-relay.brevo.com',
       SMTP_PORT: '587',
-      SMTP_USER: 'brevo-user',
-      SMTP_PASS: 'brevo-pass',
-      SMTP_FROM: 'no-reply@hexarot.local',
+      SMTP_USERNAME: 'brevo-user',
+      SMTP_PASSWORD: 'brevo-pass',
+      MAIL_STD_NAME: 'Hexarot',
+      MAIL_STD_EMAIL: 'no-reply@hexarot.local',
       FRONTEND_BASE_URL: 'http://localhost:5173',
     };
   });
@@ -42,7 +43,7 @@ describe('NodemailerMailerService', () => {
     });
     expect(sendMailMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        from: 'no-reply@hexarot.local',
+        from: 'Hexarot <no-reply@hexarot.local>',
         to: 'user@example.com',
         subject: expect.any(String),
         text: expect.stringContaining(
@@ -53,7 +54,7 @@ describe('NodemailerMailerService', () => {
   });
 
   it('throws when SMTP config is incomplete', async () => {
-    process.env.SMTP_USER = '';
+    process.env.SMTP_USERNAME = '';
     const service = new NodemailerMailerService();
 
     await expect(

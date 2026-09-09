@@ -8,14 +8,25 @@ export class NodemailerMailerService implements MailerService {
   async sendVerificationEmail(to: string, token: string): Promise<void> {
     const host = process.env.SMTP_HOST;
     const port = process.env.SMTP_PORT;
-    const user = process.env.SMTP_USER;
-    const pass = process.env.SMTP_PASS;
-    const from = process.env.SMTP_FROM;
+    const user = process.env.SMTP_USERNAME;
+    const pass = process.env.SMTP_PASSWORD;
+    const fromName = process.env.MAIL_STD_NAME;
+    const fromEmail = process.env.MAIL_STD_EMAIL;
     const frontendBaseUrl = process.env.FRONTEND_BASE_URL;
 
-    if (!host || !port || !user || !pass || !from || !frontendBaseUrl) {
+    if (
+      !host ||
+      !port ||
+      !user ||
+      !pass ||
+      !fromName ||
+      !fromEmail ||
+      !frontendBaseUrl
+    ) {
       throw new Error('SMTP is not configured');
     }
+
+    const from = `${fromName} <${fromEmail}>`;
 
     const transport = createTransport({
       host,

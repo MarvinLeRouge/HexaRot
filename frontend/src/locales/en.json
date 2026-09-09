@@ -2,7 +2,8 @@
   "nav": {
     "encode": "Encode",
     "decode": "Decode",
-    "key": "Key"
+    "key": "Key",
+    "admin": "Admin"
   },
   "encode": {
     "title": "Encode a message",
@@ -184,6 +185,10 @@
     }
   },
   "auth": {
+    "nav": {
+      "login": "Log in",
+      "logout": "Log out"
+    },
     "resendVerification": {
       "form": {
         "email": {

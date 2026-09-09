@@ -215,6 +215,35 @@
           "unverified": "Please verify your email address before logging in."
         }
       }
+    },
+    "register": {
+      "title": "Create an account",
+      "form": {
+        "email": {
+          "label": "Email"
+        },
+        "password": {
+          "label": "Password",
+          "criteria": {
+            "minLength": "At least 12 characters",
+            "lowercase": "One lowercase letter",
+            "uppercase": "One uppercase letter",
+            "digit": "One digit",
+            "special": "One special character"
+          }
+        },
+        "submit": {
+          "label": "Register",
+          "loading": "Registering..."
+        },
+        "error": {
+          "duplicateEmail": "An account with this email already exists."
+        }
+      },
+      "success": {
+        "heading": "Check your email",
+        "body": "We've sent a verification link to your email address. Follow it to activate your account."
+      }
     }
   },
   "errors": {

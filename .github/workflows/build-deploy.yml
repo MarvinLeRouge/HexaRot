@@ -110,7 +110,7 @@ jobs:
             DOMAIN="$DOMAIN" docker compose -f docker-compose.prod.yml up -d postgres
 
             echo "==> Wait for database to be healthy"
-            timeout 60 sh -c 'until docker compose -f docker-compose.prod.yml exec -T postgres pg_isready -U "$(grep -m1 ^POSTGRES_USER= /home/mlr/marvinlerouge.dev/hexarot/shared/env/app.env | cut -d= -f2)"; do sleep 2; done'
+            timeout 60 sh -c 'until docker compose -f docker-compose.prod.yml exec -T postgres sh -c "pg_isready -U \"\$POSTGRES_USER\" -d \"\$POSTGRES_DB\""; do sleep 2; done'
 
             echo "==> Run pending migrations"
             DOMAIN="$DOMAIN" docker compose -f docker-compose.prod.yml run --rm --no-deps backend \

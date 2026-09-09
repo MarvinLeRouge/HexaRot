@@ -38,9 +38,7 @@ services:
       - "traefik.http.routers.hexarot-api.entrypoints=websecure"
       - "traefik.http.routers.hexarot-api.tls=true"
       - "traefik.http.routers.hexarot-api.tls.certresolver=letsencrypt"
-      - "traefik.http.routers.hexarot-api.middlewares=hexarot-strip-api"
       - "traefik.http.routers.hexarot-api.service=hexarot-backend"
-      - "traefik.http.middlewares.hexarot-strip-api.stripprefix.prefixes=/api"
       - "traefik.http.services.hexarot-backend.loadbalancer.server.port=3000"
     networks:
       - traefik-public

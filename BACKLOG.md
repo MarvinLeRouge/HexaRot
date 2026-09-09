@@ -2147,7 +2147,7 @@ changes (out of scope, doesn't construct `KeyParams` literals).
 - **type:** feat
 - **id:** FEAT-023
 - **milestone:** v2
-- **status:** in-progress
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** XL

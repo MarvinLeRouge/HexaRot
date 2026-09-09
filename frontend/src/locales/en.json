@@ -195,6 +195,26 @@
         }
       },
       "success": "If an account with this email exists, a verification email has been sent."
+    },
+    "login": {
+      "title": "Log in",
+      "form": {
+        "email": {
+          "label": "Email"
+        },
+        "password": {
+          "label": "Password"
+        },
+        "submit": {
+          "label": "Log in",
+          "loading": "Logging in..."
+        },
+        "error": {
+          "invalidCredentials": "Incorrect email or password.",
+          "disabled": "This account has been disabled.",
+          "unverified": "Please verify your email address before logging in."
+        }
+      }
     }
   },
   "errors": {

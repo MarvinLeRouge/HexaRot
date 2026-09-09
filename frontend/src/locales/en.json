@@ -183,6 +183,20 @@
       }
     }
   },
+  "auth": {
+    "resendVerification": {
+      "form": {
+        "email": {
+          "label": "Email"
+        },
+        "submit": {
+          "label": "Resend",
+          "loading": "Sending..."
+        }
+      },
+      "success": "If an account with this email exists, a verification email has been sent."
+    }
+  },
   "errors": {
     "network": "Couldn't reach the server. Check your connection and try again.",
     "unknown": "Something went wrong. Please try again."

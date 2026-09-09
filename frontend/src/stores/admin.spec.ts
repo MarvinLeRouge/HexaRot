@@ -11,6 +11,16 @@ vi.mock('../api/client', async () => {
 
 import { getJson, patchJson, deleteJson } from '../api/client'
 
+/**
+ * MOCK_ADMIN_USERS_LIST is a shared module-level fixture. The admin store
+ * assigns the array returned by getJson directly to state and mutates it
+ * in place (setActive replaces an element by index), so resolving with the
+ * literal fixture would corrupt it for every later test in this file.
+ */
+function mockAdminUsersList(): typeof MOCK_ADMIN_USERS_LIST {
+  return MOCK_ADMIN_USERS_LIST.map((user) => ({ ...user }))
+}
+
 describe('useAdminStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -21,7 +31,7 @@ describe('useAdminStore', () => {
 
   describe('fetchUsers', () => {
     it('stores the returned user list on success', async () => {
-      vi.mocked(getJson).mockResolvedValue(MOCK_ADMIN_USERS_LIST)
+      vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
       const store = useAdminStore()
 
       await store.fetchUsers()
@@ -44,7 +54,7 @@ describe('useAdminStore', () => {
 
   describe('setActive', () => {
     it('replaces the updated user in the list', async () => {
-      vi.mocked(getJson).mockResolvedValue(MOCK_ADMIN_USERS_LIST)
+      vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
       const store = useAdminStore()
       await store.fetchUsers()
       const updated = { ...MOCK_ADMIN_USERS_LIST[0], active: false }
@@ -67,7 +77,7 @@ describe('useAdminStore', () => {
 
   describe('removeUser', () => {
     it('removes the deleted user from the list', async () => {
-      vi.mocked(getJson).mockResolvedValue(MOCK_ADMIN_USERS_LIST)
+      vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
       const store = useAdminStore()
       await store.fetchUsers()
       vi.mocked(deleteJson).mockResolvedValue(undefined)

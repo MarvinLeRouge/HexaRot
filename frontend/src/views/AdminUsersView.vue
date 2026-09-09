@@ -27,7 +27,7 @@ function cancelDelete(): void {
 
 async function confirmDelete(): Promise<void> {
   if (!pendingDelete.value) return
-  await adminStore.removeUser(pendingDelete.value.id)
+  await adminStore.removeUser(pendingDelete.value.id).catch(() => {})
   pendingDelete.value = null
 }
 </script>

@@ -23,8 +23,11 @@ watch(
 )
 
 function handleLogout(): void {
+  // Do not navigate here: authStore.logout() clears the token, which the
+  // watcher above observes and redirects from on its own. A second
+  // navigator racing the watcher's push would append an unwanted
+  // ?redirect= query, violating spec Decision 5's single redirect owner.
   authStore.logout()
-  void router.push('/login')
 }
 </script>
 

@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import { onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
 import RegisterForm from '../components/RegisterForm.vue'
 
 const { t } = useI18n()
 const authStore = useAuthStore()
+
+// Revisiting /register after a prior success must show the form again, not
+// a stale success panel from the last time this view was mounted.
+onMounted(() => authStore.resetRegister())
 </script>
 
 <template>

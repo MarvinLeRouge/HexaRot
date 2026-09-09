@@ -252,6 +252,11 @@
       }
     }
   },
+  "admin": {
+    "users": {
+      "title": "User management"
+    }
+  },
   "errors": {
     "network": "Couldn't reach the server. Check your connection and try again.",
     "unknown": "Something went wrong. Please try again."

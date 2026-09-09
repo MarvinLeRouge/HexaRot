@@ -14,7 +14,7 @@ onMounted(() => {
 })
 
 function toggleActive(user: AdminUserSummary): void {
-  void adminStore.setActive(user.id, !user.active)
+  adminStore.setActive(user.id, !user.active).catch(() => {})
 }
 
 function requestDelete(user: AdminUserSummary): void {

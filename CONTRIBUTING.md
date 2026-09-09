@@ -137,3 +137,21 @@ Go to **repo GitHub → Settings → Secrets and variables → Actions → Repos
 ### Security
 
 The token is tied to the account that owns the repository. Never commit it to the codebase. Rotate it immediately if compromised.
+
+## Build & Deploy pipeline secrets
+
+`.github/workflows/build-deploy.yml` builds the backend and frontend production images, pushes them to GHCR, and deploys to the VPS over SSH. It requires the following repository secrets, in addition to the ambient `GITHUB_TOKEN` used for the GHCR push (no extra token needed there).
+
+Go to **repo GitHub → Settings → Secrets and variables → Actions → Repository secrets** and create each of the following:
+
+| Secret | Purpose |
+|---|---|
+| `DEPLOY_SSH_HOST` | Hostname or IP of the VPS |
+| `DEPLOY_SSH_USER` | SSH user used to connect to the VPS |
+| `DEPLOY_SSH_PRIVATE_KEY` | Private key authorized on the VPS for that user |
+| `DOMAIN` | Public domain the app is served on, used by `docker-compose.prod.yml`'s Traefik labels |
+| `VITE_API_BASE_URL` | Base URL the frontend uses to reach the backend API, baked in at build time |
+
+### Security
+
+These secrets grant SSH access to the production server and control public routing. Never commit them to the codebase. Rotate the SSH key immediately if compromised.

@@ -26,6 +26,7 @@ services:
       - "3000"
     env_file:
       - ../shared/env/app.env
+      - ../shared/env/secrets.env
     depends_on:
       postgres:
         condition: service_healthy

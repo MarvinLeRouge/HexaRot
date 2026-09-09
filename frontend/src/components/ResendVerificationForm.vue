@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useAuthStore } from '../stores/auth'
 import LoadingSpinner from './LoadingSpinner.vue'
@@ -11,6 +11,11 @@ const authStore = useAuthStore()
 const email = ref(props.initialEmail)
 
 const canSubmit = computed(() => authStore.resendStatus !== 'loading' && email.value.trim().length > 0)
+
+// This component mounts fresh at two call sites (LoginForm, VerifyEmailView);
+// without a reset, a resendStatus of 'success'/'error' from one mount leaks
+// into the other's initial render.
+onMounted(() => authStore.resetResend())
 
 async function handleSubmit(): Promise<void> {
   if (!canSubmit.value) return

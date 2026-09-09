@@ -49,19 +49,23 @@ async function handleResponse<TResponse>(response: Response): Promise<TResponse>
   throw new ApiError(message, 'http', response.status)
 }
 
-async function doFetch(url: string, init: RequestInit): Promise<Response> {
+// Endpoints reachable without a session. A token must never be attached to
+// these (an unrelated logged-in tab's token has no business on a /login
+// attempt) and a 401 from them must never clear an unrelated, still-valid
+// session sitting in another tab.
+const PUBLIC_PATHS = new Set(['/auth/login', '/auth/register', '/auth/verify-email', '/auth/resend-verification'])
+
+async function doFetch(path: string, init: RequestInit): Promise<Response> {
   const headers: Record<string, string> = { ...(init.headers as Record<string, string> | undefined) }
-  // A 401 only means "the session died" when this request actually carried a
-  // token - a 401 from an anonymous POST /auth/login (wrong password) must
-  // not clear an unrelated, still-valid session sitting in another tab.
-  const hadToken = accessToken.value !== null
+  const isPublicAuthPath = PUBLIC_PATHS.has(path)
+  const hadToken = !isPublicAuthPath && accessToken.value !== null
   if (hadToken) {
     headers.Authorization = `Bearer ${accessToken.value}`
   }
 
   let response: Response
   try {
-    response = await fetch(url, { ...init, headers })
+    response = await fetch(`${resolveBaseUrl()}${path}`, { ...init, headers })
   } catch {
     throw new ApiError('Network error: unable to reach the server', 'network')
   }
@@ -74,12 +78,12 @@ async function doFetch(url: string, init: RequestInit): Promise<Response> {
 }
 
 export async function getJson<TResponse>(path: string): Promise<TResponse> {
-  const response = await doFetch(`${resolveBaseUrl()}${path}`, { method: 'GET' })
+  const response = await doFetch(path, { method: 'GET' })
   return handleResponse<TResponse>(response)
 }
 
 export async function postJson<TResponse>(path: string, body: unknown): Promise<TResponse> {
-  const response = await doFetch(`${resolveBaseUrl()}${path}`, {
+  const response = await doFetch(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -88,7 +92,7 @@ export async function postJson<TResponse>(path: string, body: unknown): Promise<
 }
 
 export async function patchJson<TResponse>(path: string, body: unknown): Promise<TResponse> {
-  const response = await doFetch(`${resolveBaseUrl()}${path}`, {
+  const response = await doFetch(path, {
     method: 'PATCH',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -97,6 +101,6 @@ export async function patchJson<TResponse>(path: string, body: unknown): Promise
 }
 
 export async function deleteJson(path: string): Promise<void> {
-  const response = await doFetch(`${resolveBaseUrl()}${path}`, { method: 'DELETE' })
+  const response = await doFetch(path, { method: 'DELETE' })
   return handleResponse<void>(response)
 }

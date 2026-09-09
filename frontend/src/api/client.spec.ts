@@ -171,11 +171,14 @@ describe('token attachment and session clearing', () => {
     expect(accessToken.value).toBeNull()
   })
 
-  it('does not clear anything on a 401 response when no token was sent', async () => {
+  it('does not send or clear a token on a public auth path, even when one is present', async () => {
+    setAccessToken('jwt-token')
     vi.mocked(fetch).mockResolvedValue(jsonResponse({ statusCode: 401, message: 'Invalid credentials' }, 401))
 
     await expect(postJson('/auth/login', { email: 'a@b.com', password: 'wrong' })).rejects.toBeInstanceOf(ApiError)
 
-    expect(accessToken.value).toBeNull()
+    const [, init] = vi.mocked(fetch).mock.calls[0]
+    expect((init?.headers as Record<string, string>).Authorization).toBeUndefined()
+    expect(accessToken.value).toBe('jwt-token')
   })
 })

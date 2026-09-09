@@ -143,10 +143,25 @@ export const useAuthStore = defineStore('auth', {
       if (!storedAccessToken.value) return
       try {
         await this.fetchMe()
-      } catch {
-        clearAccessToken()
-        this.user = null
+      } catch (err) {
+        // Only a genuine 401 means the session died. A network error (backend
+        // restart, offline reload) must not destroy an otherwise-valid token.
+        if (err instanceof ApiError && err.code === 'http') {
+          clearAccessToken()
+          this.user = null
+        }
       }
+    },
+
+    resetRegister(): void {
+      this.registerStatus = 'idle'
+      this.registerErrorKind = null
+      this.registerErrorMessage = null
+    },
+
+    resetResend(): void {
+      this.resendStatus = 'idle'
+      this.resendErrorKind = null
     },
   },
 })

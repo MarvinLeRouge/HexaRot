@@ -69,6 +69,9 @@ automatically from Conventional Commits history.
 - Read postgres readiness check from container env, not app.env
 - Pin importFileExtension to js in generated client
 - Stop stripping the /api prefix for the prod backend router
+- Set admin store error status and avoid fixture mutation
+- Address final review findings across auth and admin flows
+- Correct FEAT-023 status to a valid sync value
 
 ### CI/CD
 
@@ -159,6 +162,8 @@ automatically from Conventional Commits history.
 - Mark CHORE-007 done with resolution notes
 - Mark CHORE-010 done with resolution notes
 - Add FEAT-023 frontend auth and admin UI design
+- Add FEAT-023 implementation plan
+- Add FEAT-023 backlog entry
 
 ### Features
 
@@ -223,6 +228,23 @@ automatically from Conventional Commits history.
 - Add admin user moderation module
 - Register global JwtAuthGuard, RolesGuard, and ThrottlerGuard
 - Seed the single admin account from env vars
+- Enforce password complexity on registration
+- Add localStorage-backed access token module
+- Attach auth token to API requests and clear session on 401
+- Add client-side password complexity check
+- Add auth store
+- Restore the auth session before mounting the app
+- Add reusable ConfirmDialog component
+- Add ResendVerificationForm component
+- Add LoginForm component
+- Add RegisterForm component
+- Add LoginView
+- Add RegisterView
+- Add VerifyEmailView
+- Add auth routes and a route guard
+- Add admin store
+- Build out the admin users table
+- Add auth nav state and session-expiry redirect to AppLayout
 
 ### Miscellaneous
 
@@ -309,6 +331,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Auto-promote ready items [skip ci] (#179)
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md

@@ -2,7 +2,8 @@
   "nav": {
     "encode": "Encode",
     "decode": "Decode",
-    "key": "Key"
+    "key": "Key",
+    "admin": "Admin"
   },
   "encode": {
     "title": "Encode a message",
@@ -180,6 +181,106 @@
         "readingOrder": "Reading order",
         "staleNotice": "The key changed. Re-parse to update these parameters.",
         "reparse": "Re-parse"
+      }
+    }
+  },
+  "auth": {
+    "nav": {
+      "login": "Log in",
+      "logout": "Log out"
+    },
+    "resendVerification": {
+      "form": {
+        "email": {
+          "label": "Email"
+        },
+        "submit": {
+          "label": "Resend",
+          "loading": "Sending..."
+        }
+      },
+      "success": "If an account with this email exists, a verification email has been sent."
+    },
+    "verifyEmail": {
+      "title": "Email verification",
+      "success": "Your email address has been verified. You can now log in.",
+      "loginLink": "Go to login",
+      "error": "This verification link is invalid or has expired."
+    },
+    "login": {
+      "title": "Log in",
+      "form": {
+        "email": {
+          "label": "Email"
+        },
+        "password": {
+          "label": "Password"
+        },
+        "submit": {
+          "label": "Log in",
+          "loading": "Logging in..."
+        },
+        "error": {
+          "invalidCredentials": "Incorrect email or password.",
+          "disabled": "This account has been disabled.",
+          "unverified": "Please verify your email address before logging in."
+        }
+      }
+    },
+    "register": {
+      "title": "Create an account",
+      "form": {
+        "email": {
+          "label": "Email"
+        },
+        "password": {
+          "label": "Password",
+          "criteria": {
+            "minLength": "At least 12 characters",
+            "lowercase": "One lowercase letter",
+            "uppercase": "One uppercase letter",
+            "digit": "One digit",
+            "special": "One special character"
+          }
+        },
+        "submit": {
+          "label": "Register",
+          "loading": "Registering..."
+        },
+        "error": {
+          "duplicateEmail": "An account with this email already exists."
+        }
+      },
+      "success": {
+        "heading": "Check your email",
+        "body": "We've sent a verification link to your email address. Follow it to activate your account."
+      }
+    }
+  },
+  "admin": {
+    "users": {
+      "title": "User management",
+      "table": {
+        "email": "Email",
+        "role": "Role",
+        "verified": "Verified",
+        "active": "Active",
+        "createdAt": "Created",
+        "actions": "Actions"
+      },
+      "actions": {
+        "activate": "Activate",
+        "deactivate": "Deactivate",
+        "delete": "Delete"
+      },
+      "confirmDelete": {
+        "title": "Delete this account?",
+        "body": "This will permanently delete {email}'s account. This cannot be undone.",
+        "confirm": "Delete",
+        "cancel": "Cancel"
+      },
+      "error": {
+        "prefix": "Couldn't complete this action: {detail}"
       }
     }
   },

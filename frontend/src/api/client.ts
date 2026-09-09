@@ -1,3 +1,5 @@
+import { accessToken, clearAccessToken } from '../auth/token-storage'
+
 const DEFAULT_BASE_URL = '/api'
 
 interface ApiErrorBody {
@@ -47,19 +49,58 @@ async function handleResponse<TResponse>(response: Response): Promise<TResponse>
   throw new ApiError(message, 'http', response.status)
 }
 
-async function doFetch(url: string, init: RequestInit): Promise<Response> {
+// Endpoints reachable without a session. A token must never be attached to
+// these (an unrelated logged-in tab's token has no business on a /login
+// attempt) and a 401 from them must never clear an unrelated, still-valid
+// session sitting in another tab.
+const PUBLIC_PATHS = new Set(['/auth/login', '/auth/register', '/auth/verify-email', '/auth/resend-verification'])
+
+async function doFetch(path: string, init: RequestInit): Promise<Response> {
+  const headers: Record<string, string> = { ...(init.headers as Record<string, string> | undefined) }
+  const isPublicAuthPath = PUBLIC_PATHS.has(path)
+  const hadToken = !isPublicAuthPath && accessToken.value !== null
+  if (hadToken) {
+    headers.Authorization = `Bearer ${accessToken.value}`
+  }
+
+  let response: Response
   try {
-    return await fetch(url, init)
+    response = await fetch(`${resolveBaseUrl()}${path}`, { ...init, headers })
   } catch {
     throw new ApiError('Network error: unable to reach the server', 'network')
   }
+
+  if (hadToken && response.status === 401) {
+    clearAccessToken()
+  }
+
+  return response
+}
+
+export async function getJson<TResponse>(path: string): Promise<TResponse> {
+  const response = await doFetch(path, { method: 'GET' })
+  return handleResponse<TResponse>(response)
 }
 
 export async function postJson<TResponse>(path: string, body: unknown): Promise<TResponse> {
-  const response = await doFetch(`${resolveBaseUrl()}${path}`, {
+  const response = await doFetch(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   })
   return handleResponse<TResponse>(response)
+}
+
+export async function patchJson<TResponse>(path: string, body: unknown): Promise<TResponse> {
+  const response = await doFetch(path, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  return handleResponse<TResponse>(response)
+}
+
+export async function deleteJson(path: string): Promise<void> {
+  const response = await doFetch(path, { method: 'DELETE' })
+  return handleResponse<void>(response)
 }

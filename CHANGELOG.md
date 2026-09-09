@@ -67,6 +67,8 @@ automatically from Conventional Commits history.
 - Open a pull request instead of pushing auto-promotions to main
 - Only create a label in sync-backlog when it truly doesn't exist
 - Read postgres readiness check from container env, not app.env
+- Pin importFileExtension to js in generated client
+- Stop stripping the /api prefix for the prod backend router
 
 ### CI/CD
 
@@ -156,6 +158,7 @@ automatically from Conventional Commits history.
 - Correct FEAT-021 public-route list in acceptance criteria
 - Mark CHORE-007 done with resolution notes
 - Mark CHORE-010 done with resolution notes
+- Add FEAT-023 frontend auth and admin UI design
 
 ### Features
 
@@ -306,6 +309,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Auto-promote ready items [skip ci] (#179)
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 

@@ -1,3 +1,5 @@
+import { accessToken, clearAccessToken } from '../auth/token-storage'
+
 const DEFAULT_BASE_URL = '/api'
 
 interface ApiErrorBody {
@@ -48,11 +50,32 @@ async function handleResponse<TResponse>(response: Response): Promise<TResponse>
 }
 
 async function doFetch(url: string, init: RequestInit): Promise<Response> {
+  const headers: Record<string, string> = { ...(init.headers as Record<string, string> | undefined) }
+  // A 401 only means "the session died" when this request actually carried a
+  // token - a 401 from an anonymous POST /auth/login (wrong password) must
+  // not clear an unrelated, still-valid session sitting in another tab.
+  const hadToken = accessToken.value !== null
+  if (hadToken) {
+    headers.Authorization = `Bearer ${accessToken.value}`
+  }
+
+  let response: Response
   try {
-    return await fetch(url, init)
+    response = await fetch(url, { ...init, headers })
   } catch {
     throw new ApiError('Network error: unable to reach the server', 'network')
   }
+
+  if (hadToken && response.status === 401) {
+    clearAccessToken()
+  }
+
+  return response
+}
+
+export async function getJson<TResponse>(path: string): Promise<TResponse> {
+  const response = await doFetch(`${resolveBaseUrl()}${path}`, { method: 'GET' })
+  return handleResponse<TResponse>(response)
 }
 
 export async function postJson<TResponse>(path: string, body: unknown): Promise<TResponse> {
@@ -62,4 +85,18 @@ export async function postJson<TResponse>(path: string, body: unknown): Promise<
     body: JSON.stringify(body),
   })
   return handleResponse<TResponse>(response)
+}
+
+export async function patchJson<TResponse>(path: string, body: unknown): Promise<TResponse> {
+  const response = await doFetch(`${resolveBaseUrl()}${path}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  })
+  return handleResponse<TResponse>(response)
+}
+
+export async function deleteJson(path: string): Promise<void> {
+  const response = await doFetch(`${resolveBaseUrl()}${path}`, { method: 'DELETE' })
+  return handleResponse<void>(response)
 }

@@ -1,4 +1,5 @@
 import type { EncodeResult } from '../stores/encode'
+import type { PublicUser } from '../stores/auth'
 
 // A minimal valid 1x1 transparent PNG, base64-encoded — realistic enough to
 // exercise data-URL rendering and blob-download code paths without needing
@@ -51,4 +52,20 @@ export const MOCK_KEY_PARSE_RESPONSE = {
   rotationSequence: [0, 90, 180, 270],
   rotationDirection: 'cw' as const,
   readingOrder: 'LR-TB',
+}
+
+export const MOCK_PUBLIC_USER: PublicUser = {
+  id: 'user-1',
+  email: 'user@example.com',
+  role: 'USER',
+  emailVerified: true,
+  active: true,
+  createdAt: '2026-09-01T00:00:00.000Z',
+}
+
+export const MOCK_ADMIN_USER: PublicUser = {
+  ...MOCK_PUBLIC_USER,
+  id: 'admin-1',
+  email: 'admin@example.com',
+  role: 'ADMIN',
 }

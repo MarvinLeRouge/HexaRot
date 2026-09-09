@@ -54,6 +54,7 @@ export const useAdminStore = defineStore('admin', {
         const index = this.users.findIndex((user) => user.id === id)
         if (index !== -1) this.users[index] = updated
       } catch (err) {
+        this.status = 'error'
         this.errorMessage = describeError(err)
         throw err
       }
@@ -65,6 +66,7 @@ export const useAdminStore = defineStore('admin', {
         await deleteJson(`/admin/users/${id}`)
         this.users = this.users.filter((user) => user.id !== id)
       } catch (err) {
+        this.status = 'error'
         this.errorMessage = describeError(err)
         throw err
       }

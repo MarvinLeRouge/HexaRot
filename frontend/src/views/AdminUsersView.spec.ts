@@ -14,6 +14,16 @@ vi.mock('../api/client', async () => {
 
 import { getJson, patchJson, deleteJson } from '../api/client'
 
+/**
+ * MOCK_ADMIN_USERS_LIST is a shared module-level fixture. The admin store
+ * assigns the array returned by getJson directly to state and mutates it
+ * in place (setActive replaces an element by index), so resolving with the
+ * literal fixture would corrupt it for every later test in this file.
+ */
+function mockAdminUsersList(): typeof MOCK_ADMIN_USERS_LIST {
+  return MOCK_ADMIN_USERS_LIST.map((user) => ({ ...user }))
+}
+
 function mountView() {
   const i18n = createI18n({ legacy: false, locale: 'en', messages: { en } })
   return mount(AdminUsersView, {
@@ -30,7 +40,7 @@ describe('AdminUsersView', () => {
   })
 
   it('fetches and renders the user list on mount', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_ADMIN_USERS_LIST)
+    vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
     const wrapper = mountView()
     await flushPromises()
 
@@ -40,7 +50,7 @@ describe('AdminUsersView', () => {
   })
 
   it('toggles a user active state when the activate/deactivate button is clicked', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_ADMIN_USERS_LIST)
+    vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
     vi.mocked(patchJson).mockResolvedValue({ ...MOCK_ADMIN_USERS_LIST[0], active: false })
     const wrapper = mountView()
     await flushPromises()
@@ -52,7 +62,7 @@ describe('AdminUsersView', () => {
   })
 
   it('opens a confirmation dialog before deleting, and deletes only on confirm', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_ADMIN_USERS_LIST)
+    vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
     vi.mocked(deleteJson).mockResolvedValue(undefined)
     const wrapper = mountView()
     await flushPromises()
@@ -70,7 +80,7 @@ describe('AdminUsersView', () => {
   })
 
   it('shows the backend error message when an action is rejected', async () => {
-    vi.mocked(getJson).mockResolvedValue(MOCK_ADMIN_USERS_LIST)
+    vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
     vi.mocked(patchJson).mockRejectedValue(new ApiError('You cannot modify your own account', 'http', 400))
     const wrapper = mountView()
     await flushPromises()

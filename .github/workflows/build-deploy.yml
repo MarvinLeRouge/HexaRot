@@ -116,6 +116,13 @@ jobs:
             DOMAIN="$DOMAIN" docker compose -f docker-compose.prod.yml run --rm --no-deps backend \
               npx prisma migrate deploy
 
+            echo "==> Seed reference data and admin account"
+            # seed.ts idempotently upserts the alphabet data and the single admin
+            # account (update: {} on conflict) - safe to run on every deploy, never
+            # overwrites an existing account's password, role, or status.
+            DOMAIN="$DOMAIN" docker compose -f docker-compose.prod.yml run --rm --no-deps backend \
+              npx prisma db seed
+
             echo "==> Start all services"
             DOMAIN="$DOMAIN" docker compose -f docker-compose.prod.yml up -d --remove-orphans
 

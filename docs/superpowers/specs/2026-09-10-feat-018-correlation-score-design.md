@@ -37,7 +37,7 @@ Cohen's kappa can be negative (agreement below chance); `abs()` maps that back i
 
 ### Edge case: single-colour grid
 
-If the grid contains only one distinct colour, every cell trivially agrees (`p_o = 1`) and `p_e = 1`, making `kappa = 0/0`. This can't happen with the real Hexahue alphabet (its palette always has multiple colours), so `computeCorrelationScore` throws a plain `Error` when `p_e === 1` rather than special-casing a result - the same defensive-guard pattern `RotationEngine.applyToBlocks()` already uses for its own invariants (a plain `Error`, left uncaught by callers, surfacing as a 500 through NestJS's default exception handling).
+If the grid contains only one distinct colour, every cell trivially agrees (`p_o = 1`) and `p_e = 1`, making `kappa = 0/0`. This was originally expected to be unreachable with the real Hexahue alphabet, guarded by a thrown `Error`. Implementation surfaced a reachable case: an all-whitespace message maps every symbol to the same colour, and when the message length is an exact multiple of `pivotBlockSize` there are no padding cells to break up that uniformity, producing a genuinely single-colour grid. `computeCorrelationScore` special-cases `p_e === 1` to return `1` instead of throwing - a single colour means no structure was ever hidden, so full agreement is the correct "fully readable" reading, consistent with the score's `1 = fully readable` contract.
 
 ## Decision 3: dedicated endpoint, not a field on `/api/encode`
 
@@ -102,9 +102,7 @@ export function computeCorrelationScore(
   }
 
   if (expectedAgreement === 1) {
-    throw new Error(
-      'computeCorrelationScore: grid has only one distinct colour, kappa is undefined',
-    );
+    return 1;
   }
 
   const kappa =
@@ -183,22 +181,43 @@ Both are registered in `backend/src/api/api.module.ts` alongside the existing co
 ## Error handling
 
 - Invalid `key` string, or invalid individual params failing DTO validation → `BadRequestException` (same as `/api/encode`), via the existing `KeyCodec.decode()` try/catch pattern.
-- Single-colour grid (`computeCorrelationScore` throwing) → left uncaught, surfaces as a 500 via NestJS's default exception filter. Not expected to occur with the real Hexahue alphabet; this is defense-in-depth, not a user-facing error path.
+- Invalid `rotationSequence` (not a permutation of `[0,1,2,3]`) → `BadRequestException`, via `KeyCodec.encode()`'s own validation, surfaced through the same try/catch as the `key` path above.
+- Single-colour grid → no longer an error path; `computeCorrelationScore` returns `1` (see "Edge case: single-colour grid" above). Reachable via an all-whitespace message whose length is an exact multiple of `pivotBlockSize`, covered by an e2e test.
 
 ## Testing
 
-**`backend/src/correlation/correlation-score.spec.ts`** (unit, isolated from the API layer):
-- Identical pre/post grids → score is `1`: `p_o = 1`, so `kappa = (1 - p_e) / (1 - p_e) = 1`. This confirms the score's direction - 1 means unchanged/readable (no scrambling happened), 0 means maximally scrambled relative to chance - and matches the acceptance criterion "1 means fully readable."
-- Grids where cell colours were fully randomly reassigned (simulating maximal scrambling) → score close to 0.
-- Fixed, hand-computed small grid (e.g. 2x2) with known `p_o`/`p_e` → exact expected score, asserted against the manually-derived value.
-- Single-colour grid → throws.
+Four spec files cover this feature, 29 declared test cases (one of them
+parameterised over 7 malformed key strings, so 35 assertions run):
 
-**`backend/src/api/correlation-score.controller.spec.ts`** / service spec:
+**`backend/src/correlation/correlation-score.spec.ts`** (unit, isolated from the API layer, 4 tests):
+- Identical pre/post grids → score is `1`: `p_o = 1`, so `kappa = (1 - p_e) / (1 - p_e) = 1`. This confirms the score's direction - 1 means unchanged/readable (no scrambling happened), 0 means maximally scrambled relative to chance - and matches the acceptance criterion "1 means fully readable."
+- Fixed, hand-computed 2x2 grid with known `p_o`/`p_e` → exact expected score, asserted against the manually-derived value (`0.6`).
+- Six equally-distributed colours, cyclically shifted by one position (every cell disagrees) → exact expected score, asserted against the manually-derived value (`0.2`).
+- Single-colour grid → score is `1` (no residual structure to detect), not a thrown error.
+
+**`backend/src/api/dto/correlation-score-request.dto.spec.ts`** (unit, DTO validation, 11 tests):
+- Valid bodies (full individual-params body; message + key only) → no validation errors.
+- Missing or empty `message` → validation error on `message`.
+- Individual params (`pivotBlockSize`, `rotationDirection`, `readingOrder`, `rotationSequence`) required only when `key` is absent; each omitted/invalid case → validation error on that field; providing `key` instead → no error even with individual params omitted.
+- Rendering-only fields (`size`, `overrideWeaknessWarning`) → rejected (strict DTO, `forbidNonWhitelisted`).
+
+**`backend/src/api/correlation-score.service.ts`** unit spec (6 tests):
 - Valid `message` + `key` → returns a `score` in `[0, 1]`.
 - Valid `message` + 4 individual params → same code path, same result shape.
-- Same `message` + `key` called twice → identical score both times (determinism, per acceptance criteria).
-- Invalid `key` → `400`.
+- Same input called three times → identical score every time (determinism, per acceptance criteria).
+- Malformed `key` → throws `BadRequestException`.
+- `key` that unpacks to `pivotBlockSize=0` → throws `BadRequestException`.
+- `rotationSequence` not a valid permutation → throws `BadRequestException`.
+
+**`backend/test/correlation-score.e2e-spec.ts`** (integration, via supertest against the real HTTP layer, 8 declared tests):
+- Valid params body → `200` with a `score` in `[0, 1]`.
+- Valid key body → `200` with a `score` in `[0, 1]`.
+- Same body requested twice → identical score (determinism).
+- All-whitespace message that exactly fills the grid → `200` with `score` equal to `1` (single-colour grid, reproduced end-to-end).
 - Missing `message` → `400`.
+- Each of the 7 malformed key strings in the fixture set → `400` (one parameterised `it.each`, 7 assertions).
+- `size` present in the body → `400` (rejected, strict DTO - this field never applies to this endpoint).
+- `rotationSequence` not a valid permutation → `400`.
 
 ## Backlog update
 

@@ -12,6 +12,7 @@ each endpoint maps onto the underlying pipeline.
 |---|---|---|
 | `POST` | `/encode` | Encode a message → PNG + SVG cryptogram |
 | `POST` | `/decode` | Decode a cryptogram → plaintext |
+| `POST` | `/correlation-score` | Compute a cryptogram's correlation score |
 | `POST` | `/key/generate` | Generate an HR key from parameters |
 | `POST` | `/key/parse` | Parse an HR key → structured parameters |
 
@@ -54,6 +55,25 @@ POST /api/decode
 ```json
 {
   "message": "HELLO WORLD"
+}
+```
+
+## `POST /correlation-score`
+
+```json
+POST /api/correlation-score
+{
+  "message": "HELLO WORLD",
+  "pivotBlockSize": 5,
+  "rotationSequence": [0, 1, 2, 3],
+  "rotationDirection": "cw",
+  "readingOrder": "LR-TB"
+}
+```
+
+```json
+{
+  "score": 0.83
 }
 ```
 

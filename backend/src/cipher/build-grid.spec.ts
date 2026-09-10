@@ -9,6 +9,18 @@ import {
   expectPaddingOnlyAfterMessage,
 } from './__fixtures__/cipher.fixtures';
 
+/** Small local seeded PRNG (mulberry32) for deterministic test-only randomness. */
+function mulberry32ForTest(seed: number): () => number {
+  let a = seed;
+  return function () {
+    a |= 0;
+    a = (a + 0x6d2b79f5) | 0;
+    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
 describe('buildGrid', () => {
   describe('dimensions', () => {
     it('produces a grid whose width in cases is a multiple of pivotBlockSize', () => {
@@ -156,6 +168,33 @@ describe('buildGrid', () => {
       const gridA = buildGrid(message, alphabet, 7);
       const gridB = buildGrid(message, alphabet, 7);
       expect(gridA).not.toEqual(gridB);
+    });
+
+    it('returns a palette-order-independent grid (getPalette output is sorted)', () => {
+      // Build twice with alphabets whose getSupportedChars() return the same
+      // characters in different orders (simulating different DB row order);
+      // since the underlying colour palettes are identical, the returned
+      // palette content must match, so its element order must be pinned by
+      // sort() alone, not by iteration order.
+      const forwardAlphabet = new MockAlphabet();
+      const reversedAlphabet: VisualAlphabet = {
+        symbolWidth: forwardAlphabet.symbolWidth,
+        symbolHeight: forwardAlphabet.symbolHeight,
+        getSupportedChars: () =>
+          [...forwardAlphabet.getSupportedChars()].reverse(),
+        getBlock: (char: string) => forwardAlphabet.getBlock(char),
+      };
+
+      const seed = 42;
+      const grid1 = buildGrid('A', forwardAlphabet, 3, mulberry32ForTest(seed));
+      const grid2 = buildGrid(
+        'A',
+        reversedAlphabet,
+        3,
+        mulberry32ForTest(seed),
+      );
+
+      expect(grid1).toEqual(grid2);
     });
   });
 

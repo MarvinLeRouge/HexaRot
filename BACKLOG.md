@@ -1127,7 +1127,6 @@ encode view.
 - Score of 0 means no detectable structure; 1 means fully readable
 - Score is deterministic for a given cryptogram
 - Endpoint documented in API docs
-- Score interpretation is explained in the UI (tooltip or help text)
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->

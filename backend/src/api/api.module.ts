@@ -8,10 +8,22 @@ import { KeyController } from './key.controller';
 import { KeyService } from './key.service';
 import { DecodeController } from './decode.controller';
 import { DecodeService } from './decode.service';
+import { CorrelationScoreController } from './correlation-score.controller';
+import { CorrelationScoreService } from './correlation-score.service';
 
 @Module({
   imports: [AlphabetModule, RotationModule, RendererModule],
-  controllers: [EncodeController, KeyController, DecodeController],
-  providers: [EncodeService, KeyService, DecodeService],
+  controllers: [
+    EncodeController,
+    KeyController,
+    DecodeController,
+    CorrelationScoreController,
+  ],
+  providers: [
+    EncodeService,
+    KeyService,
+    DecodeService,
+    CorrelationScoreService,
+  ],
 })
 export class ApiModule {}

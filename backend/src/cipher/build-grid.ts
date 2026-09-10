@@ -24,11 +24,15 @@ import { gcd } from '../validation/validate-params';
  *   resolvable via alphabet.getBlock.
  * @param alphabet - Supplies symbol dimensions and per-character colour grids.
  * @param pivotBlockSize - T: both grid dimensions, in cases, are multiples of this.
+ * @param randomFn - Source of randomness for padding cells. Defaults to
+ *   `Math.random`; callers that need reproducible padding (e.g. to derive a
+ *   deterministic score from the same input) can supply a seeded generator.
  */
 export function buildGrid(
   processedString: string,
   alphabet: VisualAlphabet,
   pivotBlockSize: number,
+  randomFn: () => number = Math.random,
 ): ColorGrid {
   if (!Number.isInteger(pivotBlockSize) || pivotBlockSize < 1) {
     throw new RangeError(
@@ -79,7 +83,7 @@ export function buildGrid(
   for (let y = 0; y < gridHeightInCases; y++) {
     for (let x = 0; x < gridWidthInCases; x++) {
       if (grid[y][x] === '') {
-        grid[y][x] = palette[Math.floor(Math.random() * palette.length)];
+        grid[y][x] = palette[Math.floor(randomFn() * palette.length)];
       }
     }
   }
@@ -102,5 +106,5 @@ function getPalette(alphabet: VisualAlphabet): string[] {
       }
     }
   }
-  return Array.from(colors);
+  return Array.from(colors).sort();
 }

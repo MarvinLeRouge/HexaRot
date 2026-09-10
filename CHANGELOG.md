@@ -171,6 +171,7 @@ automatically from Conventional Commits history.
 - Narrow FEAT-018 to backend-only scope
 - Document POST /correlation-score
 - Fix Testing section to match implemented tests
+- Mark FEAT-018 done, verified live
 
 ### Features
 
@@ -342,6 +343,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Auto-promote ready items [skip ci] (#179)
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md

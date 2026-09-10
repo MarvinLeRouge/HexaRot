@@ -73,6 +73,7 @@ automatically from Conventional Commits history.
 - Address final review findings across auth and admin flows
 - Correct FEAT-023 status to a valid sync value
 - Seed the admin account during production deployment
+- Handle single-colour grids, validate rotation permutation, sort palette
 
 ### CI/CD
 
@@ -166,6 +167,9 @@ automatically from Conventional Commits history.
 - Add FEAT-023 implementation plan
 - Add FEAT-023 backlog entry
 - Mark auth done, note pre-rotation display idea
+- Add correlation score design spec
+- Narrow FEAT-018 to backend-only scope
+- Document POST /correlation-score
 
 ### Features
 
@@ -247,6 +251,10 @@ automatically from Conventional Commits history.
 - Add admin store
 - Build out the admin users table
 - Add auth nav state and session-expiry redirect to AppLayout
+- Add computeCorrelationScore
+- Add CorrelationScoreRequestDto
+- Add CorrelationScoreService
+- Expose POST /api/correlation-score
 
 ### Miscellaneous
 
@@ -333,6 +341,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Auto-promote ready items [skip ci] (#179)
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md

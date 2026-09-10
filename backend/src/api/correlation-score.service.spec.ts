@@ -90,5 +90,15 @@ describe('CorrelationScoreService', () => {
 
       expect(() => service.compute(dto)).toThrow(BadRequestException);
     });
+
+    it('throws BadRequestException when rotationSequence is not a valid permutation', () => {
+      const service = makeService();
+      const dto: CorrelationScoreRequestDto = {
+        ...VALID_PARAMS_DTO,
+        rotationSequence: [0, 0, 0, 0],
+      };
+
+      expect(() => service.compute(dto)).toThrow(BadRequestException);
+    });
   });
 });

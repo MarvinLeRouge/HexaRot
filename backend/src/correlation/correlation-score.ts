@@ -36,9 +36,7 @@ export function computeCorrelationScore(
   }
 
   if (expectedAgreement === 1) {
-    throw new Error(
-      'computeCorrelationScore: grid has only one distinct colour, kappa is undefined',
-    );
+    return 1;
   }
 
   const kappa =

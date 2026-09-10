@@ -48,14 +48,14 @@ describe('computeCorrelationScore', () => {
     expect(score).toBeCloseTo(0.2, 10);
   });
 
-  it('throws when the grid has only one distinct colour (p_e === 1, kappa undefined)', () => {
+  it('returns 1 for a single-colour grid (no residual structure to detect)', () => {
     const grid: ColorGrid = [
       ['red', 'red'],
       ['red', 'red'],
     ];
 
-    expect(() => computeCorrelationScore(grid, grid)).toThrow(
-      'computeCorrelationScore: grid has only one distinct colour, kappa is undefined',
-    );
+    const score = computeCorrelationScore(grid, grid);
+
+    expect(score).toBeCloseTo(1, 10);
   });
 });

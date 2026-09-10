@@ -1374,7 +1374,7 @@ Docker itself:
 - **type:** ci
 - **id:** CI-004
 - **milestone:** v1
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** infra
 - **complexity:** M
@@ -1406,6 +1406,22 @@ direct SSH access to the production server is performed outside of this pipeline
   images, runs `prisma migrate deploy`, then restarts the stack
 - Required secrets are documented in `CONTRIBUTING.md` (names only, no values)
 - Workflow fails loudly (non-zero exit) if any step fails, with no partial silent state
+
+#### Resolution (2026-09-10)
+
+`build-deploy.yml` merged via PR #185 (2026-09-09), covering the build, push, and
+migration-deploy steps against all five acceptance criteria above.
+
+The first real deploy surfaced a gap not covered by those criteria: the admin account
+was never created in production, because the pipeline never ran `prisma db seed`, and
+`tsx` (which executes `backend/prisma/seed.ts` per `prisma.config.ts`) was a
+`devDependency`, unavailable in the `--omit=dev` production image. Fixed by moving
+`tsx` to `dependencies` and adding a seed step to the deploy workflow, right after
+`prisma migrate deploy`, using the same `run --rm --no-deps backend` pattern. The seed
+is idempotent by design (`upsert` with `update: {}` on conflict in `seedAdminUser()`),
+so running it on every deploy never overwrites an existing account. The two VPS-side
+variables it needs (`SEED_ADMIN_EMAIL`, `SEED_ADMIN_PASSWORD`) are documented in
+`CONTRIBUTING.md` alongside the existing repository-secrets table.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->

@@ -165,6 +165,7 @@ automatically from Conventional Commits history.
 - Add FEAT-023 frontend auth and admin UI design
 - Add FEAT-023 implementation plan
 - Add FEAT-023 backlog entry
+- Mark auth done, note pre-rotation display idea
 
 ### Features
 
@@ -332,6 +333,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Auto-promote ready items [skip ci] (#179)
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md

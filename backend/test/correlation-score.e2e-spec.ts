@@ -69,6 +69,22 @@ describe('POST /api/correlation-score (e2e)', () => {
         (first.body as CorrelationScoreResult).score,
       );
     });
+
+    it('returns 200 with score 1 for an all-whitespace message (single-colour grid)', async () => {
+      // 25 spaces with VALID_ENCODE_BODY's pivotBlockSize (5) exactly fills
+      // the grid (zero padding cells), so the whole body grid is pure black,
+      // genuinely reproducing the single-colour scenario: shorter
+      // whitespace-only messages here still leave padding cells, which are
+      // drawn from the full palette and are not black, so they do not
+      // reproduce the bug.
+      const res = await request(app.getHttpServer())
+        .post('/api/correlation-score')
+        .send({ ...VALID_ENCODE_BODY, message: ' '.repeat(25) });
+
+      expect(res.status).toBe(200);
+      const body = res.body as CorrelationScoreResult;
+      expect(body.score).toBe(1);
+    });
   });
 
   describe('validation errors', () => {
@@ -97,6 +113,14 @@ describe('POST /api/correlation-score (e2e)', () => {
       const res = await request(app.getHttpServer())
         .post('/api/correlation-score')
         .send({ ...VALID_ENCODE_BODY, size: 'large' });
+
+      expect(res.status).toBe(400);
+    });
+
+    it('returns 400 when rotationSequence is not a valid permutation', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/correlation-score')
+        .send({ ...VALID_ENCODE_BODY, rotationSequence: [0, 0, 0, 0] });
 
       expect(res.status).toBe(400);
     });

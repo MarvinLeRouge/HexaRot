@@ -106,5 +106,5 @@ function getPalette(alphabet: VisualAlphabet): string[] {
       }
     }
   }
-  return Array.from(colors);
+  return Array.from(colors).sort();
 }

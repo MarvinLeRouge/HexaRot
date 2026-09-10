@@ -58,6 +58,11 @@ export class CorrelationScoreService {
         readingOrder: dto.readingOrder as KeyParams['readingOrder'],
         size: 'medium',
       };
+      try {
+        KeyCodec.encode(keyParams);
+      } catch (err) {
+        throw new BadRequestException((err as Error).message);
+      }
     }
 
     const { text } = preprocess(dto.message, this.alphabet);

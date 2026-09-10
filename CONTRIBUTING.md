@@ -155,3 +155,14 @@ Go to **repo GitHub → Settings → Secrets and variables → Actions → Repos
 ### Security
 
 These secrets grant SSH access to the production server and control public routing. Never commit them to the codebase. Rotate the SSH key immediately if compromised.
+
+### VPS environment files
+
+Separately from the repository secrets above, the deploy step's seed run (`npx prisma db seed`, see `backend/prisma/seed.ts`) reads two variables from the backend service's own env files on the VPS. Add them to `shared/env/secrets.env` (never `app.env`, since these are credentials):
+
+| Variable | Purpose |
+|---|---|
+| `SEED_ADMIN_EMAIL` | Email of the single admin account |
+| `SEED_ADMIN_PASSWORD` | Its password, hashed at seed time - never store the plaintext elsewhere |
+
+The seed step is idempotent (`upsert` with `update: {}` on conflict): it creates the admin account once and never touches it again on later deploys, even if these values change afterwards.

@@ -24,7 +24,13 @@
 - ⬜ Animated decoding mode
 - ⬜ Spiral reading order
 - ⬜ Correlation score
-- ⬜ User authentication
+- ✅ User authentication
+
+## Ideas for later (not yet scoped)
+
+- Show the pre-rotation encoding at relevant points (e.g. alongside the
+  correlation score) - could make cryptogram effectiveness more tangible,
+  but no backlog item yet
 
 ---
 

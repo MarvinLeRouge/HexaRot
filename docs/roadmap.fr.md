@@ -24,7 +24,13 @@
 - ⬜ Mode de décodage animé
 - ⬜ Ordre de lecture en spirale
 - ⬜ Score de corrélation
-- ⬜ Authentification utilisateur
+- ✅ Authentification utilisateur
+
+## Idées pour plus tard (pas encore cadrées)
+
+- Montrer l'encodage avant rotation à certains endroits (par exemple à
+  côté du score de corrélation) : pourrait rendre l'efficacité du
+  cryptogramme plus tangible, mais aucun item de backlog pour l'instant
 
 ---
 

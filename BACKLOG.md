@@ -1103,7 +1103,7 @@ cryptogram is progressively resolved back to its original state.
 - **type:** feat
 - **id:** FEAT-018
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** low
 - **domain:** cipher
 - **complexity:** XL

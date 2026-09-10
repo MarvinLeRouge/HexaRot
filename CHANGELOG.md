@@ -72,6 +72,7 @@ automatically from Conventional Commits history.
 - Set admin store error status and avoid fixture mutation
 - Address final review findings across auth and admin flows
 - Correct FEAT-023 status to a valid sync value
+- Seed the admin account during production deployment
 
 ### CI/CD
 
@@ -331,6 +332,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Auto-promote ready items [skip ci] (#179)
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md

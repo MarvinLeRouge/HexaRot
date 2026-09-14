@@ -20,7 +20,7 @@
     "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
-    "@eslint/js": "^9.39.4",
+    "@eslint/js": "^10.0.1",
     "@types/node": "^24.12.0",
     "@vitejs/plugin-vue": "^6.0.8",
     "@vitest/coverage-v8": "^5.0.0",

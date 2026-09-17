@@ -174,6 +174,7 @@ automatically from Conventional Commits history.
 - Document POST /correlation-score
 - Fix Testing section to match implemented tests
 - Mark FEAT-018 done, verified live
+- Document codecov coverage thresholds
 
 ### Features
 
@@ -359,6 +360,7 @@ automatically from Conventional Commits history.
 - Raise patch coverage target to 90%
 - Update CHANGELOG.md
 - Add ci-status aggregator job
+- Update CHANGELOG.md
 
 ### Refactoring
 

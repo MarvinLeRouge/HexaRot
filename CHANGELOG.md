@@ -357,6 +357,8 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Raise patch coverage target to 90%
+- Update CHANGELOG.md
+- Add ci-status aggregator job
 
 ### Refactoring
 

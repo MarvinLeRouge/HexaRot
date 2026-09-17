@@ -94,6 +94,7 @@ automatically from Conventional Commits history.
 - Homogenize changelog workflow
 - Add build and deploy pipeline for GHCR and VPS
 - Add path-filter to skip backend/frontend jobs on unrelated changes
+- Skip CI on doc-only changes
 
 ### Documentation
 
@@ -354,6 +355,8 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
+- Update CHANGELOG.md
+- Raise patch coverage target to 90%
 
 ### Refactoring
 

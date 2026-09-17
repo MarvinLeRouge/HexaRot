@@ -74,6 +74,7 @@ automatically from Conventional Commits history.
 - Correct FEAT-023 status to a valid sync value
 - Seed the admin account during production deployment
 - Handle single-colour grids, validate rotation permutation, sort palette
+- Trigger workflow on all pull requests, not just non-doc changes
 
 ### CI/CD
 
@@ -360,6 +361,7 @@ automatically from Conventional Commits history.
 - Raise patch coverage target to 90%
 - Update CHANGELOG.md
 - Add ci-status aggregator job
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 
 ### Refactoring

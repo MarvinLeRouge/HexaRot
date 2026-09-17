@@ -51,6 +51,8 @@ cd backend && npm run test:e2e   # tests end-to-end
 cd frontend && npm run test      # tests unitaires (Vitest)
 ```
 
+Seuils de couverture (`codecov.yml`, bloquants) : projet 85% (±2%), patch 90% (±5%).
+
 ## Workflow
 
 1. Forker le dépôt et créer une branche à partir de `main`.

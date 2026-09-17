@@ -93,6 +93,7 @@ automatically from Conventional Commits history.
 - Remove duplicate --config flag from git-cliff-action args
 - Homogenize changelog workflow
 - Add build and deploy pipeline for GHCR and VPS
+- Add path-filter to skip backend/frontend jobs on unrelated changes
 
 ### Documentation
 
@@ -343,6 +344,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Auto-promote ready items [skip ci] (#179)
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md

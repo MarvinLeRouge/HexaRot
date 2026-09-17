@@ -51,6 +51,8 @@ cd backend && npm run test:e2e   # end-to-end tests
 cd frontend && npm run test      # unit tests (Vitest)
 ```
 
+Coverage thresholds (`codecov.yml`, blocking): project 85% (±2%), patch 90% (±5%).
+
 ## Workflow
 
 1. Fork the repository and create a branch off `main`.

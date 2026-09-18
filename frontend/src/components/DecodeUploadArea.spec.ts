@@ -1,4 +1,4 @@
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import DecodeUploadArea from './DecodeUploadArea.vue'
@@ -40,6 +40,26 @@ describe('DecodeUploadArea', () => {
     expect(wrapper.find('.decode-upload-area__error').exists()).toBe(true)
   })
 
+  it('does not emit when the file input changes with no file selected', async () => {
+    const wrapper = mountArea()
+    const input = wrapper.find('input[type="file"]')
+    Object.defineProperty(input.element, 'files', { value: [], writable: false })
+
+    await input.trigger('change')
+
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+  })
+
+  it('does not emit when a drop event carries no file', async () => {
+    const wrapper = mountArea()
+
+    await wrapper.find('.decode-upload-area').trigger('drop', {
+      dataTransfer: { files: [] },
+    })
+
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+  })
+
   it('emits the dropped file when a valid file is dropped', async () => {
     const wrapper = mountArea()
 
@@ -58,5 +78,26 @@ describe('DecodeUploadArea', () => {
   it('does not display a filename when no file is selected', () => {
     const wrapper = mountArea(null)
     expect(wrapper.text()).not.toContain(MOCK_PNG_FILE.name)
+  })
+
+  it('toggles the dragging class on dragover and dragleave', async () => {
+    const wrapper = mountArea()
+    const dropzone = wrapper.find('.decode-upload-area')
+
+    await dropzone.trigger('dragover')
+    expect(dropzone.classes()).toContain('decode-upload-area--dragging')
+
+    await dropzone.trigger('dragleave')
+    expect(dropzone.classes()).not.toContain('decode-upload-area--dragging')
+  })
+
+  it('clicking the browse button opens the file picker', async () => {
+    const wrapper = mountArea()
+    const input = wrapper.find('input[type="file"]').element as HTMLInputElement
+    const clickSpy = vi.spyOn(input, 'click').mockImplementation(() => {})
+
+    await wrapper.find('button').trigger('click')
+
+    expect(clickSpy).toHaveBeenCalled()
   })
 })

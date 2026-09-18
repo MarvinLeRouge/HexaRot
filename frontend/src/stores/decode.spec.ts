@@ -35,6 +35,15 @@ describe('useDecodeStore', () => {
     expect(store.errorCode).toBeNull()
   })
 
+  it('does nothing when submit is called without a file', async () => {
+    const store = useDecodeStore()
+
+    await store.submit()
+
+    expect(postJson).not.toHaveBeenCalled()
+    expect(store.status).toBe('idle')
+  })
+
   it('builds the PNG payload with a base64-encoded cryptogram when submitting', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
     const store = useDecodeStore()

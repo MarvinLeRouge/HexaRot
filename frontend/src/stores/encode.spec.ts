@@ -103,6 +103,17 @@ describe('useEncodeStore', () => {
     expect(store.errorMessage).toBeNull()
   })
 
+  it('sets errorCode to unknown and leaves errorMessage null on a non-ApiError failure', async () => {
+    vi.mocked(postJson).mockRejectedValue(new Error('boom'))
+    const store = useEncodeStore()
+
+    await store.submit()
+
+    expect(store.status).toBe('error')
+    expect(store.errorCode).toBe('unknown')
+    expect(store.errorMessage).toBeNull()
+  })
+
   it('keeps the previous result visible while a new submit is in flight', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
     const store = useEncodeStore()

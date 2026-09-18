@@ -72,6 +72,24 @@ describe('useAuthStore', () => {
 
       expect(store.loginErrorKind).toBe('network')
     })
+
+    it('sets loginErrorKind to unknown on an unexpected http status', async () => {
+      vi.mocked(postJson).mockRejectedValue(new ApiError('Internal server error', 'http', 500))
+      const store = useAuthStore()
+
+      await store.login('user@example.com', 'Password-123!')
+
+      expect(store.loginErrorKind).toBe('unknown')
+    })
+
+    it('sets loginErrorKind to unknown on a non-ApiError failure', async () => {
+      vi.mocked(postJson).mockRejectedValue(new Error('boom'))
+      const store = useAuthStore()
+
+      await store.login('user@example.com', 'Password-123!')
+
+      expect(store.loginErrorKind).toBe('unknown')
+    })
   })
 
   describe('register', () => {
@@ -105,6 +123,33 @@ describe('useAuthStore', () => {
       expect(store.registerErrorKind).toBe('validation')
       expect(store.registerErrorMessage).toBe(message)
     })
+
+    it('sets registerErrorKind to unknown on an unexpected http status', async () => {
+      vi.mocked(postJson).mockRejectedValue(new ApiError('Internal server error', 'http', 500))
+      const store = useAuthStore()
+
+      await store.register('new@example.com', 'Password-123!')
+
+      expect(store.registerErrorKind).toBe('unknown')
+    })
+
+    it('sets registerErrorKind to network on a network failure', async () => {
+      vi.mocked(postJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+      const store = useAuthStore()
+
+      await store.register('new@example.com', 'Password-123!')
+
+      expect(store.registerErrorKind).toBe('network')
+    })
+
+    it('sets registerErrorKind to unknown on a non-ApiError failure', async () => {
+      vi.mocked(postJson).mockRejectedValue(new Error('boom'))
+      const store = useAuthStore()
+
+      await store.register('new@example.com', 'Password-123!')
+
+      expect(store.registerErrorKind).toBe('unknown')
+    })
   })
 
   describe('verifyEmail', () => {
@@ -127,6 +172,16 @@ describe('useAuthStore', () => {
       expect(store.verifyStatus).toBe('error')
       expect(store.verifyErrorMessage).toBe('Invalid or expired verification token')
     })
+
+    it('sets verifyErrorMessage to null on a non-ApiError failure', async () => {
+      vi.mocked(postJson).mockRejectedValue(new Error('boom'))
+      const store = useAuthStore()
+
+      await store.verifyEmail('bad-token')
+
+      expect(store.verifyStatus).toBe('error')
+      expect(store.verifyErrorMessage).toBeNull()
+    })
   })
 
   describe('resendVerification', () => {
@@ -148,6 +203,16 @@ describe('useAuthStore', () => {
 
       expect(store.resendStatus).toBe('error')
       expect(store.resendErrorKind).toBe('network')
+    })
+
+    it('sets resendErrorKind to unknown on a non-network failure', async () => {
+      vi.mocked(postJson).mockRejectedValue(new ApiError('Too many requests', 'http', 429))
+      const store = useAuthStore()
+
+      await store.resendVerification('user@example.com')
+
+      expect(store.resendStatus).toBe('error')
+      expect(store.resendErrorKind).toBe('unknown')
     })
   })
 
@@ -195,6 +260,16 @@ describe('useAuthStore', () => {
 
       expect(store.accessToken).toBeNull()
       expect(store.user).toBeNull()
+    })
+
+    it('keeps the token on a network failure, since the session may still be valid', async () => {
+      setAccessToken('existing-token')
+      vi.mocked(getJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+      const store = useAuthStore()
+
+      await store.restoreSession()
+
+      expect(store.accessToken).toBe('existing-token')
     })
   })
 })

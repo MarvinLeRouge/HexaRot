@@ -94,6 +94,27 @@ describe('KeyParserForm', () => {
     expect(postJson).not.toHaveBeenCalled()
   })
 
+  it('does not call the API when the form is submitted with an invalid key', async () => {
+    const wrapper = mountForm()
+
+    await wrapper.find('input[type="text"]').setValue(MALFORMED_KEY)
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(postJson).not.toHaveBeenCalled()
+  })
+
+  it('shows a generic network error message on a network failure', async () => {
+    vi.mocked(postJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+    const wrapper = mountForm()
+
+    await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain(en.errors.network)
+  })
+
   it('displays a clear error message when the API returns 400', async () => {
     vi.mocked(postJson).mockRejectedValue(new ApiError('unsupported key version', 'http', 400))
     const wrapper = mountForm()

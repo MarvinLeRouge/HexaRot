@@ -53,6 +53,14 @@ describe('ResendVerificationForm', () => {
     expect(wrapper.text()).toContain(en.auth.resendVerification.success)
   })
 
+  it('does not submit when the email field is empty', async () => {
+    const wrapper = mountForm()
+
+    await wrapper.find('form').trigger('submit')
+
+    expect(postJson).not.toHaveBeenCalled()
+  })
+
   it('shows a network error message on a network failure', async () => {
     vi.mocked(postJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
     const wrapper = mountForm({ initialEmail: 'user@example.com' })

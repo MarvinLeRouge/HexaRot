@@ -89,4 +89,37 @@ describe('LoginForm', () => {
     expect(wrapper.text()).toContain(en.auth.login.form.error.unverified)
     expect(wrapper.findComponent(ResendVerificationForm).exists()).toBe(true)
   })
+
+  it('shows a generic network error message on a network failure', async () => {
+    vi.mocked(postJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+    const wrapper = mountForm()
+    await wrapper.find('input[type="email"]').setValue('user@example.com')
+    await wrapper.find('input[type="password"]').setValue('Password-123!')
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain(en.errors.network)
+  })
+
+  it('shows a generic unknown error message on an unexpected failure', async () => {
+    vi.mocked(postJson).mockRejectedValue(new Error('boom'))
+    const wrapper = mountForm()
+    await wrapper.find('input[type="email"]').setValue('user@example.com')
+    await wrapper.find('input[type="password"]').setValue('Password-123!')
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain(en.errors.unknown)
+  })
+
+  it('does not submit when required fields are empty', async () => {
+    const wrapper = mountForm()
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(postJson).not.toHaveBeenCalled()
+  })
 })

@@ -50,6 +50,16 @@ describe('useAdminStore', () => {
       expect(store.status).toBe('error')
       expect(store.errorMessage).toBe('Forbidden')
     })
+
+    it('falls back to a generic error message on a non-ApiError failure', async () => {
+      vi.mocked(getJson).mockRejectedValue(new Error('boom'))
+      const store = useAdminStore()
+
+      await store.fetchUsers()
+
+      expect(store.status).toBe('error')
+      expect(store.errorMessage).toBe('Something went wrong')
+    })
   })
 
   describe('setActive', () => {
@@ -72,6 +82,19 @@ describe('useAdminStore', () => {
 
       await expect(store.setActive('self-id', false)).rejects.toBeInstanceOf(ApiError)
       expect(store.errorMessage).toBe('You cannot modify your own account')
+    })
+
+    it('leaves the list untouched when the updated user is no longer present', async () => {
+      vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
+      const store = useAdminStore()
+      await store.fetchUsers()
+      const usersBefore = [...store.users]
+      vi.mocked(patchJson).mockResolvedValue({ ...MOCK_ADMIN_USERS_LIST[0], id: 'unknown-id', active: false })
+
+      await store.setActive('unknown-id', false)
+
+      expect(store.users).toEqual(usersBefore)
+      expect(store.status).toBe('success')
     })
   })
 

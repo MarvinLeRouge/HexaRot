@@ -64,6 +64,32 @@ describe('RotationSequencePicker', () => {
       expect(wrapper.emitted('update:modelValue')).toBeUndefined()
     })
 
+    it('moves the roving tabindex to the previous item on ArrowLeft without reordering', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[1].trigger('keydown', { key: 'ArrowLeft' })
+
+      const items = wrapper.findAll('li')
+      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', '-1', '-1'])
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    })
+
+    it('does nothing on ArrowLeft from the first item', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowLeft' })
+
+      const items = wrapper.findAll('li')
+      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', '-1', '-1'])
+    })
+
+    it('does nothing on ArrowRight from the last item', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[3].trigger('keydown', { key: 'ArrowRight' })
+
+      const items = wrapper.findAll('li')
+      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', '-1', '-1'])
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    })
+
     it('moves actual DOM focus to the destination item on ArrowRight, not just the roving tabindex', async () => {
       const wrapper = mountPicker([0, 1, 2, 3])
       const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus')
@@ -106,10 +132,27 @@ describe('RotationSequencePicker', () => {
       expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('false')
     })
 
+    it('does nothing on Escape when no item is grabbed', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[0].trigger('keydown', { key: 'Escape' })
+
+      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+      expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('false')
+    })
+
     it('announces the grabbed state through the live region', async () => {
       const wrapper = mountPicker([0, 1, 2, 3])
       await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
       expect(wrapper.find('[role="status"]').text()).toContain('Picked up')
+    })
+
+    it('moves the roving tabindex to whichever item receives real DOM focus', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+
+      await wrapper.findAll('li')[2].trigger('focus')
+
+      const items = wrapper.findAll('li')
+      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['-1', '-1', '0', '-1'])
     })
   })
 })

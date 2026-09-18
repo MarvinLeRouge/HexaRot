@@ -58,6 +58,22 @@ describe('KeyGeneratorForm', () => {
     })
   })
 
+  it('includes the reordered rotation sequence when using the picker', async () => {
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
+    const wrapper = mountForm()
+
+    await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
+    await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(postJson).toHaveBeenCalledWith(
+      '/key/generate',
+      expect.objectContaining({ rotationSequence: [1, 0, 2, 3] }),
+    )
+  })
+
   it('displays the returned HR key after a successful generate response', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
     const wrapper = mountForm()
@@ -89,6 +105,57 @@ describe('KeyGeneratorForm', () => {
     await flushPromises()
 
     expect(wrapper.find('.key-generator-form__result button').text()).toBe(en.key.generator.result.copied)
+  })
+
+  it('resets the copy feedback to idle after a delay', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true })
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
+    Object.assign(navigator, { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } })
+    const wrapper = mountForm()
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wrapper.find('.key-generator-form__result button').trigger('click')
+    await flushPromises()
+    expect(wrapper.find('.key-generator-form__result button').text()).toBe(en.key.generator.result.copied)
+
+    await vi.advanceTimersByTimeAsync(2000)
+
+    expect(wrapper.find('.key-generator-form__result button').text()).toBe(en.key.generator.result.copy)
+    vi.useRealTimers()
+  })
+
+  it('shows an error state when the clipboard write fails', async () => {
+    vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
+    Object.assign(navigator, { clipboard: { writeText: vi.fn().mockRejectedValue(new Error('denied')) } })
+    const wrapper = mountForm()
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+    await wrapper.find('.key-generator-form__result button').trigger('click')
+    await flushPromises()
+
+    expect(wrapper.find('.key-generator-form__result button').text()).toBe(en.key.generator.result.copyError)
+  })
+
+  it('does not call the API when submitted with an out-of-range pivot block size', async () => {
+    const wrapper = mountForm()
+
+    await wrapper.find('input[type="number"]').setValue(0)
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(postJson).not.toHaveBeenCalled()
+  })
+
+  it('shows a generic network error message on a network failure', async () => {
+    vi.mocked(postJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+    const wrapper = mountForm()
+
+    await wrapper.find('form').trigger('submit')
+    await flushPromises()
+
+    expect(wrapper.text()).toContain(en.errors.network)
   })
 
   it('displays an error when the generate API call fails', async () => {

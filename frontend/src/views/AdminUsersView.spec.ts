@@ -3,6 +3,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import { createPinia, setActivePinia } from 'pinia'
 import { createI18n } from 'vue-i18n'
 import AdminUsersView from './AdminUsersView.vue'
+import ConfirmDialog from '../components/ConfirmDialog.vue'
 import en from '../locales/en.json'
 import { MOCK_ADMIN_USERS_LIST } from '../__fixtures__/frontend.fixtures'
 import { ApiError } from '../api/client'
@@ -76,6 +77,31 @@ describe('AdminUsersView', () => {
     await flushPromises()
 
     expect(deleteJson).toHaveBeenCalledWith('/admin/users/user-1')
+    expect(wrapper.find('.confirm-dialog').exists()).toBe(false)
+  })
+
+  it('does nothing if the confirm dialog emits confirm with no pending deletion', async () => {
+    vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.findComponent(ConfirmDialog).vm.$emit('confirm')
+    await flushPromises()
+
+    expect(deleteJson).not.toHaveBeenCalled()
+  })
+
+  it('closes the confirmation dialog without deleting when cancelled', async () => {
+    vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
+    const wrapper = mountView()
+    await flushPromises()
+
+    await wrapper.findAll('button').filter((b) => b.text() === en.admin.users.actions.delete)[0].trigger('click')
+    expect(wrapper.find('.confirm-dialog').exists()).toBe(true)
+
+    await wrapper.find('.confirm-dialog__cancel').trigger('click')
+
+    expect(deleteJson).not.toHaveBeenCalled()
     expect(wrapper.find('.confirm-dialog').exists()).toBe(false)
   })
 

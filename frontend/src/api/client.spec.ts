@@ -53,6 +53,15 @@ describe('postJson', () => {
     })
   })
 
+  it('falls back to the response status text when the error body is not valid JSON', async () => {
+    vi.mocked(fetch).mockResolvedValue(new Response('<html>Bad Gateway</html>', { status: 502, statusText: 'Bad Gateway' }))
+
+    await expect(postJson('/encode', {})).rejects.toMatchObject({
+      message: 'Bad Gateway',
+      status: 502,
+    })
+  })
+
   it('maps a network failure to an ApiError', async () => {
     vi.mocked(fetch).mockRejectedValue(new TypeError('Failed to fetch'))
 
@@ -78,6 +87,16 @@ describe('getJson', () => {
 
     expect(result).toEqual({ id: 'user-1' })
     expect(fetch).toHaveBeenCalledWith(expect.stringContaining('/auth/me'), expect.objectContaining({ method: 'GET' }))
+  })
+
+  it('uses VITE_API_BASE_URL as the request origin when configured', async () => {
+    vi.stubEnv('VITE_API_BASE_URL', 'https://api.example.com')
+    vi.mocked(fetch).mockResolvedValue(jsonResponse({ id: 'user-1' }))
+
+    await getJson('/auth/me')
+
+    expect(fetch).toHaveBeenCalledWith('https://api.example.com/auth/me', expect.anything())
+    vi.unstubAllEnvs()
   })
 })
 

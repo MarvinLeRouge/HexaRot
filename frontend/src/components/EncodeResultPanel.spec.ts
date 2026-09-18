@@ -74,6 +74,21 @@ describe('EncodeResultPanel', () => {
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(`${MOCK_ENCODE_RESPONSE.key} · ${en.encode.form.size.large}`)
     })
 
+    it('resets the copy feedback to idle after a delay', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true })
+      Object.assign(navigator, { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } })
+      const wrapper = mountPanel()
+
+      await wrapper.find('.encode-result-panel__key button').trigger('click')
+      await flushPromises()
+      expect(wrapper.find('.encode-result-panel__key button').text()).toBe(en.encode.result.copied)
+
+      await vi.advanceTimersByTimeAsync(2000)
+
+      expect(wrapper.find('.encode-result-panel__key button').text()).toBe(en.encode.result.copy)
+      vi.useRealTimers()
+    })
+
     it('shows "Copy failed" when the clipboard write rejects', async () => {
       Object.assign(navigator, {
         clipboard: { writeText: vi.fn().mockRejectedValue(new Error('denied')) },

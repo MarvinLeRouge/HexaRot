@@ -120,6 +120,30 @@ describe('DecodeView', () => {
       )
     })
 
+    it('does not call the API when submitted with no file selected', async () => {
+      const wrapper = mountView()
+      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(postJson).not.toHaveBeenCalled()
+    })
+
+    it('includes the selected size value in the API payload', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+      const wrapper = mountView()
+      await selectFile(wrapper, MOCK_PNG_FILE)
+      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+      await wrapper.find('select[name="size"]').setValue('large')
+
+      await wrapper.find('form').trigger('submit')
+
+      await vi.waitFor(() =>
+        expect(postJson).toHaveBeenCalledWith('/decode', expect.objectContaining({ size: 'large' })),
+      )
+    })
+
     it('shows a loading indicator while the API call is in progress', async () => {
       vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
       const wrapper = mountView()
@@ -179,6 +203,27 @@ describe('DecodeView', () => {
 
       expect(navigator.clipboard.writeText).toHaveBeenCalledWith(MOCK_DECODE_RESPONSE.message)
       expect(wrapper.find('.decode-view__result-card button').text()).toBe(en.decode.result.copied)
+    })
+
+    it('resets the copy feedback to idle after a delay', async () => {
+      vi.useFakeTimers({ shouldAdvanceTime: true })
+      Object.assign(navigator, { clipboard: { writeText: vi.fn().mockResolvedValue(undefined) } })
+      vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+      const wrapper = mountView()
+      await selectFile(wrapper, MOCK_PNG_FILE)
+      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
+      await wrapper.find('form').trigger('submit')
+      await vi.waitFor(() => expect(wrapper.find('.decode-view__result-card').exists()).toBe(true))
+      await flushPromises()
+
+      await wrapper.find('.decode-view__result-card button').trigger('click')
+      await flushPromises()
+      expect(wrapper.find('.decode-view__result-card button').text()).toBe(en.decode.result.copied)
+
+      await vi.advanceTimersByTimeAsync(2000)
+
+      expect(wrapper.find('.decode-view__result-card button').text()).toBe(en.decode.result.copy)
+      vi.useRealTimers()
     })
 
     it('makes the decoded message keyboard-focusable and labelled, so long messages remain reachable', async () => {

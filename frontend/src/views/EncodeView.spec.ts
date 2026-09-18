@@ -89,6 +89,23 @@ describe('EncodeView', () => {
       )
     })
 
+    it('includes the reordered rotation sequence in the payload after using the picker', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+
+      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
+      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(postJson).toHaveBeenCalledWith(
+        '/encode',
+        expect.objectContaining({ rotationSequence: [1, 0, 2, 3] }),
+      )
+    })
+
     it('shows a loading indicator while the API call is in progress', async () => {
       vi.mocked(postJson).mockReturnValue(new Promise(() => {}))
       const wrapper = mountView()
@@ -160,6 +177,29 @@ describe('EncodeView', () => {
       await flushPromises()
 
       expect(postJson).toHaveBeenCalledWith('/encode', expect.objectContaining({ message: 'hello world', key: 'HR1·a1b2' }))
+    })
+
+    it('switches back to the params fields when the params radio is reselected', async () => {
+      const wrapper = mountView()
+      await wrapper.find('input[type="radio"][value="key"]').setValue()
+      expect(wrapper.find('input[type="text"]').exists()).toBe(true)
+
+      await wrapper.find('input[type="radio"][value="params"]').setValue()
+
+      expect(wrapper.find('input[type="number"]').exists()).toBe(true)
+      expect(wrapper.find('input[type="text"]').exists()).toBe(false)
+    })
+
+    it('includes overrideWeaknessWarning in the payload once checked', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('input[type="checkbox"]').setValue(true)
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(postJson).toHaveBeenCalledWith('/encode', expect.objectContaining({ overrideWeaknessWarning: true }))
     })
   })
 
@@ -310,6 +350,17 @@ describe('EncodeView', () => {
       await flushPromises()
 
       expect(wrapper.text()).toContain('message must not be empty')
+    })
+
+    it('shows a generic network error message on a network failure', async () => {
+      vi.mocked(postJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      expect(wrapper.text()).toContain(en.errors.network)
     })
 
     it('does not display a cryptogram preview after an API error', async () => {

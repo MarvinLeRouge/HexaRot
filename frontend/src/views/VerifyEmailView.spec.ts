@@ -14,7 +14,7 @@ vi.mock('../api/client', async () => {
 
 import { postJson } from '../api/client'
 
-async function mountView(token: string) {
+async function mountView(token?: string) {
   const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -22,7 +22,7 @@ async function mountView(token: string) {
       { path: '/login', name: 'login', component: { template: '<div>login</div>' } },
     ],
   })
-  router.push(`/verify-email?token=${token}`)
+  router.push(token === undefined ? '/verify-email' : `/verify-email?token=${token}`)
   await router.isReady()
 
   const i18n = createI18n({ legacy: false, locale: 'en', messages: { en } })
@@ -52,6 +52,14 @@ describe('VerifyEmailView', () => {
 
     expect(wrapper.text()).toContain(en.auth.verifyEmail.success)
     expect(wrapper.find('a[href="/login"]').exists()).toBe(true)
+  })
+
+  it('sends an empty token when no token is present in the query', async () => {
+    vi.mocked(postJson).mockRejectedValue(new ApiError('Invalid or expired verification token', 'http', 400))
+    await mountView()
+    await flushPromises()
+
+    expect(postJson).toHaveBeenCalledWith('/auth/verify-email', { token: '' })
   })
 
   it('shows an error and the resend-verification form on an invalid token', async () => {

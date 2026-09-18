@@ -178,6 +178,7 @@ automatically from Conventional Commits history.
 - Fix Testing section to match implemented tests
 - Mark FEAT-018 done, verified live
 - Document codecov coverage thresholds
+- Sync test counts and fix broken license link
 
 ### Features
 
@@ -363,6 +364,7 @@ automatically from Conventional Commits history.
 - Raise patch coverage target to 90%
 - Update CHANGELOG.md
 - Add ci-status aggregator job
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md

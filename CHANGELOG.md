@@ -363,6 +363,7 @@ automatically from Conventional Commits history.
 - Add ci-status aggregator job
 - Update CHANGELOG.md
 - Update CHANGELOG.md
+- Update CHANGELOG.md
 
 ### Refactoring
 
@@ -394,5 +395,6 @@ automatically from Conventional Commits history.
 - Enforce coverage thresholds, close two real test gaps
 - Add end-to-end coverage for register/verify/login/admin flows
 - Fix vacuous route-protection assertion in e2e suite
+- Raise branch and function coverage across api/components/stores/views
 
 

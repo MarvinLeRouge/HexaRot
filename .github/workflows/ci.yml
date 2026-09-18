@@ -31,16 +31,40 @@ jobs:
               - 'frontend/**'
               - '.github/workflows/ci.yml'
 
-  backend:
-    name: Backend — install, lint, test
+  backend-lint:
+    name: "Backend: lint"
     needs: changes
     if: ${{ needs.changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: postgresql://hexarot:hexarot_password@localhost:5432/hexarot_test
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+      - name: Type check
+        run: npm run typecheck
 
+  backend-test:
+    name: "Backend: test"
+    needs: changes
+    if: ${{ needs.changes.outputs.backend == 'true' }}
+    runs-on: ubuntu-latest
     permissions:
       id-token: write
       contents: read
-
     services:
       postgres:
         image: postgres:16
@@ -55,49 +79,33 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     env:
       DATABASE_URL: postgresql://hexarot:hexarot_password@localhost:5432/hexarot_test
       JWT_SECRET: test_jwt_secret_do_not_use_in_production
       SEED_ADMIN_EMAIL: ci-admin@hexarot.local
       SEED_ADMIN_PASSWORD: ci_test_admin_password_do_not_use_in_production
-
     defaults:
       run:
         working-directory: backend
-
     steps:
       - name: Checkout
         uses: actions/checkout@v7
-
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: 'npm'
           cache-dependency-path: backend/package-lock.json
-
       - name: Install dependencies
         run: npm ci
-
       - name: Run Prisma migrations
         run: npx prisma migrate deploy
-
       - name: Run database seed
         run: npx prisma db seed
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Type check
-        run: npm run typecheck
-
       - name: Test
         run: npm run test:cov
-
       - name: E2E test
         run: npm run test:e2e:cov
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
@@ -106,43 +114,78 @@ jobs:
           files: backend/coverage/lcov.info,backend/coverage-e2e/lcov.info
           fail_ci_if_error: false
 
-  frontend:
-    name: Frontend — install, lint, test
+  backend-security:
+    name: "Backend: security"
     needs: changes
-    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    if: ${{ needs.changes.outputs.backend == 'true' }}
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write
-      contents: read
-
+    env:
+      DATABASE_URL: postgresql://hexarot:hexarot_password@localhost:5432/hexarot_test
     defaults:
       run:
-        working-directory: frontend
-
+        working-directory: backend
     steps:
       - name: Checkout
         uses: actions/checkout@v7
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: npm audit (dependency vulnerability scan)
+        run: npm audit --audit-level=critical
 
+  frontend-lint:
+    name: "Frontend: lint"
+    needs: changes
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: 'npm'
           cache-dependency-path: frontend/package-lock.json
-
       - name: Install dependencies
         run: npm ci
-
       - name: Lint
         run: npm run lint
-
       - name: Type check
         run: npm run typecheck
 
+  frontend-test:
+    name: "Frontend: test"
+    needs: changes
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
       - name: Test
         run: npm run test:cov
-
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v7
         with:
@@ -151,10 +194,32 @@ jobs:
           files: frontend/coverage/lcov.info
           fail_ci_if_error: false
 
+  frontend-security:
+    name: "Frontend: security"
+    needs: changes
+    if: ${{ needs.changes.outputs.frontend == 'true' }}
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+      - name: Setup Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: npm audit (dependency vulnerability scan)
+        run: npm audit --audit-level=critical
+
   ci-status:
     name: CI status
     if: always()
-    needs: [changes, backend, frontend]
+    needs: [changes, backend-lint, backend-test, backend-security, frontend-lint, frontend-test, frontend-security]
     runs-on: ubuntu-latest
     steps:
       - name: Fail if any required job failed or was cancelled

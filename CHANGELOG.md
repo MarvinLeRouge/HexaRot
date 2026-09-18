@@ -75,6 +75,7 @@ automatically from Conventional Commits history.
 - Seed the admin account during production deployment
 - Handle single-colour grids, validate rotation permutation, sort palette
 - Trigger workflow on all pull requests, not just non-doc changes
+- Set DATABASE_URL for backend-lint and backend-security jobs
 
 ### CI/CD
 
@@ -96,6 +97,7 @@ automatically from Conventional Commits history.
 - Add build and deploy pipeline for GHCR and VPS
 - Add path-filter to skip backend/frontend jobs on unrelated changes
 - Skip CI on doc-only changes
+- Split backend/frontend jobs into lint, test, and security stages
 
 ### Documentation
 
@@ -361,6 +363,7 @@ automatically from Conventional Commits history.
 - Raise patch coverage target to 90%
 - Update CHANGELOG.md
 - Add ci-status aggregator job
+- Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md

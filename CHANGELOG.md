@@ -369,6 +369,8 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Update CHANGELOG.md
 - Update CHANGELOG.md
+- Update CHANGELOG.md
+- Add local post-commit hook for changelog generation
 
 ### Refactoring
 

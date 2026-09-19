@@ -179,6 +179,7 @@ automatically from Conventional Commits history.
 - Mark FEAT-018 done, verified live
 - Document codecov coverage thresholds
 - Sync test counts and fix broken license link
+- Document the local post-commit changelog hook
 
 ### Features
 

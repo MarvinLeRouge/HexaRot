@@ -62,7 +62,17 @@ to `main`. It requires a `HEXAROT_PROJECT_TOKEN` repository secret (classic
 Personal Access Token with `repo` and `project` scopes); see
 [CONTRIBUTING.md](../CONTRIBUTING.md) for setup.
 
-`changelog.yml` regenerates `CHANGELOG.md` on push to `main` and opens a pull
-request rather than pushing directly. It requires "Allow GitHub Actions to
-create and approve pull requests" to be enabled in the repository's Actions
-settings.
+`CHANGELOG.md` is regenerated primarily by a local `post-commit` hook
+(appended to `.husky/post-commit`, calling `scripts/changelog-post-commit.sh`)
+that runs git-cliff and folds the result into the same commit before it's
+ever pushed, so a feature PR already carries its own changelog entry. Each
+developer adds this call to their own local `.husky/post-commit` (gitignored,
+personal per-machine, like this repo's other non-`pre-commit` Husky hooks —
+not automatable via `pre-commit install` since this repo uses Husky, not the
+`pre-commit` framework).
+
+As a fallback, `changelog.yml` still regenerates `CHANGELOG.md` on push to
+`main` and opens a pull request rather than pushing directly, in case a
+commit lands on `main` without going through the local hook. It requires
+"Allow GitHub Actions to create and approve pull requests" to be enabled in
+the repository's Actions settings.

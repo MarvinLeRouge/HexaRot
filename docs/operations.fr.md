@@ -62,7 +62,18 @@ Kanban à chaque push sur `main`. Il nécessite un secret de repository
 `HEXAROT_PROJECT_TOKEN` (Personal Access Token classic avec les scopes `repo` et
 `project`) ; voir [CONTRIBUTING.fr.md](../CONTRIBUTING.fr.md) pour la configuration.
 
-`changelog.yml` régénère `CHANGELOG.md` à chaque push sur `main` et ouvre une pull
-request plutôt que de pousser directement. Il nécessite l'activation de « Allow
-GitHub Actions to create and approve pull requests » dans les paramètres Actions
-du repository.
+`CHANGELOG.md` est régénéré principalement par un hook local `post-commit`
+(ajouté à la fin de `.husky/post-commit`, qui appelle
+`scripts/changelog-post-commit.sh`) qui exécute git-cliff et intègre le
+résultat dans le même commit avant même qu'il soit poussé, si bien qu'une PR
+de fonctionnalité contient déjà sa propre entrée de changelog. Chaque
+développeur ajoute cet appel à son propre `.husky/post-commit` local
+(gitignoré, personnel par machine, comme les autres hooks Husky non
+`pre-commit` de ce repo — non automatisable via `pre-commit install` puisque
+ce repo utilise Husky et non le framework `pre-commit`).
+
+En secours, `changelog.yml` régénère toujours `CHANGELOG.md` à chaque push sur
+`main` et ouvre une pull request plutôt que de pousser directement, au cas où
+un commit atterrirait sur `main` sans passer par le hook local. Il nécessite
+l'activation de « Allow GitHub Actions to create and approve pull requests »
+dans les paramètres Actions du repository.

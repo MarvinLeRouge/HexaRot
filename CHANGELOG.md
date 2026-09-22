@@ -373,7 +373,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Add local post-commit hook for changelog generation
 - Wire changelog hook into existing Husky post-commit instead of hooksPath override
-- Bump typescript to 6.0.3 and nestjs/schematics to 12.0.3
+- Bump typescript to 6.0.3 and nestjs/schematics to 12.0.3 (#242)
 
 ### Other
 

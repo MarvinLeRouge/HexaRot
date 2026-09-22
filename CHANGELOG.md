@@ -373,6 +373,22 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md
 - Add local post-commit hook for changelog generation
 - Wire changelog hook into existing Husky post-commit instead of hooksPath override
+- Bump typescript to 6.0.3 and nestjs/schematics to 12.0.3
+
+### Other
+
+- Bump lint-staged (#208)
+- Bump dorny/paths-filter from 3 to 4 (#238)
+- Bump the npm-minor-patch group across 1 directory with 10 updates (#239)
+- Bump the npm-minor-patch group across 1 directory with 8 updates (#240)
+- Bump docker/build-push-action from 6 to 7 (#206)
+- Bump docker/login-action from 3 to 4 (#207)
+- Bump globals from 16.5.0 to 17.12.0 in /frontend (#210)
+- Bump vite from 7.3.6 to 8.3.0 in /frontend (#211)
+- Bump @eslint/js from 9.39.4 to 10.0.1 in /frontend (#214)
+- Bump @types/node from 22.19.15 to 26.6.2 in /backend (#216)
+- Bump globals from 16.5.0 to 17.12.0 in /backend (#217)
+- Bump vue-router from 4.6.4 to 5.3.1 in /frontend (#213)
 
 ### Refactoring
 

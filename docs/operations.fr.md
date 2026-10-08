@@ -8,7 +8,7 @@
 
 Le développement local est entièrement conteneurisé avec Docker Compose, et passe
 par un reverse proxy Traefik local pour refléter la production plutôt que de
-publier les ports des conteneurs directement. Voir [CONTRIBUTING.fr.md](../CONTRIBUTING.fr.md)
+publier les ports des conteneurs directement. Voir [CONTRIBUTING.fr.md](i18n/fr/CONTRIBUTING.fr.md)
 pour la configuration initiale de Traefik et de `/etc/hosts`.
 
 ```bash
@@ -60,7 +60,7 @@ GitHub Actions s'exécute sur les pull requests vers `main` (`.github/workflows/
 `sync-backlog.yml` synchronise `BACKLOG.md` vers les Issues GitHub et un tableau
 Kanban à chaque push sur `main`. Il nécessite un secret de repository
 `HEXAROT_PROJECT_TOKEN` (Personal Access Token classic avec les scopes `repo` et
-`project`) ; voir [CONTRIBUTING.fr.md](../CONTRIBUTING.fr.md) pour la configuration.
+`project`) ; voir [CONTRIBUTING.fr.md](i18n/fr/CONTRIBUTING.fr.md) pour la configuration.
 
 `CHANGELOG.md` est régénéré principalement par un hook local `post-commit`
 (ajouté à la fin de `.husky/post-commit`, qui appelle

@@ -1,4 +1,4 @@
-🇫🇷 Version française | [🇬🇧 English version](CONTRIBUTING.md)
+🇫🇷 Version française | [🇬🇧 English version](../../../CONTRIBUTING.md)
 
 ---
 
@@ -101,7 +101,7 @@ Ce projet suit un [Code de conduite](CODE_OF_CONDUCT.fr.md). En participant, vou
 
 ## Licence
 
-En contribuant, vous acceptez que vos contributions soient distribuées sous la [licence MIT](LICENSE) du projet.
+En contribuant, vous acceptez que vos contributions soient distribuées sous la [licence MIT](../../../LICENSE) du projet.
 
 ---
 

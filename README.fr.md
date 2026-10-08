@@ -49,7 +49,7 @@ La même clé déchiffre tous les messages qu'elle a servi à chiffrer.
 
 **Prérequis :** Docker, Docker Compose, et un reverse proxy Traefik local (le
 développement local passe par Traefik pour refléter la production — voir
-[CONTRIBUTING.fr.md](CONTRIBUTING.fr.md#environnement-de-développement-local) pour
+[CONTRIBUTING.fr.md](docs/i18n/fr/CONTRIBUTING.fr.md#environnement-de-développement-local) pour
 la configuration initiale, notamment l'entrée `/etc/hosts` requise).
 
 ```bash
@@ -161,7 +161,7 @@ Projet personnel à double vocation :
 
 ## Contribuer
 
-Voir [CONTRIBUTING.fr.md](CONTRIBUTING.fr.md) pour les instructions de configuration,
+Voir [CONTRIBUTING.fr.md](docs/i18n/fr/CONTRIBUTING.fr.md) pour les instructions de configuration,
 notamment la mise en place du token GitHub Actions requis pour le pipeline CI/CD complet.
 
 ---

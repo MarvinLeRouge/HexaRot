@@ -180,7 +180,7 @@ automatically from Conventional Commits history.
 - Document codecov coverage thresholds
 - Sync test counts and fix broken license link
 - Document the local post-commit changelog hook
-- Move French community-health docs into docs/i18n/fr
+- Move French community-health docs into docs/i18n/fr (#252)
 
 ### Features
 

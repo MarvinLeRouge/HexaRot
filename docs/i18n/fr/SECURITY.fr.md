@@ -1,4 +1,4 @@
-🇫🇷 Version française | [🇬🇧 English version](SECURITY.md)
+🇫🇷 Version française | [🇬🇧 English version](../../../SECURITY.md)
 
 ---
 
@@ -29,6 +29,6 @@ Merci d'inclure les étapes de reproduction et, si possible, le composant concer
 
 HexaRot est un chiffre visuel à visée d'obfuscation et d'apprentissage, et non un
 schéma de chiffrement validé cryptographiquement. Il évite délibérément de laisser
-fuiter la longueur du message dans le cryptogramme (voir l'[ADR 0001](docs/adr/0001-no-message-length-exposure.md)),
+fuiter la longueur du message dans le cryptogramme (voir l'[ADR 0001](../../adr/0001-no-message-length-exposure.md)),
 mais ne doit pas être utilisé pour protéger des données sensibles face à un
 attaquant déterminé.

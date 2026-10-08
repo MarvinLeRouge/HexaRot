@@ -180,6 +180,7 @@ automatically from Conventional Commits history.
 - Document codecov coverage thresholds
 - Sync test counts and fix broken license link
 - Document the local post-commit changelog hook
+- Move French community-health docs into docs/i18n/fr
 
 ### Features
 
@@ -374,6 +375,7 @@ automatically from Conventional Commits history.
 - Add local post-commit hook for changelog generation
 - Wire changelog hook into existing Husky post-commit instead of hooksPath override
 - Bump typescript to 6.0.3 and nestjs/schematics to 12.0.3 (#242)
+- Update CHANGELOG.md (#241)
 
 ### Other
 

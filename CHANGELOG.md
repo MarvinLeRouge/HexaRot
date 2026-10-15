@@ -181,7 +181,7 @@ automatically from Conventional Commits history.
 - Sync test counts and fix broken license link
 - Document the local post-commit changelog hook
 - Move French community-health docs into docs/i18n/fr (#252)
-- Align readme tagline with repository description
+- Align readme tagline with repository description (#255)
 
 ### Features
 

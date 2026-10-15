@@ -4,9 +4,7 @@
 
 # 🔐 HexaRot
 
-> *Un chiffre visuel qui combine l'encodage de symboles par couleur avec des rotations
-> géométriques de blocs, pour produire des cryptogrammes faciles à générer et difficiles
-> à lire — condensés dans une clé compacte et réutilisable.*
+> *Chiffrement visuel combinant un encodage de symboles par couleurs (alphabet Hexahue) et des rotations géométriques de blocs, regroupés dans une clé compacte et réutilisable. Application web et API REST en NestJS, Vue.js et TypeScript.*
 
 [![CI](https://github.com/MarvinLeRouge/HexaRot/actions/workflows/ci.yml/badge.svg)](https://github.com/MarvinLeRouge/HexaRot/actions)
 [![Backend coverage](https://img.shields.io/codecov/c/github/MarvinLeRouge/HexaRot/main?flag=backend&label=backend&logo=codecov)](https://app.codecov.io/gh/MarvinLeRouge/HexaRot)

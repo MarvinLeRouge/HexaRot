@@ -181,7 +181,7 @@ automatically from Conventional Commits history.
 - Sync test counts and fix broken license link
 - Document the local post-commit changelog hook
 - Move French community-health docs into docs/i18n/fr (#252)
-- Align readme tagline with repository description
+- Align readme tagline with repository description (#255)
 
 ### Features
 
@@ -377,6 +377,7 @@ automatically from Conventional Commits history.
 - Wire changelog hook into existing Husky post-commit instead of hooksPath override
 - Bump typescript to 6.0.3 and nestjs/schematics to 12.0.3 (#242)
 - Update CHANGELOG.md (#241)
+- Ignore codegraph folder
 
 ### Other
 

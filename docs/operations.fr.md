@@ -26,7 +26,7 @@ docker compose up
 | Service | Image / build | Notes |
 |---|---|---|
 | `postgres` | `postgres:16-alpine` | Conditionné par healthcheck ; `backend` attend qu'il soit sain avant de démarrer |
-| `backend` | `backend/Dockerfile.dev` | Serveur de dev NestJS avec le code source monté en bind ; routé via Traefik sous `/api` |
+| `backend` | `backend/Dockerfile.dev` | Serveur de dev NestJS avec le code source monté en bind ; applique les migrations Prisma en attente (`migrate deploy`) et lance le seed au démarrage (seed ignoré si `SEED_ADMIN_PASSWORD` est vide) ; routé via Traefik sous `/api` |
 | `frontend` | `frontend/Dockerfile.dev` | Serveur de dev Vite avec le code source monté en bind ; routé via Traefik à la racine de l'hôte |
 
 `backend` et `frontend` rejoignent tous deux le réseau Docker externe

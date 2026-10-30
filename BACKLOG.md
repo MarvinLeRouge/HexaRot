@@ -2266,3 +2266,53 @@ deploy process is introduced that runs `prisma migrate deploy` as part of
 the running production container itself (rather than as a separate one-off
 invocation against the image), or when Prisma publishes a non-breaking fix.
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FIX-001] Seed accepts the documented admin password placeholder
+
+- **type:** fix
+- **id:** FIX-001
+- **milestone:** v2
+- **status:** ready
+- **priority:** high
+- **domain:** backend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [config placeholder guards drift from documentation]
+- **labels:** [fix, domain:backend, priority:high]
+
+#### Description
+
+`backend/prisma/seed.ts` (`seedAdminUser`) refuses to seed the admin account
+when `SEED_ADMIN_PASSWORD` equals a known placeholder, but it checks the
+wrong string. The guard compares against `change_me_admin`, the dev/CI
+default from the FEAT-021 spec and plan. The placeholder actually documented
+in `.env.example` and `backend/.env.example` is
+`REPLACE_WITH_A_REAL_ADMIN_PASSWORD`, and their comment states the seed
+"refuses this documented placeholder password specifically", which is false.
+
+Consequence: anyone who copies `.env.example` to `.env` without editing
+`SEED_ADMIN_PASSWORD` gets an `ADMIN` account (email verified, active) whose
+password is a public string from the repository. The seed runs on every
+production deploy (`.github/workflows/build-deploy.yml`) and, since the dev
+auto-seed change, on every dev backend start.
+
+The admin upsert uses `update: {}`, so fixing the guard does not repair an
+admin account already created with the placeholder: an existing account keeps
+its password.
+
+`seed.ts` has no tests, which is how the drift went unnoticed.
+
+#### Acceptance criteria
+
+- The seed refuses to run when `SEED_ADMIN_PASSWORD` equals
+  `REPLACE_WITH_A_REAL_ADMIN_PASSWORD`; `change_me_admin` stays refused
+- The placeholder value lives in one place, so the guard and `.env.example`
+  cannot drift apart again (or a test pins them together)
+- Tests cover `seedAdminUser`: missing email, missing password, each
+  placeholder refused, valid password upserted with `ADMIN` role
+- The `.env.example` comments match the actual behavior
+- Production admin account checked: if it was ever seeded with the
+  placeholder, its password is rotated
+<!-- ITEM:END -->

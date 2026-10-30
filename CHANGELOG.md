@@ -182,6 +182,7 @@ automatically from Conventional Commits history.
 - Document the local post-commit changelog hook
 - Move French community-health docs into docs/i18n/fr (#252)
 - Align readme tagline with repository description (#255)
+- Add FIX-001 seed admin placeholder guard mismatch
 
 ### Features
 
@@ -378,6 +379,7 @@ automatically from Conventional Commits history.
 - Bump typescript to 6.0.3 and nestjs/schematics to 12.0.3 (#242)
 - Update CHANGELOG.md (#241)
 - Ignore codegraph folder
+- Apply prisma migrations and seed on dev backend start
 
 ### Other
 

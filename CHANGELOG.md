@@ -380,6 +380,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md (#241)
 - Ignore codegraph folder
 - Apply prisma migrations and seed on dev backend start
+- Patch backend dependencies flagged critical by npm audit
 
 ### Other
 

@@ -383,6 +383,7 @@ automatically from Conventional Commits history.
 - Apply prisma migrations and seed on dev backend start
 - Patch backend dependencies flagged critical by npm audit
 - Patch frontend dependencies flagged by npm audit
+- Upgrade vue-i18n from 9 to 11
 
 ### Other
 

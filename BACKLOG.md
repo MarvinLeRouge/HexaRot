@@ -2416,7 +2416,7 @@ a major upgrade. Tracked as CHORE-013.
 - **type:** chore
 - **id:** CHORE-013
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** S
@@ -2444,4 +2444,14 @@ locale and more messages on top of the current vue-i18n setup.
 - `npm audit` on `frontend/` reports no high or critical finding
 - Frontend tests, typecheck and build pass; every view renders its English
   messages in the real dev UI
+
+#### Resolution (2026-10-30)
+
+`vue-i18n` raised to `^11.4.16` with no code change: the app only uses the
+Composition API (`legacy: false`, `useI18n().t`) with named parameters, so none
+of the 9 to 11 breaking changes (`tc`/`$tc` removal, Legacy API deprecation,
+`v-t`) apply. `npm audit` on `frontend/` reports 0 vulnerabilities. Checked in
+a headless browser logged in as admin: Encode, Decode, Key and Admin views
+render their English messages with no raw keys and no console warnings, and a
+parameterised message (`{email}`) is interpolated.
 <!-- ITEM:END -->

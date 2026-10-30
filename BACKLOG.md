@@ -2329,3 +2329,44 @@ and fails the seed if one matches. The seed runs on every production deploy,
 so the next deploy fails loudly if the production admin was ever seeded with a
 placeholder, and the password then has to be rotated by hand.
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CHORE-011] Patch backend dependencies flagged critical by npm audit
+
+- **type:** chore
+- **id:** CHORE-011
+- **milestone:** v2
+- **status:** done
+- **priority:** critical
+- **domain:** backend
+- **complexity:** XS
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [npm audit triage]
+- **labels:** [chore, domain:backend, priority:critical]
+
+#### Description
+
+The CI `npm audit --audit-level=critical` step on `backend/` started failing
+on 2026-10-30 after new advisories were published: 2 critical (`proxy-addr`
+IP spoofing via IPv4-mapped IPv6 trust subnets, `handlebars`) plus several
+high ones on runtime packages (`body-parser`, `sharp`/librsvg, `multer`,
+`nodemailer`, `mysql2`). The failure blocked every backend PR.
+
+#### Acceptance criteria
+
+- `npm audit --audit-level=critical` passes on `backend/`
+- Only non-breaking updates (`npm audit fix`, no `--force`)
+- Backend still builds and encodes through the real API
+
+#### Resolution (2026-10-30)
+
+`npm audit fix` updated `backend/package-lock.json` within the existing
+semver ranges (`proxy-addr` 2.0.8, `handlebars` 4.7.10, `express` 5.3.0,
+`body-parser` 2.4.0, `sharp` 0.35.5, `nodemailer` 10.3.1, `multer` 2.5.0,
+`@nestjs/platform-express` 12.3.2, `prisma` 7.10.1). Remaining after the fix:
+1 high (`brace-expansion` <=1.1.20) and 6 low (`deepmerge` via `jest-config`),
+all dev-only tooling; `--force` would downgrade `jest` to 25, not justified.
+The frontend audit has no critical finding (8 high, 3 moderate) and is left
+for a separate item.
+<!-- ITEM:END -->

@@ -26,7 +26,7 @@ docker compose up
 | Service | Image / build | Notes |
 |---|---|---|
 | `postgres` | `postgres:16-alpine` | Healthcheck-gated; `backend` waits for it to be healthy before starting |
-| `backend` | `backend/Dockerfile.dev` | NestJS dev server with a bind-mounted source tree; applies pending Prisma migrations (`migrate deploy`) and runs the seed on start (seed skipped when `SEED_ADMIN_PASSWORD` is empty); routed through Traefik under `/api` |
+| `backend` | `backend/Dockerfile.dev` | NestJS dev server with a bind-mounted source tree; applies pending Prisma migrations (`migrate deploy`) and runs the seed on start (seed skipped when `SEED_ADMIN_PASSWORD` is empty; a placeholder value makes the seed fail and the backend not start); routed through Traefik under `/api` |
 | `frontend` | `frontend/Dockerfile.dev` | Vite dev server with a bind-mounted source tree; routed through Traefik at the host root |
 
 Both `backend` and `frontend` join the external `traefik-public` Docker network

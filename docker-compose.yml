@@ -22,7 +22,8 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       target: dev
-    # Mirrors the production deploy (migrate, then seed); the seed refuses to run without an admin password
+    # Mirrors the production deploy (migrate, then seed). An empty SEED_ADMIN_PASSWORD skips the seed;
+    # a placeholder one makes the seed fail and the backend not start, like a placeholder JWT_SECRET
     command: >
       sh -c 'npx prisma migrate deploy
       && if [ -n "$$SEED_ADMIN_PASSWORD" ]; then npx prisma db seed;

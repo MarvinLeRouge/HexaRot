@@ -378,6 +378,7 @@ automatically from Conventional Commits history.
 - Bump typescript to 6.0.3 and nestjs/schematics to 12.0.3 (#242)
 - Update CHANGELOG.md (#241)
 - Ignore codegraph folder
+- Apply prisma migrations and seed on dev backend start
 
 ### Other
 

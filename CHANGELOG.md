@@ -382,6 +382,7 @@ automatically from Conventional Commits history.
 - Ignore codegraph folder
 - Apply prisma migrations and seed on dev backend start
 - Patch backend dependencies flagged critical by npm audit
+- Patch frontend dependencies flagged by npm audit
 
 ### Other
 

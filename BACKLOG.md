@@ -2370,3 +2370,78 @@ all dev-only tooling; `--force` would downgrade `jest` to 25, not justified.
 The frontend audit has no critical finding (8 high, 3 moderate) and is left
 for a separate item.
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CHORE-012] Patch frontend dependencies flagged by npm audit
+
+- **type:** chore
+- **id:** CHORE-012
+- **milestone:** v2
+- **status:** done
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** XS
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [npm audit triage]
+- **labels:** [chore, domain:frontend, priority:medium]
+
+#### Description
+
+`npm audit` on `frontend/` reported 11 vulnerabilities (8 high, 3 moderate,
+no critical, so CI still passed) in `vite`, `undici`, `source-map-js`,
+`brace-expansion`, `@vitest/mocker` and `vue-i18n`'s `@intlify/*` packages.
+
+#### Acceptance criteria
+
+- Every finding fixable without a major upgrade is fixed
+- Frontend tests, typecheck and build pass; the dev UI still loads
+- Findings that need a major upgrade get their own backlog item
+
+#### Resolution (2026-10-30)
+
+`npm audit fix` updated `frontend/package-lock.json` (`vite` 8.3.5 and
+transitive packages). `npm audit fix` could not move the `vitest` pair, since
+`@vitest/coverage-v8` pins an exact `vitest` peer version, so both were raised
+to `^5.0.5` in `package.json`, which fixes `@vitest/mocker`.
+
+Remaining: 4 high in `vue-i18n` 9.14.5 (`@intlify/core-base`,
+`@intlify/shared`, `@intlify/message-compiler`), fixed only in `vue-i18n` 11,
+a major upgrade. Tracked as CHORE-013.
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [CHORE-013] Upgrade vue-i18n from 9 to 11
+
+- **type:** chore
+- **id:** CHORE-013
+- **milestone:** v2
+- **status:** ready
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [vue-i18n major upgrade]
+- **labels:** [chore, domain:frontend, priority:medium]
+
+#### Description
+
+`npm audit` reports 4 high advisories on `vue-i18n` 9.14.5 and its
+`@intlify/*` packages, fixed only in `vue-i18n` 11 (GHSA-8rc2-428q-7ww3:
+`escapeParameter` does not escape named parameters when a list is also
+passed; GHSA-83rm-6c8r-g728: XSS through `srcdoc` in translation messages).
+
+Exposure today is low: the app does not use `escapeParameter`, and translation
+messages are static strings from the repository, not user input. The upgrade
+should still happen before FEAT-020 (French interface), which adds a second
+locale and more messages on top of the current vue-i18n setup.
+
+#### Acceptance criteria
+
+- `vue-i18n` upgraded to 11, breaking changes from 9 to 10 to 11 handled
+  (legacy API mode, message format and compilation changes)
+- `npm audit` on `frontend/` reports no high or critical finding
+- Frontend tests, typecheck and build pass; every view renders its English
+  messages in the real dev UI
+<!-- ITEM:END -->

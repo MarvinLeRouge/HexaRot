@@ -76,6 +76,7 @@ automatically from Conventional Commits history.
 - Handle single-colour grids, validate rotation permutation, sort palette
 - Trigger workflow on all pull requests, not just non-doc changes
 - Set DATABASE_URL for backend-lint and backend-security jobs
+- Refuse the admin password placeholder documented in .env.example
 
 ### CI/CD
 

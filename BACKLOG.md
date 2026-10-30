@@ -2273,7 +2273,7 @@ invocation against the image), or when Prisma publishes a non-breaking fix.
 - **type:** fix
 - **id:** FIX-001
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** backend
 - **complexity:** S
@@ -2315,6 +2315,19 @@ its password.
 - The `.env.example` comments match the actual behavior
 - Production admin account checked: if it was ever seeded with the
   placeholder, its password is rotated
+
+#### Resolution (2026-10-30)
+
+`seedAdminUser` moved to `backend/prisma/seed-admin.ts` (kept under
+`prisma/` because the production image copies `prisma/` but not `src/`).
+`SEED_ADMIN_PASSWORD_PLACEHOLDERS` lists both refused values, and a test pins
+it to the `SEED_ADMIN_PASSWORD` documented in both `.env.example` files.
+
+The production admin check is automated instead of manual: before the upsert,
+the seed compares an existing admin account's hash against every placeholder
+and fails the seed if one matches. The seed runs on every production deploy,
+so the next deploy fails loudly if the production admin was ever seeded with a
+placeholder, and the password then has to be rotated by hand.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->

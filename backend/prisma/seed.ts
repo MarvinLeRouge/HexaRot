@@ -1,6 +1,6 @@
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '../generated/prisma/client';
-import { hash } from 'bcryptjs';
+import { seedAdminUser } from './seed-admin';
 
 const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL });
 const prisma = new PrismaClient({ adapter });
@@ -47,39 +47,6 @@ const HEXAHUE_DATA = [
   { char: '8', colors: ['white', 'black', 'gray', 'white', 'black', 'gray'] },
   { char: '9', colors: ['black', 'white', 'gray', 'white', 'black', 'gray'] },
 ];
-
-/**
- * Idempotently upserts the single seeded admin account. Unlike HiveMind
- * (which seeds a fixed test admin plus a separate custom admin), HexaRot
- * has exactly one admin account by design (see FEAT-021 spec, Decision 1).
- */
-async function seedAdminUser(client: PrismaClient): Promise<void> {
-  const email = process.env.SEED_ADMIN_EMAIL;
-  const password = process.env.SEED_ADMIN_PASSWORD;
-  if (!email || !password) {
-    throw new Error(
-      'SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD must both be set to seed the admin account',
-    );
-  }
-  if (password === 'change_me_admin') {
-    throw new Error(
-      'SEED_ADMIN_PASSWORD must not be the documented placeholder value from .env.example - set a real password',
-    );
-  }
-  const passwordHash = await hash(password, 12);
-
-  await client.user.upsert({
-    where: { email },
-    update: {},
-    create: {
-      email,
-      passwordHash,
-      role: 'ADMIN',
-      emailVerified: true,
-      active: true,
-    },
-  });
-}
 
 async function main() {
   const alphabet = await prisma.alphabet.upsert({

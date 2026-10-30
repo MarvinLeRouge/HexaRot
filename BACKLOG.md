@@ -2445,3 +2445,57 @@ locale and more messages on top of the current vue-i18n setup.
 - Frontend tests, typecheck and build pass; every view renders its English
   messages in the real dev UI
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [REFACTOR-012] Design polish pass - critique, triage, fix
+
+- **type:** refactor
+- **id:** REFACTOR-012
+- **milestone:** v2
+- **status:** ready
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [critique-driven UI polish]
+- **labels:** [refactor, domain:frontend, priority:medium]
+
+#### Description
+
+Polish the visual design of the whole frontend. The last design critique
+(round 7, 14/40) predates REFACTOR-004..011, the key-size change (FEAT-022) and
+the authentication and admin views (FEAT-023), which were never critiqued.
+The current score is therefore unknown.
+
+Approach:
+
+1. Run `/impeccable critique` on every view at its current state (Encode,
+   Decode, Key, Login, Register, Verify email, Admin users), desktop and
+   mobile, and record the score.
+2. Triage findings by domain, not only by severity: pure visual or layout
+   fixes stay in this item; interaction or state bugs and anything touching
+   the key or cryptogram format get their own backlog items.
+3. Write each independently mergeable visual fix as its own child item
+   (`parent: REFACTOR-012`) before implementing any, so the plan survives an
+   interrupted session.
+4. Re-run the critique after each batch of fixes, so the reported score always
+   matches what is merged.
+
+Known candidate to triage: in Encode's "existing key" mode, the size selector
+has no effect (the key embeds its own size since FEAT-022) but is still shown
+as editable. This is an interaction issue, so it gets its own item.
+
+Stay within `docs/design-system.md` (tokens, typography, colour roles); any
+change to the design system itself is documented there in both languages.
+
+#### Acceptance criteria
+
+- A fresh critique of every view is recorded, with its score
+- Every finding is triaged into this item's children or a separate item
+- Child items implemented, each on its own branch and PR
+- A final critique after the last fix shows a higher score than the initial
+  one, reported against the merged state
+- `docs/design-system.md` and `docs/design-system.fr.md` updated if tokens or
+  rules change
+<!-- ITEM:END -->

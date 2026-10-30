@@ -184,6 +184,7 @@ automatically from Conventional Commits history.
 - Move French community-health docs into docs/i18n/fr (#252)
 - Align readme tagline with repository description (#255)
 - Add FIX-001 seed admin placeholder guard mismatch
+- Add REFACTOR-012 design polish pass
 
 ### Features
 

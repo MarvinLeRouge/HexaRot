@@ -55,4 +55,10 @@ describe('router guards', () => {
 
     expect(router.currentRoute.value.path).toBe('/login')
   })
+
+  it('does not gate /help', async () => {
+    await router.push('/help')
+
+    expect(router.currentRoute.value.name).toBe('help')
+  })
 })

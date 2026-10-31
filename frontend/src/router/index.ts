@@ -6,6 +6,7 @@ import LoginView from '../views/LoginView.vue'
 import RegisterView from '../views/RegisterView.vue'
 import VerifyEmailView from '../views/VerifyEmailView.vue'
 import AdminUsersView from '../views/AdminUsersView.vue'
+import HelpView from '../views/HelpView.vue'
 import { useAuthStore } from '../stores/auth'
 
 declare module 'vue-router' {
@@ -25,6 +26,7 @@ export const router = createRouter({
     { path: '/login', name: 'login', component: LoginView },
     { path: '/register', name: 'register', component: RegisterView },
     { path: '/verify-email', name: 'verify-email', component: VerifyEmailView },
+    { path: '/help', name: 'help', component: HelpView },
     {
       path: '/admin/users',
       name: 'admin-users',

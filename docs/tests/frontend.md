@@ -1,7 +1,7 @@
 # HexaRot — Test Spec: Frontend Domain
 
 Covers: FEAT-014 (encode view), FEAT-015 (decode view), FEAT-016 (key view),
-their associated Pinia stores, and FEAT-020 (French interface).
+their associated Pinia stores, FEAT-020 (French interface) and FEAT-025 (help page).
 
 All tests in this document are **unit tests** using Vitest and Vue Test Utils.
 API calls are mocked with `vi.mock` — no real HTTP requests are made.
@@ -204,6 +204,33 @@ describe('AdminUsersView') - localized values
 
 - it renders the role, the verified and active flags through i18n, not raw values
 - it formats the creation date for the active locale instead of showing the raw ISO string
+
+---
+
+## 8. Help page (FEAT-025)
+
+```
+describe('help files')
+```
+
+- every supported locale has a help file
+- every help file defines exactly the anchors listed in `HELP_SECTIONS`, so
+  contextual links work in every language
+
+```
+describe('HelpView')
+```
+
+- it renders the help content of the active locale
+- it switches to the other locale's content when the language changes, without reloading
+- it scrolls to the section named in the URL hash once the content is rendered
+- it keeps the hash target in view after a language switch
+
+```
+describe('router guards') - help page
+```
+
+- it does not gate `/help`
 
 ---
 

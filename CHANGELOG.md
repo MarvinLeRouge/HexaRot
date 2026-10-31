@@ -272,6 +272,7 @@ automatically from Conventional Commits history.
 - Add CorrelationScoreService
 - Expose POST /api/correlation-score
 - Add the French interface with a language switcher
+- Add a public help page with stable section anchors
 
 ### Miscellaneous
 

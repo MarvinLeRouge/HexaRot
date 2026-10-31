@@ -3,6 +3,7 @@
     "encode": "Encoder",
     "decode": "Décoder",
     "key": "Clé",
+    "help": "Aide",
     "admin": "Admin"
   },
   "encode": {

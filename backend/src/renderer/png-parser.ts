@@ -35,7 +35,10 @@ export async function parsePng(
   try {
     // Bounded to what PngRenderer can produce, closing off unbounded
     // decompression amplification from arbitrary caller-supplied PNG input.
+    // Alpha is dropped so the raw buffer stays at the 3 bytes per pixel the
+    // budget assumes (Sharp already outputs 8 bits per channel).
     const raw = await sharp(buffer, { limitInputPixels: MAX_IMAGE_PIXELS })
+      .removeAlpha()
       .raw()
       .toBuffer({ resolveWithObject: true });
     data = raw.data;

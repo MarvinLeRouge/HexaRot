@@ -155,6 +155,37 @@ describe('EncodeView', () => {
     })
   })
 
+  describe('image size budget', () => {
+    it('warns and disables submit when the combination would make a too large image', async () => {
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('A'.repeat(10800))
+      await wrapper.find('select[name="size"]').setValue('large')
+
+      expect(wrapper.find('.encode-params-form__budget-warning').text()).toBe(en.encode.form.imageBudget.tooLarge)
+      expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
+    })
+
+    it('says the size and pivot cannot be combined, rather than blaming the message, when no message could fit', async () => {
+      const wrapper = mountView()
+      await wrapper.find('input[type="number"]').setValue(181)
+      await wrapper.find('select[name="size"]').setValue('large')
+
+      expect(wrapper.find('.encode-params-form__budget-warning').text()).toBe(en.encode.form.imageBudget.neverFits)
+    })
+
+    it('clears the warning once a smaller size is picked', async () => {
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      await wrapper.find('input[type="number"]').setValue(181)
+      await wrapper.find('select[name="size"]').setValue('large')
+
+      await wrapper.find('select[name="size"]').setValue('medium')
+
+      expect(wrapper.find('.encode-params-form__budget-warning').exists()).toBe(false)
+      expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeUndefined()
+    })
+  })
+
   describe('key mode', () => {
     it('shows an inline error for a malformed key and disables submit', async () => {
       const wrapper = mountView()

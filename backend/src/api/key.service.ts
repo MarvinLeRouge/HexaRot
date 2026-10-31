@@ -1,6 +1,8 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { KeyCodec, KeyParams, RotationSequence } from '../key/key-codec';
 import { KeyGenerateRequestDto } from './dto/key-generate-request.dto';
+import { HexahueAlphabet } from '../alphabet/hexahue-alphabet.service';
+import { assertImageFits } from './assert-image-fits';
 
 const DEFAULT_PIVOT_BLOCK_SIZE = 5;
 const DEFAULT_ROTATION_SEQUENCE: RotationSequence = Object.freeze([
@@ -26,6 +28,8 @@ export interface KeyParseResult {
 
 @Injectable()
 export class KeyService {
+  constructor(private readonly alphabet: HexahueAlphabet) {}
+
   generate(dto: KeyGenerateRequestDto): { key: string } {
     const keyParams: KeyParams = {
       version: 1,
@@ -38,6 +42,8 @@ export class KeyService {
         DEFAULT_READING_ORDER,
       size: dto.size ?? DEFAULT_SIZE,
     };
+    // A key no message could ever be encoded with is useless
+    assertImageFits(0, this.alphabet, keyParams.pivotBlockSize, keyParams.size);
 
     try {
       return { key: KeyCodec.encode(keyParams) };

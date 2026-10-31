@@ -41,25 +41,13 @@ export function buildGrid(
   }
 
   const { symbolWidth, symbolHeight } = alphabet;
-
-  const baseWidthUnit = lcm(pivotBlockSize, symbolWidth);
-  const baseSymbolsPerRow = baseWidthUnit / symbolWidth;
-
-  const idealWidthInCases = Math.sqrt(
-    processedString.length * symbolWidth * symbolHeight,
+  const { width: gridWidthInCases, height: gridHeightInCases } = gridDimensions(
+    processedString.length,
+    symbolWidth,
+    symbolHeight,
+    pivotBlockSize,
   );
-  const widthMultiplier = Math.max(
-    1,
-    Math.round(idealWidthInCases / baseWidthUnit),
-  );
-
-  const gridWidthInCases = widthMultiplier * baseWidthUnit;
-  const symbolsPerRow = widthMultiplier * baseSymbolsPerRow;
-
-  const numRows = Math.ceil(processedString.length / symbolsPerRow);
-  const neededHeightInCases = Math.max(symbolHeight, numRows * symbolHeight);
-  const gridHeightInCases =
-    Math.ceil(neededHeightInCases / pivotBlockSize) * pivotBlockSize;
+  const symbolsPerRow = gridWidthInCases / symbolWidth;
 
   const grid: ColorGrid = Array.from({ length: gridHeightInCases }, () =>
     new Array<string>(gridWidthInCases).fill(''),
@@ -89,6 +77,38 @@ export function buildGrid(
   }
 
   return grid;
+}
+
+/**
+ * Grid size, in cases, that buildGrid lays a message of this length on (see
+ * buildGrid for the layout rules). Cheap: nothing is allocated, so callers
+ * can check an image size before building or rendering anything.
+ * frontend/src/utils/image-budget.ts mirrors this computation.
+ *
+ * @param messageLength - Pre-processed message length, in symbols.
+ */
+export function gridDimensions(
+  messageLength: number,
+  symbolWidth: number,
+  symbolHeight: number,
+  pivotBlockSize: number,
+): { width: number; height: number } {
+  const baseWidthUnit = lcm(pivotBlockSize, symbolWidth);
+  const idealWidthInCases = Math.sqrt(
+    messageLength * symbolWidth * symbolHeight,
+  );
+  const widthMultiplier = Math.max(
+    1,
+    Math.round(idealWidthInCases / baseWidthUnit),
+  );
+  const width = widthMultiplier * baseWidthUnit;
+
+  const numRows = Math.ceil(messageLength / (width / symbolWidth));
+  const neededHeightInCases = Math.max(symbolHeight, numRows * symbolHeight);
+  const height =
+    Math.ceil(neededHeightInCases / pivotBlockSize) * pivotBlockSize;
+
+  return { width, height };
 }
 
 /** Smallest width, in cases, that is a multiple of both the block size and the symbol width. */

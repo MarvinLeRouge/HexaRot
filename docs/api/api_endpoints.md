@@ -45,6 +45,14 @@ POST /api/encode
 uppercase (some characters, such as `ß`, become two). Longer messages get a
 400.
 
+The image is limited to 66,666,666 pixels (a 200 MB memory budget per
+request). `small` and `medium` always fit within the message limit; `large`
+depends on the message length and the pivot block size. A combination over
+the limit gets a 400 whose message gives the image size, before anything is
+rendered. `POST /decode` applies the same pixel limit to uploaded PNGs, and
+`POST /key/generate` refuses a pivot block size and size that no message could
+fit (for example pivot 181 or more at size `large`).
+
 ## `POST /decode`
 
 ```json

@@ -9,6 +9,7 @@ import { KeyCodec, KeyParams, RotationSequence } from '../key/key-codec';
 import { HexahueAlphabet } from '../alphabet/hexahue-alphabet.service';
 import { EncodeRequestDto } from './dto/encode-request.dto';
 import { assertMessageLength } from './assert-message-length';
+import { assertImageFits } from './assert-image-fits';
 
 /** Response shape for POST /encode. */
 export interface EncodeResult {
@@ -66,6 +67,12 @@ export class EncodeService {
 
     const { text, unknownChars } = preprocess(dto.message, this.alphabet);
     assertMessageLength(text);
+    assertImageFits(
+      text.length,
+      this.alphabet,
+      keyParams.pivotBlockSize,
+      keyParams.size,
+    );
     const bodyGrid = buildGrid(text, this.alphabet, keyParams.pivotBlockSize);
     const rotatedGrid = this.rotationEngine.encode(
       bodyGrid,

@@ -90,6 +90,16 @@ describe('Key endpoints (e2e)', () => {
       },
     );
 
+    it('returns 400 when the pivot block size can never fit the size', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/key/generate')
+        .send({ pivotBlockSize: 181, size: 'large' });
+      expect(res.status).toBe(400);
+      expect((res.body as { message: string }).message).toContain(
+        'cannot be used',
+      );
+    });
+
     it('returns 400 when rotationDirection is an invalid value', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/key/generate')

@@ -52,6 +52,10 @@ describe('POST /encode')
 - it returns 400 when `message` is longer than 29,000 characters
 - it returns 400 when uppercasing makes `message` longer than 29,000 characters
   (e.g. 'ß' becomes 'SS')
+- it returns 400, with a message giving the image size, when the message
+  length, pivot block size and size make an image over the pixel budget
+- it returns 400 saying the size cannot be used with that pivot block size when
+  even an empty message is over the pixel budget
 - it returns 400 when `key` is provided but malformed
 - it returns 400 when `rotationDirection` is not 'cw' or 'ccw'
 - it returns 400 when `size` is not 'small', 'medium', or 'large'
@@ -88,7 +92,7 @@ describe('POST /decode')
 
 **Request body size**
 - it decodes the largest SVG and PNG cryptograms POST /encode can produce
-  (29,000 characters at pivot 255, size large)
+  (29,000 characters at pivot 255, size medium)
 - it returns 413 when the body is over the 24 MB decode limit
 - it keeps a small limit on other routes
 - it accepts any maximum-length message on encode, even one JSON escapes to
@@ -109,9 +113,12 @@ describe('POST /key/generate')
 - it returns 400 when `rotationDirection` is an invalid value
 - it returns 400 when `readingOrder` is an unknown value
 - it returns 400 when `pivotBlockSize` is not a positive integer
+- it returns 400 when the pivot block size can never fit the size (e.g. pivot
+  181 at size large)
 
 **Round-trip with POST /key/parse**
 - it generates a key and parses it back to recover the original params without data loss
+
 
 ---
 

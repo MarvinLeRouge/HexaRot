@@ -2891,42 +2891,69 @@ in FIX-006.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
-### [FIX-006] PNG rendering allocates up to 800 MB per request at size large
+### [FIX-006] Encoding at size large can allocate up to 800 MB per request
 
 - **type:** fix
 - **id:** FIX-006
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** renderer
 - **complexity:** M
 - **parent:** ~
 - **depends-on:** ~
-- **learning:** [memory-bounded image rendering, resource exhaustion]
+- **learning:** [memory budgets, resource exhaustion, keeping client and server checks in sync]
 - **labels:** [fix, domain:renderer, priority:medium]
 
 #### Description
 
-`PngRenderer` builds the whole raw RGB pixel buffer in memory before handing
-it to Sharp: 3 bytes per pixel. A maximum-length message (29,000 characters,
-see FIX-005) at size `large` makes an image close to Sharp's 268 million pixel
-limit, so a single encode request allocates about 800 MB (about 200 MB at
-`medium`, 50 MB at `small`), and decoding a PNG of that size costs as much
-again. A few such requests at the same time can exhaust the VPS memory.
+`PngRenderer` and `parsePng` hold the whole raw RGB image in memory: 3 bytes
+per pixel. A maximum-length message (29,000 characters, see FIX-005) at size
+`large` and pivot 255 makes a 16,320 x 16,320 pixel image: about 830 MB
+measured per encode request, as much again to decode it. A few such requests
+at the same time can exhaust the VPS memory.
 
-Options to weigh: render at one pixel per case and let Sharp scale up with
-nearest-neighbour (the raw buffer shrinks by the square of the case size),
-cap the grid in pixels rather than in characters, or refuse size `large`
-above a message length.
-
-Related: `/api/decode` accepts 24 MB bodies (FIX-005), parsed before the
-authentication and throttling guards run. A Traefik rate limit or in-flight
-request limit on that route would bound it before the backend reads the body.
+Decided with the maintainer: no rendering algorithm change for now, a memory
+budget of 200 MB per request instead, enforced on the server and checked on
+the client before sending.
 
 #### Acceptance criteria
 
-- Peak memory of a maximum-length encode at size `large` is measured before
-  and after, and drops well below the current 800 MB
-- The rendered PNG is pixel-identical to the current output
-- Decoding a PNG of that size is measured too, and fixed or tracked
+- No image over 200 MB of raw pixels (66,666,666 pixels) is rendered or
+  parsed
+- The server answers a combination over the budget with a 400 whose message
+  names the image size, before allocating anything, in both encode modes
+- The Encode page warns and blocks sending when the combination is over the
+  budget, using the same computation as the server
+- `small` and `medium` keep the full 29,000 character limit for every pivot
+  block size
+
+#### Resolution (2026-10-31)
+
+`MAX_IMAGE_PIXELS` (`backend/src/renderer/image-limits.ts`) is now
+`floor(200 MB / 3)`, used by `PngRenderer` and `parsePng`. `gridDimensions`
+was extracted from `buildGrid` and computes the grid size without allocating;
+`assertImageFits` uses it in `EncodeService` before building the grid, so key
+mode is covered too. The worst `medium` case (510 x 510 cases at pivot 255,
+66,585,600 pixels) fits just under the budget. For `large`, the maximum
+depends on the pivot block size: about 10,750 characters at the default pivot
+5, and pivots of 181 and above never fit (the minimal grid is already
+2 x pivot by pivot cases).
+
+When even an empty message is over the budget (odd pivots of 181 and above
+at `large`), the 400 says the size cannot be used with that pivot block size
+instead of blaming the message, and `POST /key/generate` refuses such a key.
+`parsePng` drops any alpha channel so a caller-supplied PNG stays at 3 bytes
+per pixel. PNGs over the budget made before this change (up to 268 million
+pixels) can no longer be decoded: accepted by the maintainer, the only user
+so far.
+
+`frontend/src/utils/image-budget.ts` mirrors the computation (Hexahue 2 x 3
+symbols, characters counted as the server does) and the Encode form shows a
+translated warning and disables submit. Both sides test the same reference
+grid sizes. Key mode gets no client-side warning, since the key's pivot and
+size are unknown in the browser: the server's 400 covers it.
+
+Not done: the 24 MB decode body is still parsed before the authentication and
+throttling guards (see FIX-005); a reverse-proxy rate limit would bound it.
 <!-- ITEM:END -->

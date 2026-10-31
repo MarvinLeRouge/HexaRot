@@ -62,6 +62,13 @@ La taille de chaque carré dans l'image : petite (8 pixels), moyenne
 aux dimensions de l'image. La taille est enregistrée dans la clé : inutile de
 la retenir.
 
+L'image ne peut pas dépasser environ 66 millions de pixels. Les tailles petite
+et moyenne passent toujours, jusqu'à la limite de 29 000 caractères. La taille
+grande dépend de la longueur du message et du bloc pivot : avec le bloc de 5
+par défaut, elle accepte environ 10 000 caractères, et les très grands blocs
+peuvent ne pas passer du tout. La page Encoder vous prévient avant l'envoi
+quand une combinaison est trop grande.
+
 ### Avertissement de faiblesse {#weakness-warning}
 
 Un caractère Hexahue mesure 2 carrés de large et 3 carrés de haut. Si la

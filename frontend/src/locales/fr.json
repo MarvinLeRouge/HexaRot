@@ -44,6 +44,10 @@
         "medium": "Moyenne",
         "large": "Grande"
       },
+      "imageBudget": {
+        "tooLarge": "Ce message est trop long pour cette taille et ce bloc pivot : l'image serait trop grande. Choisissez une taille plus petite, un bloc pivot plus petit ou un message plus court.",
+        "neverFits": "Ce bloc pivot est trop grand pour cette taille : même un message court donnerait une image trop grande. Choisissez une taille plus petite ou un bloc pivot plus petit."
+      },
       "overrideWeaknessWarning": {
         "label": "Ignorer les avertissements de faiblesse"
       },

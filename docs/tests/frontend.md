@@ -26,6 +26,11 @@ describe('EncodeView')
 - it calls the encode API with the correct payload when the form is submitted
 - it passes the message value from the input field in the API call
 - it passes the selected size option in the API call
+- it warns and disables submit when the message length, pivot block size and
+  size would make an image over the pixel budget, and clears the warning once
+  the combination fits
+- it says the size and pivot block size cannot be combined, instead of blaming
+  the message, when even an empty message would be over the budget
 - it hides the size selector in "Existing key" mode, since the key carries its own size
 - it takes the displayed size from the API response, so key mode shows the key's size
 - it shows a loading indicator while the API call is in progress

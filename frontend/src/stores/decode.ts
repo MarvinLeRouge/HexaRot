@@ -11,7 +11,7 @@ interface DecodeState {
   result: string | null
   resultStale: boolean
   errorMessage: string | null
-  errorCode: 'network' | 'unknown' | null
+  errorCode: 'tooLarge' | 'network' | 'unknown' | null
 }
 
 function initialState(): DecodeState {
@@ -78,7 +78,10 @@ export const useDecodeStore = defineStore('decode', {
         this.resultStale = false
         this.status = 'success'
       } catch (err) {
-        if (err instanceof ApiError && err.code === 'http') {
+        if (err instanceof ApiError && err.status === 413) {
+          this.errorMessage = null
+          this.errorCode = 'tooLarge'
+        } else if (err instanceof ApiError && err.code === 'http') {
           this.errorMessage = err.message
         } else if (err instanceof ApiError && err.code === 'network') {
           this.errorMessage = null

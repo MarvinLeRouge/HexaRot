@@ -101,6 +101,7 @@ describe('DecodeView')
 **Error handling**
 - it displays an error when the key format is invalid (client-side, before API call)
 - it displays an error when the API call fails
+- it shows a translated "file too large" message when the server answers 413
 - it does not display a decoded message after an API error
 
 **i18n**

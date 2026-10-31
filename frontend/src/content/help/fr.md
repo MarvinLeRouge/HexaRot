@@ -21,7 +21,8 @@ peut annuler les rotations et lire le message.
 Avant l'encodage, le message est passé en majuscules et les accents sont
 retirés (é devient E, ç devient C). Hexahue couvre les lettres de A à Z, les
 chiffres de 0 à 9, l'espace, le point et la virgule. Tout autre caractère est
-ignoré, et le résultat indique la liste des caractères ignorés.
+ignoré, et le résultat indique la liste des caractères ignorés. Un message
+peut compter jusqu'à 29 000 caractères.
 
 ### Taille du bloc pivot {#pivot-block-size}
 

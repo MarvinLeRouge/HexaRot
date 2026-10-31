@@ -41,6 +41,10 @@ POST /api/encode
 }
 ```
 
+`message` est limité à 29 000 caractères, vérifiés à nouveau après passage en
+majuscules (certains caractères, comme `ß`, en deviennent deux). Un message
+plus long reçoit une 400.
+
 ## `POST /decode`
 
 ```json
@@ -60,6 +64,11 @@ POST /api/decode
 
 L'image est toujours lue à la taille enregistrée dans la clé. Un champ `size`
 est encore accepté par compatibilité, quelle que soit sa valeur, mais ignoré.
+
+Le corps de la requête est limité à 24 Mo sur cette route, de quoi accepter le
+plus gros cryptogramme que `POST /encode` peut produire (un SVG d'environ
+19 Mo). Un corps plus gros reçoit une 413. Toutes les autres routes sont limitées
+à 256 ko, de quoi accepter n'importe quel message valide.
 
 ## `POST /correlation-score`
 

@@ -49,6 +49,9 @@ describe('POST /encode')
 **Validation errors**
 - it returns 400 when `message` is missing
 - it returns 400 when `message` is an empty string
+- it returns 400 when `message` is longer than 29,000 characters
+- it returns 400 when uppercasing makes `message` longer than 29,000 characters
+  (e.g. 'ß' becomes 'SS')
 - it returns 400 when `key` is provided but malformed
 - it returns 400 when `rotationDirection` is not 'cw' or 'ccw'
 - it returns 400 when `size` is not 'small', 'medium', or 'large'
@@ -82,6 +85,14 @@ describe('POST /decode')
 - it decodes without a `size`, parsing the image at the key's own size
 - it ignores a `size` that differs from the key's own size
 - it ignores any `size` value, even one that is not 'small', 'medium' or 'large'
+
+**Request body size**
+- it decodes the largest SVG and PNG cryptograms POST /encode can produce
+  (29,000 characters at pivot 255, size large)
+- it returns 413 when the body is over the 24 MB decode limit
+- it keeps a small limit on other routes
+- it accepts any maximum-length message on encode, even one JSON escapes to
+  6 bytes per character
 
 ---
 

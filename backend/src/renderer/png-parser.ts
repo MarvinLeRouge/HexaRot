@@ -1,5 +1,6 @@
 import sharp from 'sharp';
 import { ColorGrid } from '../shared/types';
+import { MAX_IMAGE_PIXELS } from './image-limits';
 import { rgbToColorName } from './palette';
 
 /**
@@ -32,11 +33,9 @@ export async function parsePng(
   let channels: number;
 
   try {
-    // Bound the maximum decoded pixel count: HexaRot images are small
-    // colour-block grids, not photographs, so 16000x16000 is more than
-    // enough headroom while closing off unbounded decompression
-    // amplification from arbitrary caller-supplied PNG input.
-    const raw = await sharp(buffer, { limitInputPixels: 16000 * 16000 })
+    // Bounded to what PngRenderer can produce, closing off unbounded
+    // decompression amplification from arbitrary caller-supplied PNG input.
+    const raw = await sharp(buffer, { limitInputPixels: MAX_IMAGE_PIXELS })
       .raw()
       .toBuffer({ resolveWithObject: true });
     data = raw.data;

@@ -13,7 +13,7 @@ import {
   ValidateIf,
 } from 'class-validator';
 import { READING_ORDERS } from '../../key/key-codec';
-import { MAX_MESSAGE_LENGTH } from '../../cipher/header';
+import { MAX_ENCODE_MESSAGE_LENGTH } from '../../cipher/max-message-length';
 
 /**
  * Request body for POST /correlation-score. Same "either key, or all four
@@ -24,7 +24,7 @@ import { MAX_MESSAGE_LENGTH } from '../../cipher/header';
 export class CorrelationScoreRequestDto {
   @IsString()
   @IsNotEmpty()
-  @MaxLength(MAX_MESSAGE_LENGTH)
+  @MaxLength(MAX_ENCODE_MESSAGE_LENGTH)
   message!: string;
 
   @IsOptional()

@@ -11,6 +11,7 @@ import { ReadingOrderRegistry } from '../reading-order/reading-order.registry';
 import { PngRenderer } from '../renderer/png-renderer';
 import { SvgRenderer } from '../renderer/svg-renderer';
 import { KeyCodec } from '../key/key-codec';
+import { MAX_ENCODE_MESSAGE_LENGTH } from '../cipher/max-message-length';
 import { HexahueAlphabet } from '../alphabet/hexahue-alphabet.service';
 import { MockAlphabet } from '../../test/utils/mock-alphabet';
 
@@ -187,6 +188,15 @@ describe('EncodeService', () => {
     it('throws BadRequestException when key unpacks to an out-of-range rotation sequence index', async () => {
       const service = makeService();
       const dto = { message: 'ABC', key: 'HR1·ZZZZ' } as EncodeRequestDto;
+      await expect(service.encode(dto)).rejects.toThrow(BadRequestException);
+    });
+
+    it('throws BadRequestException when the pre-processed message is longer than the maximum', async () => {
+      const service = makeService();
+      const dto = {
+        ...VALID_PARAMS_DTO,
+        message: 'a'.repeat(MAX_ENCODE_MESSAGE_LENGTH + 1),
+      };
       await expect(service.encode(dto)).rejects.toThrow(BadRequestException);
     });
 

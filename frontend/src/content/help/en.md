@@ -21,7 +21,8 @@ message.
 Before encoding, the message is converted to uppercase and accents are
 removed (é becomes E, ç becomes C). Hexahue covers the letters A to Z, the
 digits 0 to 9, the space, the full stop and the comma. Any other character is
-dropped, and the result lists the characters that were dropped.
+dropped, and the result lists the characters that were dropped. A message can
+be up to 29,000 characters long.
 
 ### Pivot block size {#pivot-block-size}
 

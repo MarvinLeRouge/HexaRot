@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import sharp from 'sharp';
 import { ColorGrid, CaseSize, Renderer } from '../shared/types';
+import { MAX_IMAGE_PIXELS } from './image-limits';
 import { getCasePixels, colorNameToRgb } from './palette';
 
 const CHANNELS = 3; // RGB, no alpha
@@ -55,6 +56,7 @@ export class PngRenderer implements Renderer<Buffer> {
 
     return sharp(pixels, {
       raw: { width: widthPx, height: heightPx, channels: CHANNELS },
+      limitInputPixels: MAX_IMAGE_PIXELS,
     })
       .png()
       .toBuffer();

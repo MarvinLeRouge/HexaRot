@@ -80,6 +80,7 @@ automatically from Conventional Commits history.
 - Let backlog auto-promotion PRs merge once the required CI check passes
 - Show the key's own size in "Existing key" mode results
 - Read the cryptogram size from the key instead of the form
+- Cap messages at 29,000 characters and raise the decode body limit to 24 MB
 
 ### CI/CD
 

@@ -1,6 +1,8 @@
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import request from 'supertest';
+import { configureBodyLimits } from '../src/configure-body-limits';
+import { MAX_ENCODE_MESSAGE_LENGTH } from '../src/cipher/max-message-length';
 import { ApiModule } from '../src/api/api.module';
 import { DecodeResult } from '../src/api/decode.service';
 import { EncodeResult } from '../src/api/encode.service';
@@ -25,7 +27,8 @@ describe('POST /api/decode (e2e)', () => {
       imports: [ApiModule],
     }).compile();
 
-    app = moduleRef.createNestApplication();
+    app = moduleRef.createNestApplication({ bodyParser: false });
+    configureBodyLimits(app);
     app.setGlobalPrefix('api');
     app.useGlobalPipes(
       new ValidationPipe({
@@ -206,6 +209,61 @@ describe('POST /api/decode (e2e)', () => {
         size: 'huge',
       });
       expect(res.status).toBe(200);
+    });
+  });
+
+  describe('request body size', () => {
+    it.each(['svg', 'png'] as const)(
+      'decodes the largest %s cryptogram POST /encode can produce',
+      async (format) => {
+        // Pivot 255 pads a maximum-length message the most (510 x 510 cases);
+        // size large gives the biggest SVG body and the biggest PNG in pixels
+        const encoded = await encode({
+          ...BASE_ENCODE_BODY,
+          message: 'A'.repeat(MAX_ENCODE_MESSAGE_LENGTH),
+          pivotBlockSize: 255,
+          size: 'large',
+        });
+        const res = await request(app.getHttpServer())
+          .post('/api/decode')
+          .send({ cryptogram: encoded[format], format, key: encoded.key });
+
+        expect(res.status).toBe(200);
+        expect(
+          (res.body as DecodeResponseBody).message.startsWith(
+            'A'.repeat(MAX_ENCODE_MESSAGE_LENGTH),
+          ),
+        ).toBe(true);
+      },
+      120000,
+    );
+
+    it('returns 413 when the body is over the decode limit', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/decode')
+        .send({
+          cryptogram: 'x'.repeat(25 * 1024 * 1024),
+          format: 'svg',
+          key: 'HR1·2T51',
+        });
+      expect(res.status).toBe(413);
+    });
+
+    it('keeps a small limit on other routes', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({ ...BASE_ENCODE_BODY, message: 'A'.repeat(300 * 1024) });
+      expect(res.status).toBe(413);
+    });
+
+    it('accepts any maximum-length message on encode, even one JSON escapes to 6 bytes per character', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({
+          ...BASE_ENCODE_BODY,
+          message: '\u0001'.repeat(MAX_ENCODE_MESSAGE_LENGTH),
+        });
+      expect(res.status).not.toBe(413);
     });
   });
 });

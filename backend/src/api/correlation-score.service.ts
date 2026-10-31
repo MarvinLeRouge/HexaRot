@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { preprocess } from '../cipher/preprocess';
 import { buildGrid } from '../cipher/build-grid';
+import { assertMessageLength } from './assert-message-length';
 import { RotationEngine } from '../rotation/rotation-engine';
 import { KeyCodec, KeyParams, RotationSequence } from '../key/key-codec';
 import { HexahueAlphabet } from '../alphabet/hexahue-alphabet.service';
@@ -66,6 +67,7 @@ export class CorrelationScoreService {
     }
 
     const { text } = preprocess(dto.message, this.alphabet);
+    assertMessageLength(text);
     // Seed buildGrid's padding RNG from the request itself so repeated calls
     // with identical input produce an identical grid, and therefore an
     // identical score (determinism is a hard requirement for this endpoint).

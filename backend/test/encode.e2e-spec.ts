@@ -10,6 +10,7 @@ import {
   ENCODE_BODY_WITH_UNKNOWN_CHARS,
   MALFORMED_KEY_STRINGS,
 } from './fixtures/api.fixtures';
+import { MAX_ENCODE_MESSAGE_LENGTH } from '../src/cipher/max-message-length';
 
 /** Reads width/height from a base64 PNG's IHDR chunk (bytes 16-23). */
 function pngDimensions(base64Png: string): { width: number; height: number } {
@@ -236,6 +237,27 @@ describe('POST /api/encode (e2e)', () => {
       const res = await request(app.getHttpServer())
         .post('/api/encode')
         .send(rest);
+      expect(res.status).toBe(400);
+    });
+
+    it('returns 400 when message is longer than the maximum', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({
+          ...VALID_ENCODE_BODY,
+          message: 'A'.repeat(MAX_ENCODE_MESSAGE_LENGTH + 1),
+        });
+      expect(res.status).toBe(400);
+    });
+
+    it('returns 400 when uppercasing makes the message longer than the maximum', async () => {
+      // 'ß' uppercases to 'SS': within the raw length limit, over it once pre-processed
+      const res = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({
+          ...VALID_ENCODE_BODY,
+          message: 'ß'.repeat(MAX_ENCODE_MESSAGE_LENGTH / 2 + 1),
+        });
       expect(res.status).toBe(400);
     });
 

@@ -8,6 +8,7 @@ import { SvgRenderer } from '../renderer/svg-renderer';
 import { KeyCodec, KeyParams, RotationSequence } from '../key/key-codec';
 import { HexahueAlphabet } from '../alphabet/hexahue-alphabet.service';
 import { EncodeRequestDto } from './dto/encode-request.dto';
+import { assertMessageLength } from './assert-message-length';
 
 /** Response shape for POST /encode. */
 export interface EncodeResult {
@@ -64,6 +65,7 @@ export class EncodeService {
     const warnings = validation.status === 'weak' ? validation.warnings : [];
 
     const { text, unknownChars } = preprocess(dto.message, this.alphabet);
+    assertMessageLength(text);
     const bodyGrid = buildGrid(text, this.alphabet, keyParams.pivotBlockSize);
     const rotatedGrid = this.rotationEngine.encode(
       bodyGrid,

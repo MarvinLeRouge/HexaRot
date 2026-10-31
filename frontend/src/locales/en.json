@@ -284,7 +284,8 @@
   },
   "errors": {
     "network": "Couldn't reach the server. Check your connection and try again.",
-    "unknown": "Something went wrong. Please try again."
+    "unknown": "Something went wrong. Please try again.",
+    "tooLarge": "This file is too large to be a HexaRot cryptogram."
   },
   "readingOrder": {
     "LR-TB": "Left to right, top to bottom",

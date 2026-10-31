@@ -2827,7 +2827,7 @@ Found by the FIX-002 review.
 - **type:** fix
 - **id:** FIX-005
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** api
 - **complexity:** S
@@ -2856,4 +2856,77 @@ measured and may hit the same limit. Known since the FEAT-015 review
   translated message for it
 - An e2e test decodes a maximum-length SVG cryptogram at size `large`
 - The Traefik configuration does not impose a lower limit of its own
+
+#### Resolution (2026-10-31)
+
+Measuring the largest cryptograms showed a second bug: at size `large`,
+messages over about 43,000 characters (and far less with large pivot sizes,
+which pad the grid) failed to encode with a 500, Sharp's "Input image exceeds
+pixel limit" (268402689 pixels). The maximum message length drops from 65,535
+to 29,000 characters (`MAX_ENCODE_MESSAGE_LENGTH`), the largest value that
+renders for every pivot size at size `large`. It is checked by the DTO, then
+again once uppercased by `assertMessageLength` in both `EncodeService` and
+`CorrelationScoreService` (`ß` becomes `SS`). Decided with the maintainer:
+29,000 characters is more than enough for the intended use. The PNG parser
+used to cap decoding at 16000 x 16000 pixels, below what the renderer can
+produce, so the largest PNGs could not be decoded: both now share
+`MAX_IMAGE_PIXELS` (Sharp's default, 268402689).
+
+At 29,000 characters the largest decode request is an SVG of about 19 MB
+(pivot 255 pads the grid to 510 x 510 cases). `configureBodyLimits`
+(`backend/src/configure-body-limits.ts`, used by `main.ts` and the decode e2e
+suite, with Nest's own parser disabled through `bodyParser: false`) sets a
+24 MB JSON limit on `/api/decode` only; every other route, including the
+public auth routes, gets 256 kB, enough for any message the DTO accepts even
+when JSON escapes it to 6 bytes per character. A 413 shows a
+translated "file too large" message on the Decode page. Neither
+`docker-compose.yml` nor `docker-compose.prod.yml` declares a Traefik
+`buffering` middleware, so Traefik adds no limit of its own.
+
+Left out: the PNG renderer's memory peak, tracked as FIX-006. Known limit:
+the 24 MB body is read and parsed before the authentication and throttling
+guards run, so an unauthenticated client can still make the server buffer
+24 MB per request; rate limiting at the reverse proxy would close it, noted
+in FIX-006.
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FIX-006] PNG rendering allocates up to 800 MB per request at size large
+
+- **type:** fix
+- **id:** FIX-006
+- **milestone:** v2
+- **status:** ready
+- **priority:** medium
+- **domain:** renderer
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [memory-bounded image rendering, resource exhaustion]
+- **labels:** [fix, domain:renderer, priority:medium]
+
+#### Description
+
+`PngRenderer` builds the whole raw RGB pixel buffer in memory before handing
+it to Sharp: 3 bytes per pixel. A maximum-length message (29,000 characters,
+see FIX-005) at size `large` makes an image close to Sharp's 268 million pixel
+limit, so a single encode request allocates about 800 MB (about 200 MB at
+`medium`, 50 MB at `small`), and decoding a PNG of that size costs as much
+again. A few such requests at the same time can exhaust the VPS memory.
+
+Options to weigh: render at one pixel per case and let Sharp scale up with
+nearest-neighbour (the raw buffer shrinks by the square of the case size),
+cap the grid in pixels rather than in characters, or refuse size `large`
+above a message length.
+
+Related: `/api/decode` accepts 24 MB bodies (FIX-005), parsed before the
+authentication and throttling guards run. A Traefik rate limit or in-flight
+request limit on that route would bound it before the backend reads the body.
+
+#### Acceptance criteria
+
+- Peak memory of a maximum-length encode at size `large` is measured before
+  and after, and drops well below the current 800 MB
+- The rendered PNG is pixel-identical to the current output
+- Decoding a PNG of that size is measured too, and fixed or tracked
 <!-- ITEM:END -->

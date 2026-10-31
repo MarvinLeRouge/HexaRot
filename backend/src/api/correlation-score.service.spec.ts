@@ -11,6 +11,7 @@ import { ReadingOrderRegistry } from '../reading-order/reading-order.registry';
 import { KeyCodec } from '../key/key-codec';
 import { HexahueAlphabet } from '../alphabet/hexahue-alphabet.service';
 import { MockAlphabet } from '../../test/utils/mock-alphabet';
+import { MAX_ENCODE_MESSAGE_LENGTH } from '../cipher/max-message-length';
 
 function makeService(): CorrelationScoreService {
   const alphabet = new MockAlphabet();
@@ -71,6 +72,16 @@ describe('CorrelationScoreService', () => {
   });
 
   describe('errors', () => {
+    it('throws BadRequestException when the pre-processed message is longer than the maximum', () => {
+      const service = makeService();
+      const dto = {
+        ...VALID_PARAMS_DTO,
+        message: 'a'.repeat(MAX_ENCODE_MESSAGE_LENGTH + 1),
+      };
+
+      expect(() => service.compute(dto)).toThrow(BadRequestException);
+    });
+
     it('throws BadRequestException when key is malformed', () => {
       const service = makeService();
       const dto = {

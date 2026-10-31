@@ -121,6 +121,19 @@ describe('useDecodeStore', () => {
     expect(store.result).toBeNull()
   })
 
+  it('sets errorCode to tooLarge and leaves errorMessage null when the server rejects the file size (413)', async () => {
+    vi.mocked(postJson).mockRejectedValue(new ApiError('request entity too large', 'http', 413))
+    const store = useDecodeStore()
+    store.file = MOCK_PNG_FILE
+    store.keyInput = 'HR1·a1b2'
+
+    await store.submit()
+
+    expect(store.status).toBe('error')
+    expect(store.errorCode).toBe('tooLarge')
+    expect(store.errorMessage).toBeNull()
+  })
+
   it('sets errorCode to network and leaves errorMessage null on a network failure', async () => {
     vi.mocked(postJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
     const store = useDecodeStore()

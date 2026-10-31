@@ -171,6 +171,7 @@ describe('POST /api/encode (e2e)', () => {
       expect(pngDimensions(withKeyBody.png)).not.toEqual(
         pngDimensions(withLargeParamsBody.png),
       );
+      expect(withKeyBody.size).toBe('medium');
     });
   });
 

@@ -126,8 +126,8 @@ function unpack(payload: number): Omit<KeyParams, 'version'> {
  *
  * @example
  * const key = KeyCodec.encode({ version: 1, pivotBlockSize: 5, ... });
- * // → 'HR1·57C3'
- * const params = KeyCodec.decode('HR1·57C3');
+ * // → 'HR1·2T51'
+ * const params = KeyCodec.decode('HR1·2T51');
  */
 export class KeyCodec {
   /**

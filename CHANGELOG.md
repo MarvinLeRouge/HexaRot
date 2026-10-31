@@ -78,6 +78,7 @@ automatically from Conventional Commits history.
 - Set DATABASE_URL for backend-lint and backend-security jobs
 - Refuse the admin password placeholder documented in .env.example
 - Let backlog auto-promotion PRs merge once the required CI check passes
+- Show the key's own size in "Existing key" mode results
 
 ### CI/CD
 

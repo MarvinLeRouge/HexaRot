@@ -34,9 +34,10 @@ POST /api/encode
 {
   "png": "<PNG encodé en base64>",
   "svg": "<chaîne SVG>",
-  "key": "HR1·57C3",
+  "key": "HR1·2T51",
   "warnings": [],
-  "unknownChars": []
+  "unknownChars": [],
+  "size": "medium"
 }
 ```
 
@@ -47,7 +48,7 @@ POST /api/decode
 {
   "cryptogram": "<PNG encodé en base64 ou chaîne SVG brute>",
   "format": "png",
-  "key": "HR1·57C3",
+  "key": "HR1·2T51",
   "size": "medium"
 }
 ```
@@ -67,7 +68,8 @@ POST /api/correlation-score
   "pivotBlockSize": 5,
   "rotationSequence": [0, 1, 2, 3],
   "rotationDirection": "cw",
-  "readingOrder": "LR-TB"
+  "readingOrder": "LR-TB",
+  "size": "medium"
 }
 ```
 
@@ -91,7 +93,7 @@ POST /api/key/generate
 
 ```json
 {
-  "key": "HR1·57C3"
+  "key": "HR1·2T51"
 }
 ```
 
@@ -100,7 +102,7 @@ POST /api/key/generate
 ```json
 POST /api/key/parse
 {
-  "key": "HR1·57C3"
+  "key": "HR1·2T51"
 }
 ```
 
@@ -119,7 +121,7 @@ Une clé HexaRot condense tous les paramètres de chiffrement dans une courte
 chaîne base36 :
 
 ```
-HR1·57C3
+HR1·2T51
 │  │ └─── paramètres encodés (base36)
 │  └───── séparateur
 └──────── préfixe de version

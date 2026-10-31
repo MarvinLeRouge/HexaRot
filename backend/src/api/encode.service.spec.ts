@@ -66,6 +66,7 @@ describe('EncodeService', () => {
       });
       const decoded = KeyCodec.decode(result.key);
       expect(decoded.size).toBe('large');
+      expect(result.size).toBe('large');
     });
 
     it('defaults a newly generated key to size "medium" when size is omitted', async () => {
@@ -103,13 +104,14 @@ describe('EncodeService', () => {
       });
       const renderSpy = jest.spyOn(PngRenderer.prototype, 'render');
 
-      await service.encode({
+      const result = await service.encode({
         message: 'ABC',
         key,
         size: 'small',
       });
 
       expect(renderSpy).toHaveBeenCalledWith(expect.anything(), 'large');
+      expect(result.size).toBe('large');
       renderSpy.mockRestore();
     });
 

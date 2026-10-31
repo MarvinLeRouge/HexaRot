@@ -34,9 +34,10 @@ POST /api/encode
 {
   "png": "<base64-encoded PNG>",
   "svg": "<SVG string>",
-  "key": "HR1·57C3",
+  "key": "HR1·2T51",
   "warnings": [],
-  "unknownChars": []
+  "unknownChars": [],
+  "size": "medium"
 }
 ```
 
@@ -47,7 +48,7 @@ POST /api/decode
 {
   "cryptogram": "<base64-encoded PNG or raw SVG string>",
   "format": "png",
-  "key": "HR1·57C3",
+  "key": "HR1·2T51",
   "size": "medium"
 }
 ```
@@ -67,7 +68,8 @@ POST /api/correlation-score
   "pivotBlockSize": 5,
   "rotationSequence": [0, 1, 2, 3],
   "rotationDirection": "cw",
-  "readingOrder": "LR-TB"
+  "readingOrder": "LR-TB",
+  "size": "medium"
 }
 ```
 
@@ -91,7 +93,7 @@ POST /api/key/generate
 
 ```json
 {
-  "key": "HR1·57C3"
+  "key": "HR1·2T51"
 }
 ```
 
@@ -100,7 +102,7 @@ POST /api/key/generate
 ```json
 POST /api/key/parse
 {
-  "key": "HR1·57C3"
+  "key": "HR1·2T51"
 }
 ```
 
@@ -118,7 +120,7 @@ POST /api/key/parse
 A HexaRot key encodes all encryption parameters into a short base36 string:
 
 ```
-HR1·57C3
+HR1·2T51
 │  │ └─── encoded parameters (base36)
 │  └───── separator
 └──────── version prefix

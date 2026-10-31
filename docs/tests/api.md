@@ -31,6 +31,8 @@ describe('POST /encode')
 - it returns 200 with an empty `unknownChars` array for a clean ASCII message
 - it generates a key from individual params when no `key` field is provided
 - it uses the provided `key` and ignores individual params when `key` is present
+- it returns the size it rendered at in `size`: the key's own size in key mode,
+  even when the request sends a different `size`
 - it encodes the same message with all three size options without error
 
 **Weakness warning**

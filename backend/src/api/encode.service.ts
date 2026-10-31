@@ -16,6 +16,8 @@ export interface EncodeResult {
   key: string;
   warnings: string[];
   unknownChars: string[];
+  /** The size the cryptogram was rendered at: the key's own size in key mode. */
+  size: KeyParams['size'];
 }
 
 @Injectable()
@@ -88,6 +90,7 @@ export class EncodeService {
       key,
       warnings,
       unknownChars,
+      size: keyParams.size,
     };
   }
 }

@@ -150,7 +150,10 @@ function handleSubmit(): void {
     <fieldset class="encode-params-form__group">
       <legend>{{ t('encode.form.outputGroup.label') }}</legend>
 
-      <label class="encode-params-form__field">
+      <label
+        v-if="store.mode === 'params'"
+        class="encode-params-form__field"
+      >
         {{ t('encode.form.size.label') }}
         <select
           v-model="store.size"

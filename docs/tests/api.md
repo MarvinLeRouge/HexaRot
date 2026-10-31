@@ -78,9 +78,10 @@ describe('POST /decode')
 - it returns 400 when `cryptogram` is not valid base64 (for PNG format)
 - it returns 400 when `cryptogram` is not valid SVG (for SVG format)
 
-**Size validation**
-- it returns 400 when `size` is missing
-- it returns 400 when `size` is not 'small', 'medium', or 'large'
+**Size**
+- it decodes without a `size`, parsing the image at the key's own size
+- it ignores a `size` that differs from the key's own size
+- it ignores any `size` value, even one that is not 'small', 'medium' or 'large'
 
 ---
 

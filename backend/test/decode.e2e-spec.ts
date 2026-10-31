@@ -57,7 +57,6 @@ describe('POST /api/decode (e2e)', () => {
         cryptogram: encoded.png,
         format: 'png',
         key: encoded.key,
-        size: 'medium',
       });
 
       expect(res.status).toBe(200);
@@ -71,7 +70,6 @@ describe('POST /api/decode (e2e)', () => {
         cryptogram: encoded.svg,
         format: 'svg',
         key: encoded.key,
-        size: 'medium',
       });
 
       expect(res.status).toBe(200);
@@ -89,7 +87,6 @@ describe('POST /api/decode (e2e)', () => {
             cryptogram: encoded.png,
             format: 'png',
             key: encoded.key,
-            size: 'medium',
           });
 
         expect(res.status).toBe(200);
@@ -111,7 +108,6 @@ describe('POST /api/decode (e2e)', () => {
             cryptogram: encoded.png,
             format: 'png',
             key: encoded.key,
-            size: 'medium',
           });
 
         expect(res.status).toBe(200);
@@ -129,7 +125,6 @@ describe('POST /api/decode (e2e)', () => {
         cryptogram: encoded.png,
         format: 'png',
         key: encoded.key,
-        size: 'medium',
       });
 
       expect(res.status).toBe(200);
@@ -142,14 +137,14 @@ describe('POST /api/decode (e2e)', () => {
     it('returns 400 when cryptogram is missing', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/decode')
-        .send({ format: 'png', key: 'HR1.0000', size: 'medium' });
+        .send({ format: 'png', key: 'HR1.0000' });
       expect(res.status).toBe(400);
     });
 
     it('returns 400 when key is missing', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/decode')
-        .send({ cryptogram: 'irrelevant', format: 'png', size: 'medium' });
+        .send({ cryptogram: 'irrelevant', format: 'png' });
       expect(res.status).toBe(400);
     });
 
@@ -158,7 +153,6 @@ describe('POST /api/decode (e2e)', () => {
         cryptogram: 'irrelevant',
         format: 'png',
         key: 'not-a-key',
-        size: 'medium',
       });
       expect(res.status).toBe(400);
     });
@@ -168,7 +162,6 @@ describe('POST /api/decode (e2e)', () => {
         cryptogram: 'irrelevant',
         format: 'gif',
         key: 'HR1.0000',
-        size: 'medium',
       });
       expect(res.status).toBe(400);
     });
@@ -179,7 +172,6 @@ describe('POST /api/decode (e2e)', () => {
         cryptogram: 'not a png at all',
         format: 'png',
         key: encoded.key,
-        size: 'medium',
       });
       expect(res.status).toBe(400);
     });
@@ -190,20 +182,22 @@ describe('POST /api/decode (e2e)', () => {
         cryptogram: 'not svg at all',
         format: 'svg',
         key: encoded.key,
-        size: 'medium',
       });
       expect(res.status).toBe(400);
     });
 
-    it('returns 400 when size is missing', async () => {
-      const encoded = await encode(BASE_ENCODE_BODY);
+    it("decodes without a size, using the key's own size", async () => {
+      const encoded = await encode({ ...BASE_ENCODE_BODY, size: 'small' });
       const res = await request(app.getHttpServer())
         .post('/api/decode')
         .send({ cryptogram: encoded.png, format: 'png', key: encoded.key });
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(200);
+      expect((res.body as { message: string }).message.startsWith('ABC')).toBe(
+        true,
+      );
     });
 
-    it('returns 400 when size is not small, medium, or large', async () => {
+    it('ignores any size value sent with the request, even an invalid one', async () => {
       const encoded = await encode(BASE_ENCODE_BODY);
       const res = await request(app.getHttpServer()).post('/api/decode').send({
         cryptogram: encoded.png,
@@ -211,7 +205,7 @@ describe('POST /api/decode (e2e)', () => {
         key: encoded.key,
         size: 'huge',
       });
-      expect(res.status).toBe(400);
+      expect(res.status).toBe(200);
     });
   });
 });

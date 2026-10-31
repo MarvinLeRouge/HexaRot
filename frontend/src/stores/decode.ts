@@ -3,12 +3,10 @@ import { postJson, ApiError } from '../api/client'
 import { normalizeKeyInput } from '../utils/key-format'
 
 export type DecodeStatus = 'idle' | 'loading' | 'success' | 'error'
-export type CryptogramSize = 'small' | 'medium' | 'large'
 
 interface DecodeState {
   file: File | null
   keyInput: string
-  size: CryptogramSize
   status: DecodeStatus
   result: string | null
   resultStale: boolean
@@ -20,7 +18,6 @@ function initialState(): DecodeState {
   return {
     file: null,
     keyInput: '',
-    size: 'medium',
     status: 'idle',
     result: null,
     resultStale: false,
@@ -76,7 +73,6 @@ export const useDecodeStore = defineStore('decode', {
           cryptogram,
           format,
           key: normalizeKeyInput(this.keyInput),
-          size: this.size,
         })
         this.result = response.message
         this.resultStale = false

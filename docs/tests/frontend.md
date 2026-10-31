@@ -35,7 +35,7 @@ describe('EncodeView')
 - it displays the PNG preview after a successful encode response
 - it displays the SVG preview after a successful encode response
 - it displays the HR key returned by the API
-- it makes the HR key copyable (copy button present)
+- it makes the HR key copyable (copy button present); the copied text is the key alone
 - it shows a PNG download link/button
 - it shows an SVG download link/button
 
@@ -79,6 +79,7 @@ describe('DecodeView')
 **Initial state**
 - it renders the file upload area
 - it renders the HR key input field
+- it does not ask for the cryptogram size, since the key carries it
 - it renders the submit button
 - it does not display a decoded message on initial render
 

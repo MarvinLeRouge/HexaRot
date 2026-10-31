@@ -51,7 +51,6 @@ describe('DecodeService', () => {
         cryptogram: encoded.png,
         format: 'png',
         key: encoded.key,
-        size: 'medium',
       };
 
       const result = await decodeService.decode(decodeDto);
@@ -66,7 +65,6 @@ describe('DecodeService', () => {
         cryptogram: encoded.svg,
         format: 'svg',
         key: encoded.key,
-        size: 'medium',
       };
 
       const result = await decodeService.decode(decodeDto);
@@ -85,7 +83,6 @@ describe('DecodeService', () => {
           cryptogram: encoded.png,
           format: 'png',
           key: encoded.key,
-          size: 'medium',
         });
         expect(result.message.startsWith('ABC')).toBe(true);
       },
@@ -103,11 +100,26 @@ describe('DecodeService', () => {
           cryptogram: encoded.png,
           format: 'png',
           key: encoded.key,
-          size: 'medium',
         });
         expect(result.message.startsWith('ABC')).toBe(true);
       },
     );
+
+    it("parses the image at the key's own size, ignoring a differing request size", async () => {
+      const { encodeService, decodeService } = makeServices();
+      const encoded = await encodeService.encode({
+        ...BASE_ENCODE_DTO,
+        size: 'small',
+      });
+
+      const result = await decodeService.decode({
+        cryptogram: encoded.png,
+        format: 'png',
+        key: encoded.key,
+        size: 'medium',
+      });
+      expect(result.message.startsWith('ABC')).toBe(true);
+    });
   });
 
   describe('errors', () => {
@@ -117,7 +129,6 @@ describe('DecodeService', () => {
         cryptogram: 'irrelevant',
         format: 'png',
         key: 'not-a-key',
-        size: 'medium',
       } as DecodeRequestDto;
       await expect(decodeService.decode(dto)).rejects.toThrow(
         BadRequestException,
@@ -138,7 +149,6 @@ describe('DecodeService', () => {
         cryptogram: Buffer.from('not a png', 'utf-8').toString('base64'),
         format: 'png',
         key,
-        size: 'medium',
       } as DecodeRequestDto;
       await expect(decodeService.decode(dto)).rejects.toThrow(
         BadRequestException,
@@ -159,7 +169,6 @@ describe('DecodeService', () => {
         cryptogram: 'not svg at all',
         format: 'svg',
         key,
-        size: 'medium',
       } as DecodeRequestDto;
       await expect(decodeService.decode(dto)).rejects.toThrow(
         BadRequestException,
@@ -181,7 +190,6 @@ describe('DecodeService', () => {
         cryptogram: encoded.png,
         format: 'png',
         key: mismatchedKey,
-        size: 'medium',
       } as DecodeRequestDto;
       await expect(decodeService.decode(dto)).rejects.toThrow(
         BadRequestException,

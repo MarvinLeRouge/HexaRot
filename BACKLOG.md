@@ -2786,7 +2786,7 @@ no CI job for `.github/scripts/`.
 - **type:** fix
 - **id:** FIX-004
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** api
 - **complexity:** S

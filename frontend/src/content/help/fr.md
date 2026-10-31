@@ -58,8 +58,8 @@ sens à chaque nouvelle ligne ou colonne, comme un serpent.
 
 La taille de chaque carré dans l'image : petite (8 pixels), moyenne
 (16 pixels) ou grande (32 pixels). Elle ne change rien au brouillage, seulement
-aux dimensions de l'image. La même taille sera nécessaire pour décoder
-l'image plus tard.
+aux dimensions de l'image. La taille est enregistrée dans la clé : inutile de
+la retenir.
 
 ### Avertissement de faiblesse {#weakness-warning}
 
@@ -84,18 +84,15 @@ messages que vous le souhaitez. Choisissez "Clé existante" sur la page
 Encoder pour encoder avec une clé que vous avez déjà ; ses réglages, y compris
 la taille du cryptogramme, remplacent alors ceux du formulaire.
 
-HexaRot n'enregistre ni vos clés ni vos messages. Copiez ou téléchargez la clé
-et la taille du cryptogramme dès l'encodage : sans elles, l'image ne pourra
-pas être décodée.
+HexaRot n'enregistre ni vos clés ni vos messages. Copiez la clé dès
+l'encodage : sans elle, l'image ne pourra pas être décodée.
 
 ## Décoder un cryptogramme {#decoding}
 
-Pour décoder, il faut trois éléments : l'image (PNG ou SVG), la clé qui a
-servi à l'encoder, et la taille de cryptogramme utilisée à l'encodage. La clé
-contient aussi la taille, mais la page Décoder la demande quand même :
-choisissez la même taille qu'à l'encodage. Envoyez le fichier, collez la clé,
-choisissez la taille, et HexaRot annule les rotations puis relit les
-caractères.
+Pour décoder, il faut deux éléments : l'image (PNG ou SVG) et la clé qui a
+servi à l'encoder. La clé contient aussi la taille du cryptogramme, il n'y a
+donc rien d'autre à choisir. Envoyez le fichier, collez la clé, et HexaRot
+annule les rotations puis relit les caractères.
 
 L'image n'indique pas où le message se termine, volontairement, pour ne rien
 révéler de sa longueur. Le texte décodé peut donc se terminer par des

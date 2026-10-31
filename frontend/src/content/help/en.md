@@ -56,7 +56,7 @@ row or column, like a snake.
 
 The size of each square in the image: small (8 pixels), medium (16 pixels) or
 large (32 pixels). It does not change the scramble, only how big the image
-is. You need the same size to decode the image later.
+is. The size is stored in the key, so you do not need to remember it.
 
 ### Weakness warning {#weakness-warning}
 
@@ -80,17 +80,15 @@ messages as you like. Use "Existing key" on the Encode page to encode with a
 key you already have; its settings, including the cryptogram size, then
 replace the ones in the form.
 
-HexaRot does not store your keys or your messages. Copy or download the key
-and the cryptogram size as soon as you encode: without them, the image cannot
-be decoded.
+HexaRot does not store your keys or your messages. Copy the key as soon as
+you encode: without it, the image cannot be decoded.
 
 ## Decoding a cryptogram {#decoding}
 
-To decode, you need three things: the image (PNG or SVG), the key it was
-encoded with, and the cryptogram size it was encoded at. The key records the
-size too, but the Decode page still asks for it: pick the same size as when
-encoding. Upload the file, paste the key, pick the size, and HexaRot undoes
-the rotations and reads the characters back.
+To decode, you need two things: the image (PNG or SVG) and the key it was
+encoded with. The key also records the cryptogram size, so there is nothing
+else to pick. Upload the file, paste the key, and HexaRot undoes the rotations
+and reads the characters back.
 
 The image does not record where the message ends, on purpose, so that it
 gives away nothing about the message length. The decoded text may therefore

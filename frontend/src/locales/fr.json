@@ -65,9 +65,9 @@
       "emptyState": "Votre cryptogramme et votre clé apparaîtront ici.",
       "keyLabel": "Clé",
       "sizeLabel": "Taille du cryptogramme",
-      "keyHint": "Il vous faudra cette clé et la taille du cryptogramme pour décoder votre message. Aucune des deux n'est enregistrée : copiez-les ou téléchargez-les maintenant.",
+      "keyHint": "Il vous faudra cette clé pour décoder votre message. Elle n'est enregistrée nulle part : copiez-la maintenant.",
       "staleNotice": "Ces paramètres ont changé. Ré-encodez pour mettre à jour ce cryptogramme.",
-      "copy": "Copier la clé et la taille",
+      "copy": "Copier la clé",
       "copied": "Copié !",
       "staleBadge": "Périmé",
       "reencode": "Ré-encoder",
@@ -94,13 +94,6 @@
         "label": "Clé HexaRot",
         "placeholder": "HR1·xxxx",
         "formatError": "Une clé HexaRot ressemble à HR1·a3f9 : \"HR\", un numéro de version, un séparateur, puis 4 caractères."
-      },
-      "size": {
-        "label": "Taille du cryptogramme",
-        "small": "Petite",
-        "medium": "Moyenne",
-        "large": "Grande",
-        "hint": "Doit correspondre à la taille utilisée lors de l'encodage du cryptogramme."
       },
       "submit": {
         "label": "Décoder",

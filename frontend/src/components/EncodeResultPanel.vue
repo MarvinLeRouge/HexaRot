@@ -21,10 +21,9 @@ function reencode(): void {
 
 const copyState = ref<'idle' | 'copied' | 'error'>('idle')
 
-async function copyKeyAndSize(): Promise<void> {
-  const sizeLabel = t(`encode.form.size.${props.result.size}`)
+async function copyKey(): Promise<void> {
   try {
-    await navigator.clipboard.writeText(`${props.result.key} · ${sizeLabel}`)
+    await navigator.clipboard.writeText(props.result.key)
     copyState.value = 'copied'
   } catch {
     copyState.value = 'error'
@@ -116,7 +115,7 @@ function downloadSvg(): void {
         <button
           type="button"
           class="btn-primary"
-          @click="copyKeyAndSize"
+          @click="copyKey"
         >
           {{ copyState === 'copied' ? t('encode.result.copied') : copyState === 'error' ? t('encode.result.copyError') : t('encode.result.copy') }}
         </button>

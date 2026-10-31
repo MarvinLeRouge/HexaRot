@@ -79,6 +79,7 @@ automatically from Conventional Commits history.
 - Refuse the admin password placeholder documented in .env.example
 - Let backlog auto-promotion PRs merge once the required CI check passes
 - Show the key's own size in "Existing key" mode results
+- Read the cryptogram size from the key instead of the form
 
 ### CI/CD
 

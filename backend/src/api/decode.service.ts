@@ -29,7 +29,7 @@ export class DecodeService {
       throw new BadRequestException((err as Error).message);
     }
 
-    const casePixels = getCasePixels(dto.size);
+    const casePixels = getCasePixels(keyParams.size);
 
     let grid: ColorGrid;
     try {

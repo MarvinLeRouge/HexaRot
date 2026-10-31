@@ -2457,7 +2457,7 @@ locale and more messages on top of the current vue-i18n setup.
 - **domain:** frontend
 - **complexity:** M
 - **parent:** ~
-- **depends-on:** ~
+- **depends-on:** FEAT-020
 - **learning:** [critique-driven UI polish]
 - **labels:** [refactor, domain:frontend, priority:medium]
 
@@ -2472,7 +2472,8 @@ Approach:
 
 1. Run `/impeccable critique` on every view at its current state (Encode,
    Decode, Key, Login, Register, Verify email, Admin users), desktop and
-   mobile, and record the score.
+   mobile, in both English and French (French strings run 15 to 30% longer
+   and surface overflows the English UI hides), and record the score.
 2. Triage findings by domain, not only by severity: pure visual or layout
    fixes stay in this item; interaction or state bugs and anything touching
    the key or cryptogram format get their own backlog items.

@@ -2779,3 +2779,81 @@ Not run by CI: the script's tests run locally only, since the repository has
 no CI job for `.github/scripts/`.
 <!-- ITEM:END -->
 
+
+<!-- ITEM:BEGIN -->
+### [FIX-004] Decode reads the cryptogram size from the form instead of the key
+
+- **type:** fix
+- **id:** FIX-004
+- **milestone:** v2
+- **status:** ready
+- **priority:** high
+- **domain:** api
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [single source of truth between client and server state]
+- **labels:** [fix, domain:api, priority:high]
+
+#### Description
+
+Since FEAT-022 the key stores the cryptogram size, and encoding treats the key
+as authoritative (FIX-002 made the encode result show it). Decoding still does
+not: `DecodeService.decode` parses the image at `dto.size`
+(`backend/src/api/decode.service.ts`), `size` is a required field of
+`DecodeRequestDto`, and the Decode page asks the user to pick it (default
+`medium`). Decoding a `small` cryptogram with its own key but the default form
+value fails with "Image dimensions ... are not exact multiples of
+casePixels=16", or returns only `?` characters when the dimensions happen to
+fit. The user already holds the right size inside the key.
+
+Found by the FIX-002 review.
+
+#### Acceptance criteria
+
+- The backend parses the image at the key's own size; `size` in the decode
+  request becomes optional and is ignored, like in encode key mode
+- The Decode page no longer asks for the size
+- A regression test decodes a cryptogram whose key size differs from the old
+  form default
+- The help page (`decoding` section, both languages), the user guide and the
+  API docs no longer tell the user to provide the size
+- `docs/tests/api.md` "Size validation" items for decode are updated to match
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FIX-005] Decoding a long-message cryptogram fails on the 100 kB request body limit
+
+- **type:** fix
+- **id:** FIX-005
+- **milestone:** v2
+- **status:** ready
+- **priority:** high
+- **domain:** api
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [HTTP body size limits, actionable error messages]
+- **labels:** [fix, domain:api, priority:high]
+
+#### Description
+
+`backend/src/main.ts` keeps Express's default JSON body limit (100 kB). SVG
+cryptograms travel as raw text in `POST /decode` (one `<rect>` per case, about
+61 bytes each plus JSON escaping), so a message of roughly 230 to 250
+characters at size `large` already exceeds it. The request fails with
+`413 Payload Too Large`, and `frontend/src/api/client.ts` falls back to the
+HTTP status text, so the user gets no actionable message. Large PNGs were never
+measured and may hit the same limit. Known since the FEAT-015 review
+(2026-08-19), never tracked until now.
+
+#### Acceptance criteria
+
+- The JSON body limit is raised to a value that fits the largest cryptogram
+  `POST /encode` can produce (`MAX_MESSAGE_LENGTH` at size `large`, SVG and
+  PNG), measured rather than guessed
+- A body over the limit still gets a 413, and the Decode page shows a clear,
+  translated message for it
+- An e2e test decodes a maximum-length SVG cryptogram at size `large`
+- The Traefik configuration does not impose a lower limit of its own
+<!-- ITEM:END -->

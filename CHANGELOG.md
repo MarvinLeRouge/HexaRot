@@ -392,6 +392,7 @@ automatically from Conventional Commits history.
 - Patch frontend dependencies flagged by npm audit
 - Upgrade vue-i18n from 9 to 11
 - Auto-promote ready items (#281)
+- Add FIX-004 and FIX-005 as high-priority fixes
 
 ### Other
 

@@ -100,6 +100,7 @@ automatically from Conventional Commits history.
 - Add path-filter to skip backend/frontend jobs on unrelated changes
 - Skip CI on doc-only changes
 - Split backend/frontend jobs into lint, test, and security stages
+- Auto-merge the catch-up CHANGELOG.md PR
 
 ### Documentation
 
@@ -389,6 +390,7 @@ automatically from Conventional Commits history.
 - Patch backend dependencies flagged critical by npm audit
 - Patch frontend dependencies flagged by npm audit
 - Upgrade vue-i18n from 9 to 11
+- Auto-promote ready items (#281)
 
 ### Other
 

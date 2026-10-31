@@ -23,9 +23,9 @@
 - ✅ Interface française (i18n)
 - ⬜ Mode de décodage animé
 - ⬜ Ordre de lecture en spirale
-- ⬜ Score de corrélation
+- ✅ Score de corrélation (endpoint API)
 - ✅ Authentification utilisateur
-- ⬜ Page d'aide (principe et réglages, en anglais et en français)
+- ✅ Page d'aide (principe et réglages, en anglais et en français)
 
 ## Idées pour plus tard (pas encore cadrées)
 

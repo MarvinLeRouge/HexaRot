@@ -44,6 +44,9 @@ function handleLogout(): void {
       <router-link to="/key">
         {{ t('nav.key') }}
       </router-link>
+      <router-link to="/help">
+        {{ t('nav.help') }}
+      </router-link>
       <router-link
         v-if="authStore.user?.role === 'ADMIN'"
         to="/admin/users"

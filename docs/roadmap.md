@@ -23,9 +23,9 @@
 - ✅ French interface (i18n)
 - ⬜ Animated decoding mode
 - ⬜ Spiral reading order
-- ⬜ Correlation score
+- ✅ Correlation score (API endpoint)
 - ✅ User authentication
-- ⬜ Help page (concept and settings, English and French)
+- ✅ Help page (concept and settings, English and French)
 
 ## Ideas for later (not yet scoped)
 

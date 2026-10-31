@@ -2579,7 +2579,7 @@ request's `Accept-Language` header, to be decided in this item's design.
 - **type:** feat
 - **id:** FEAT-025
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** M
@@ -2617,4 +2617,113 @@ approach.
 - Content covers the concept, every setting, the key, the weakness warning and
   decoding, reviewed by the maintainer
 - Readable on mobile (no horizontal scroll at 390px)
+
+#### Resolution (2026-10-31)
+
+- Public `/help` view (`frontend/src/views/HelpView.vue`), linked from the nav
+  bar ("Help" / "Aide") on every view, logged in or not.
+- Content in `frontend/src/content/help/en.md` and `fr.md`, compiled to Vue
+  components at build time by `unplugin-vue-markdown` (dev dependency). The
+  view lazily loads the active locale's file (one chunk per language) and
+  follows a language switch without reloading.
+- Named anchors, added to the scope during planning for future contextual help
+  links: each section has an explicit `{#anchor}` id (via `markdown-it-attrs`),
+  identical in every locale. `frontend/src/content/help/sections.ts` exports
+  the typed `HELP_SECTIONS` list for links such as
+  `{ path: '/help', hash: '#pivot-block-size' }`; `help-files.spec.ts` fails if
+  a locale file is missing or does not define exactly these anchors, in order.
+  Opening `/help#anchor` scrolls to the section once the content has loaded,
+  and stays on it after a language switch.
+- Content checked against the code rather than `CONTEXT.md`, which still
+  describes a message-length header and a key without the size: pivot block
+  size range (1 to 255), sequence cycling over blocks, keyboard reordering,
+  GCD rule (weak sizes still encode, the checkbox only hides the warning),
+  case sizes in pixels, key-mode settings overriding the form, `?` for
+  padding at the end of a decoded message. The example key is `HR1·0005`:
+  the `HR1·57C3` example used in the READMEs and the `KeyCodec` JSDoc is not
+  a valid key (out-of-range rotation sequence index), see FIX-002.
+- The Markdown typographer is disabled so the help text keeps straight
+  apostrophes, like the rest of the UI strings.
+- A guard in `HelpView` ignores a help file that finishes loading after a newer
+  language switch. Not covered by a test: both files load in order under
+  Vitest, so a test could not reproduce the race.
+
+Not done: contextual "?" links next to each setting, which can now target the
+anchors. Tracked as FEAT-026.
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-026] Contextual help links next to each setting
+
+- **type:** feat
+- **id:** FEAT-026
+- **milestone:** v2
+- **status:** backlog
+- **priority:** low
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** FEAT-025
+- **learning:** [accessible inline help affordances]
+- **labels:** [feat, domain:frontend, priority:low, milestone:v2]
+
+#### Description
+
+The help page (FEAT-025) has stable, locale-independent anchors listed in
+`frontend/src/content/help/sections.ts` (`HELP_SECTIONS`). Add a small help
+link next to each setting of the Encode, Decode and Key forms (pivot block
+size, rotation sequence, rotation direction, reading order, cryptogram size,
+weakness warning, key field) that opens the matching section, for example
+`{ path: '/help', hash: '#pivot-block-size' }`.
+
+#### Acceptance criteria
+
+- Each setting listed above has a help link targeting its `HELP_SECTIONS`
+  anchor, typed so that an unknown anchor fails the typecheck
+- Links have an accessible name naming the setting ("Help: pivot block size"),
+  in both languages, and do not lose the form state when followed and when
+  coming back
+- Keyboard and screen reader users can reach and use the links
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FIX-002] Encode result shows the form size instead of the key size in "Existing key" mode
+
+- **type:** fix
+- **id:** FIX-002
+- **milestone:** v2
+- **status:** ready
+- **priority:** high
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [single source of truth between client and server state]
+- **labels:** [fix, domain:frontend, priority:high]
+
+#### Description
+
+In "Existing key" mode, the backend renders the cryptogram at the size stored
+in the key (FEAT-022, "the key is authoritative") and ignores the `size` sent
+with the request. The frontend still sends the form's size and stores it as
+`result.size` (`frontend/src/stores/encode.ts`). When the form size differs
+from the key's size, the result panel, the "Copy key and size" text and the
+download file names show the wrong size. A user who decodes with that size
+gets only `?` characters.
+
+Example: a key encoding `small`, form left on `medium`. The image is drawn
+with 8-pixel squares, the result says Medium, decoding with Medium fails.
+
+Found by the FEAT-025 review. Related documentation bug: the example key
+`HR1·57C3` in `README.md`, `README.fr.md` and the `KeyCodec` JSDoc is not a
+valid key (its payload unpacks to rotation sequence index 27, only 0 to 23
+exist), so pasting it fails.
+
+#### Acceptance criteria
+
+- In "Existing key" mode, the result size is the key's size, never the form's
+- The size selector is hidden or disabled in "Existing key" mode, or shows the
+  key's size, so the form cannot contradict the key
+- A regression test covers a key whose size differs from the form's default
+- The `HR1·57C3` example is replaced with a valid key everywhere it appears
 <!-- ITEM:END -->

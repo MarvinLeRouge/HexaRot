@@ -1,8 +1,19 @@
 import { defineConfig } from 'vitest/config'
 import vue from '@vitejs/plugin-vue'
+import markdown from 'unplugin-vue-markdown/vite'
+import markdownItAttrs from 'markdown-it-attrs'
 
 export default defineConfig({
-  plugins: [vue()],
+  plugins: [
+    vue({ include: [/\.vue$/, /\.md$/] }),
+    // Help pages: Markdown compiled to Vue components at build time, with
+    // explicit `{#anchor}` ids so section links are identical in every locale
+    markdown({
+      // Plain punctuation, like the rest of the UI strings
+      markdownOptions: { typographer: false },
+      markdownSetup: (md) => { md.use(markdownItAttrs) },
+    }),
+  ],
   server: {
     proxy: {
       '/api': process.env.VITE_PROXY_TARGET ?? 'http://localhost:3000',

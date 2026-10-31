@@ -8,23 +8,18 @@ export type RotationDirection = 'cw' | 'ccw'
 export type CryptogramSize = 'small' | 'medium' | 'large'
 export type EncodeStatus = 'idle' | 'loading' | 'success' | 'error'
 
-/** Mirrors backend/src/api/encode.service.ts's EncodeResult - the raw API response shape. */
-interface EncodeApiResult {
+/**
+ * Mirrors backend/src/api/encode.service.ts's EncodeResult - the raw API
+ * response shape. `size` is the size the server actually rendered at (the
+ * key's own size in key mode), so it always matches the key and the image,
+ * whatever the form says or later changes to.
+ */
+export interface EncodeResult {
   png: string
   svg: string
   key: string
   warnings: string[]
   unknownChars: string[]
-}
-
-/**
- * EncodeApiResult plus the size actually submitted with the request - a
- * snapshot taken at request time, not a live read of `store.size`, so the
- * displayed size (and any downloaded filename built from it) stays
- * consistent with the key and cryptogram even if the form changes after a
- * successful encode.
- */
-export interface EncodeResult extends EncodeApiResult {
   size: CryptogramSize
 }
 
@@ -80,7 +75,6 @@ export const useEncodeStore = defineStore('encode', {
           ? {
               message: this.message,
               key: normalizeKeyInput(this.keyInput),
-              size: this.size,
               overrideWeaknessWarning: this.overrideWeaknessWarning,
             }
           : {
@@ -94,8 +88,7 @@ export const useEncodeStore = defineStore('encode', {
             }
 
       try {
-        const response = await postJson<EncodeApiResult>('/encode', payload)
-        this.result = { ...response, size: this.size }
+        this.result = await postJson<EncodeResult>('/encode', payload)
         this.resultStale = false
         this.status = 'success'
       } catch (err) {

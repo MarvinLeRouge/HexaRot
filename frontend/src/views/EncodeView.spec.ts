@@ -179,6 +179,13 @@ describe('EncodeView', () => {
       expect(postJson).toHaveBeenCalledWith('/encode', expect.objectContaining({ message: 'hello world', key: 'HR1·a1b2' }))
     })
 
+    it('hides the size selector, since the key carries its own size', async () => {
+      const wrapper = mountView()
+      await wrapper.find('input[type="radio"][value="key"]').setValue()
+
+      expect(wrapper.find('select[name="size"]').exists()).toBe(false)
+    })
+
     it('switches back to the params fields when the params radio is reselected', async () => {
       const wrapper = mountView()
       await wrapper.find('input[type="radio"][value="key"]').setValue()

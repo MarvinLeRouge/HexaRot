@@ -25,7 +25,7 @@ puis brouille cette grille en appliquant des rotations géométriques à des blo
 taille fixe — disloquant délibérément les symboles pour produire du bruit visuel.
 
 Tous les paramètres de chiffrement (taille de bloc, séquence de rotations, ordre de lecture,
-direction) sont condensés dans une clé base36 compacte préfixée `HR` — par exemple `HR1·57C3`.
+direction, taille du cryptogramme) sont condensés dans une clé base36 compacte préfixée `HR` — par exemple `HR1·2T51`.
 La même clé déchiffre tous les messages qu'elle a servi à chiffrer.
 
 ---
@@ -75,7 +75,7 @@ complète, avec des exemples de requêtes/réponses.
 Une clé HexaRot condense tous les paramètres de chiffrement dans une courte chaîne base36 :
 
 ```
-HR1·57C3
+HR1·2T51
 │  │ └─── paramètres encodés (base36)
 │  └───── séparateur
 └──────── préfixe de version
@@ -90,6 +90,7 @@ Les paramètres condensés dans la clé, avec exemples de valeurs :
 | Séquence de rotations | `[0°, 90°, 180°, 270°]` | Une des 24 permutations possibles |
 | Direction de rotation | `cw` | Sens horaire |
 | Ordre de lecture | `LR-TB` | Gauche-droite, haut-bas |
+| Taille du cryptogramme | `medium` | Cases de 16 pixels |
 
 La clé est **indépendante du message** — la même clé chiffre et déchiffre autant de messages
 que souhaité. Le cryptogramme ne contient aucune métadonnée de longueur par conception (un

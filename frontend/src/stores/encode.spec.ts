@@ -36,7 +36,7 @@ describe('useEncodeStore', () => {
 
   it.each([
     ['params', { message: 'hi', pivotBlockSize: 5, rotationSequence: [0, 1, 2, 3], rotationDirection: 'cw', readingOrder: 'LR-TB', size: 'medium', overrideWeaknessWarning: false }],
-    ['key', { message: 'hi', key: 'HR1·a1b2', size: 'medium', overrideWeaknessWarning: false }],
+    ['key', { message: 'hi', key: 'HR1·a1b2', overrideWeaknessWarning: false }],
   ])('builds the %s-mode payload correctly when submitting', async (mode, expectedPayload) => {
     vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
     const store = useEncodeStore()
@@ -59,6 +59,19 @@ describe('useEncodeStore', () => {
     await store.submit()
 
     expect(postJson).toHaveBeenCalledWith('/encode', expect.objectContaining({ key: 'HR1·a1b2' }))
+  })
+
+  it("takes the result size from the response, not the form, so key mode shows the key's own size", async () => {
+    vi.mocked(postJson).mockResolvedValue({ ...MOCK_ENCODE_RESPONSE, size: 'small' })
+    const store = useEncodeStore()
+    store.mode = 'key'
+    store.message = 'hi'
+    store.keyInput = 'HR1·a1b2'
+    store.size = 'medium'
+
+    await store.submit()
+
+    expect(store.result?.size).toBe('small')
   })
 
   it('sets status to loading while the request is in flight', () => {

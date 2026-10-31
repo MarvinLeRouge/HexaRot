@@ -411,7 +411,7 @@ Implement the `KeyCodec` module. A key encapsulates: system version, pivot block
 rotation sequence (one of 4! = 24 permutations of [0°, 90°, 180°, 270°]), rotation
 direction (clockwise / counter-clockwise), and reading order.
 
-The key is encoded as a compact base36 string prefixed with `HR` (e.g. `HR1·57C3`).
+The key is encoded as a compact base36 string prefixed with `HR` (e.g. `HR1·2T51`).
 The codec must expose:
 - `encode(params: KeyParams): string` — serialises parameters to a key string
 - `decode(key: string): KeyParams` — deserialises a key string to parameters
@@ -2692,7 +2692,7 @@ weakness warning, key field) that opens the matching section, for example
 - **type:** fix
 - **id:** FIX-002
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** frontend
 - **complexity:** S

@@ -46,9 +46,9 @@ function triggerDownload(blob: Blob, filename: string): void {
 function downloadFilename(extension: string): string {
   // Never include the key here: this file is the artifact the user hands to
   // someone else, and a cipher's key must travel on a separate channel from
-  // the cryptogram it decrypts. Uses the snapshotted result size, not the
-  // live form field, so a filename never claims a size that doesn't match
-  // the cryptogram actually inside it.
+  // the cryptogram it decrypts. Uses the size the server rendered at, not the
+  // form field, so a filename never claims a size that doesn't match the
+  // cryptogram actually inside it.
   return `hexarot-${props.result.size}.${extension}`
 }
 

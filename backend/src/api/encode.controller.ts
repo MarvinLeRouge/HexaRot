@@ -11,7 +11,7 @@ export class EncodeController {
    * Encodes the given message and parameters into PNG/SVG cryptograms.
    *
    * @param dto - Validated request body.
-   * @returns The encoding result (png, svg, key, warnings, unknownChars).
+   * @returns The encoding result (png, svg, key, warnings, unknownChars, and the size it was rendered at).
    */
   @Post()
   @HttpCode(200)

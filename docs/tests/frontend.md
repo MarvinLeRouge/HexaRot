@@ -26,6 +26,8 @@ describe('EncodeView')
 - it calls the encode API with the correct payload when the form is submitted
 - it passes the message value from the input field in the API call
 - it passes the selected size option in the API call
+- it hides the size selector in "Existing key" mode, since the key carries its own size
+- it takes the displayed size from the API response, so key mode shows the key's size
 - it shows a loading indicator while the API call is in progress
 - it hides the loading indicator after the API call resolves
 

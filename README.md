@@ -24,8 +24,8 @@ HexaRot encodes any text message into a colour grid using the
 then scrambles that grid by applying geometric rotations to fixed-size pivot blocks —
 deliberately dislocating symbols to produce visual noise.
 
-All encryption parameters (block size, rotation sequence, reading order, direction) are
-packed into a compact base36 key string prefixed with `HR` — for example `HR1·57C3`.
+All encryption parameters (block size, rotation sequence, reading order, direction, cryptogram size) are
+packed into a compact base36 key string prefixed with `HR` — for example `HR1·2T51`.
 The same key decodes any message it was used to encode.
 
 ---
@@ -75,7 +75,7 @@ including request/response examples.
 A HexaRot key encodes all encryption parameters into a short base36 string:
 
 ```
-HR1·57C3
+HR1·2T51
 │  │ └─── encoded parameters (base36)
 │  └───── separator
 └──────── version prefix
@@ -90,6 +90,7 @@ The parameters packed into the key, with example values:
 | Rotation sequence | `[0°, 90°, 180°, 270°]` | One of 24 possible permutations |
 | Rotation direction | `cw` | Clockwise |
 | Reading order | `LR-TB` | Left-right, top-bottom |
+| Cryptogram size | `medium` | 16-pixel squares |
 
 The key is **message-independent** — the same key encrypts and decrypts any number of
 messages. The cryptogram carries no message-length metadata by design (a deliberate

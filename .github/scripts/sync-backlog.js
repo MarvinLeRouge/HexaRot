@@ -277,11 +277,16 @@ function buildIssueTitle(item) {
 
 // ─── AUTO-PROMOTION PULL REQUEST ─────────────────────────────────────────────
 
-// main is protected by a ruleset requiring pull requests, so the updated
-// BACKLOG.md is committed to a dedicated branch via the Contents API, then
-// a PR is opened and merged immediately (the ruleset allows 0 approvals).
-async function commitPromotionsViaPullRequest(promotions, content) {
-  const branch = 'chore/backlog-auto-promote-' + Date.now();
+const AUTO_PROMOTE_BRANCH_PREFIX = 'chore/backlog-auto-promote-';
+
+// main is protected by a ruleset requiring a pull request and the "CI status"
+// check, so the updated BACKLOG.md is committed to a dedicated branch via the
+// Contents API, a PR is opened, and GitHub auto-merge merges it once CI passes.
+// The commit must not skip CI, or the required check never arrives.
+async function commitPromotionsViaPullRequest(promotions, content, { octokit, gql }) {
+  await closeSupersededPromotionPullRequests(octokit);
+
+  const branch = AUTO_PROMOTE_BRANCH_PREFIX + Date.now();
 
   const { data: mainRef } = await octokit.git.getRef({ owner: OWNER, repo: REPO, ref: 'heads/main' });
   await octokit.git.createRef({ owner: OWNER, repo: REPO, ref: 'refs/heads/' + branch, sha: mainRef.object.sha });
@@ -292,7 +297,7 @@ async function commitPromotionsViaPullRequest(promotions, content) {
 
   await octokit.repos.createOrUpdateFileContents({
     owner: OWNER, repo: REPO, path: 'BACKLOG.md',
-    message: 'chore(backlog): auto-promote ready items [skip ci]',
+    message: 'chore(backlog): auto-promote ready items',
     content: Buffer.from(content, 'utf8').toString('base64'),
     sha: existingFile.sha,
     branch,
@@ -308,8 +313,23 @@ async function commitPromotionsViaPullRequest(promotions, content) {
     body: 'Auto-promoted to ready: ' + promotions.join(', '),
   });
 
-  await octokit.pulls.merge({ owner: OWNER, repo: REPO, pull_number: pr.number, merge_method: 'squash' });
-  console.log('Merged auto-promotion PR #' + pr.number + ' (' + branch + ')');
+  await gql(
+    'mutation($pullRequestId: ID!) { enablePullRequestAutoMerge(input: { pullRequestId: $pullRequestId, mergeMethod: SQUASH }) { clientMutationId } }',
+    { pullRequestId: pr.node_id }
+  );
+  console.log('Opened auto-promotion PR #' + pr.number + ' (' + branch + '), auto-merge enabled once CI passes');
+}
+
+// An earlier run may have left an auto-promotion PR open (failed run, re-run).
+// Its content is stale since promotions are recomputed from main, so close it
+// instead of piling up duplicates.
+async function closeSupersededPromotionPullRequests(octokit) {
+  const { data: openPulls } = await octokit.pulls.list({ owner: OWNER, repo: REPO, state: 'open', base: 'main', per_page: 100 });
+  for (const pull of openPulls.filter(p => p.head.ref.startsWith(AUTO_PROMOTE_BRANCH_PREFIX))) {
+    await octokit.pulls.update({ owner: OWNER, repo: REPO, pull_number: pull.number, state: 'closed' });
+    await octokit.git.deleteRef({ owner: OWNER, repo: REPO, ref: 'heads/' + pull.head.ref });
+    console.log('Closed superseded auto-promotion PR #' + pull.number);
+  }
 }
 
 // ─── MAIN ────────────────────────────────────────────────────────────────────
@@ -350,11 +370,10 @@ async function main() {
     content = applyReadyPromotions(content, promotions);
     fs.writeFileSync(backlogPath, content, 'utf8');
 
-    // main is protected (PR required) — commit to a dedicated branch, open a PR,
-    // then merge it immediately (the ruleset requires 0 approvals) instead of
-    // pushing to main directly.
-    await commitPromotionsViaPullRequest(promotions, content);
-    console.log('BACKLOG.md updated via pull request.');
+    // main is protected (PR and CI required): commit to a dedicated branch and
+    // open a PR that GitHub merges automatically once CI passes.
+    await commitPromotionsViaPullRequest(promotions, content, { octokit, gql });
+    console.log('BACKLOG.md update proposed via pull request.');
 
     // Re-parse with updated content
     const reparsed = parseBacklog(content);
@@ -471,7 +490,11 @@ async function main() {
   console.log('\nSync complete.');
 }
 
-main().catch(err => {
-  console.error('Sync failed:', err.message);
-  process.exit(1);
-});
+if (require.main === module) {
+  main().catch(err => {
+    console.error('Sync failed:', err.message);
+    process.exit(1);
+  });
+}
+
+module.exports = { commitPromotionsViaPullRequest };

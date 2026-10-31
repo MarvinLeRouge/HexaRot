@@ -2727,3 +2727,55 @@ exist), so pasting it fails.
 - A regression test covers a key whose size differs from the form's default
 - The `HR1·57C3` example is replaced with a valid key everywhere it appears
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FIX-003] Backlog auto-promotion PR can never merge under the CI-required ruleset
+
+- **type:** fix
+- **id:** FIX-003
+- **milestone:** v2
+- **status:** done
+- **priority:** high
+- **domain:** infra
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [GitHub auto-merge, required status checks vs skip ci]
+- **labels:** [fix, domain:infra, priority:high]
+
+#### Description
+
+When an item's dependencies become `done`, `sync-backlog.js` promotes it to
+`ready` by committing `BACKLOG.md` to a branch, opening a PR and merging it
+right away. Since the `protect-main` ruleset requires the "CI status" check
+(added during the October CI homogenization), that merge is refused: the
+commit message contained `[skip ci]`, so CI never ran on the PR and the
+required check never arrived. First seen on 2026-10-31, when merging FEAT-025
+promoted FEAT-026: the run failed with "Required status check "CI status" is
+expected", and its rerun opened a duplicate PR (#278, #279).
+
+#### Acceptance criteria
+
+- The auto-promotion commit no longer skips CI
+- The PR is merged by GitHub auto-merge once "CI status" passes, not merged
+  immediately; the rest of the sync goes on without waiting
+- A rerun closes earlier auto-promotion PRs still open (and their branches)
+  instead of opening duplicates
+- Tests cover the three behaviours without calling the GitHub API
+
+#### Resolution (2026-10-31)
+
+`commitPromotionsViaPullRequest` now drops `[skip ci]`, enables auto-merge
+(squash) through the `enablePullRequestAutoMerge` GraphQL mutation, and first
+closes superseded `chore/backlog-auto-promote-*` PRs and deletes their
+branches. The script only runs `main()` when executed directly
+(`require.main === module`) and exports the function, so
+`.github/scripts/sync-backlog.test.js` (`node --test .github/scripts/`, no
+dependency) covers it with a mocked Octokit. "Allow auto-merge" enabled in the
+repository settings. A PR touching only `BACKLOG.md` skips the backend and
+frontend jobs, so "CI status" passes within seconds.
+
+Not run by CI: the script's tests run locally only, since the repository has
+no CI job for `.github/scripts/`.
+<!-- ITEM:END -->
+

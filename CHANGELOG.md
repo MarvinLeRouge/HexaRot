@@ -77,6 +77,7 @@ automatically from Conventional Commits history.
 - Trigger workflow on all pull requests, not just non-doc changes
 - Set DATABASE_URL for backend-lint and backend-security jobs
 - Refuse the admin password placeholder documented in .env.example
+- Let backlog auto-promotion PRs merge once the required CI check passes
 
 ### CI/CD
 

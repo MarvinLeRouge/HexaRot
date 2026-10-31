@@ -58,9 +58,16 @@ GitHub Actions s'exécute sur les pull requests vers `main` (`.github/workflows/
   Vitest (en parallèle du job backend).
 
 `sync-backlog.yml` synchronise `BACKLOG.md` vers les Issues GitHub et un tableau
-Kanban à chaque push sur `main`. Il nécessite un secret de repository
-`HEXAROT_PROJECT_TOKEN` (Personal Access Token classic avec les scopes `repo` et
-`project`) ; voir [CONTRIBUTING.fr.md](i18n/fr/CONTRIBUTING.fr.md) pour la configuration.
+Kanban quand une pull request qui le modifie est mergée dans `main`. Il nécessite
+un secret de repository `HEXAROT_PROJECT_TOKEN` (Personal Access Token classic
+avec les scopes `repo` et `project`) ; voir
+[CONTRIBUTING.fr.md](i18n/fr/CONTRIBUTING.fr.md) pour la configuration. Quand
+toutes les dépendances d'une entrée sont `done`, le workflow la passe en `ready`
+via sa propre pull request, que GitHub merge automatiquement une fois le check
+obligatoire "CI status" passé. Il faut pour cela activer "Allow auto-merge" dans
+les réglages du dépôt. Une relance ferme toute pull request d'auto-promotion
+précédente encore ouverte, au lieu d'en ouvrir une en double. Les tests du script
+se lancent avec `node --test .github/scripts/`.
 
 `CHANGELOG.md` est régénéré principalement par un hook local `post-commit`
 (ajouté à la fin de `.husky/post-commit`, qui appelle

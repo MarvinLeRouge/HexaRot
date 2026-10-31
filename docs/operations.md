@@ -57,10 +57,16 @@ GitHub Actions runs on pull requests to `main` (`.github/workflows/ci.yml`):
 - **Frontend job:** install dependencies, lint, run the Vitest suite (in parallel
   with the backend job).
 
-`sync-backlog.yml` syncs `BACKLOG.md` to GitHub Issues and a Kanban board on push
-to `main`. It requires a `HEXAROT_PROJECT_TOKEN` repository secret (classic
-Personal Access Token with `repo` and `project` scopes); see
-[CONTRIBUTING.md](../CONTRIBUTING.md) for setup.
+`sync-backlog.yml` syncs `BACKLOG.md` to GitHub Issues and a Kanban board when a
+pull request touching it is merged into `main`. It requires a
+`HEXAROT_PROJECT_TOKEN` repository secret (classic Personal Access Token with
+`repo` and `project` scopes); see [CONTRIBUTING.md](../CONTRIBUTING.md) for
+setup. When an item's dependencies are all `done`, the workflow promotes it to
+`ready` through its own pull request, which GitHub auto-merges once the required
+"CI status" check passes. This needs "Allow auto-merge" enabled in the
+repository settings. A rerun closes any earlier auto-promotion pull request
+still open instead of opening a duplicate. The script's tests run with
+`node --test .github/scripts/`.
 
 `CHANGELOG.md` is regenerated primarily by a local `post-commit` hook
 (appended to `.husky/post-commit`, calling `scripts/changelog-post-commit.sh`)

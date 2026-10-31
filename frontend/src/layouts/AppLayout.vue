@@ -3,6 +3,7 @@ import { watch } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/auth'
+import LanguageSwitcher from '../components/LanguageSwitcher.vue'
 
 const { t } = useI18n()
 const route = useRoute()
@@ -50,6 +51,7 @@ function handleLogout(): void {
         {{ t('nav.admin') }}
       </router-link>
       <span class="app-layout__nav-spacer" />
+      <LanguageSwitcher />
       <router-link
         v-if="!authStore.accessToken"
         to="/login"
@@ -74,8 +76,9 @@ function handleLogout(): void {
 <style scoped>
 .app-layout__nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  gap: 8px 16px;
   padding: 16px;
   border-bottom: 1px solid var(--border);
 }

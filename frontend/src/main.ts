@@ -5,15 +5,20 @@ import App from './App.vue'
 import { router } from './router'
 import { useAuthStore } from './stores/auth'
 import en from './locales/en.json'
+import fr from './locales/fr.json'
+import { DEFAULT_LOCALE, applyDocumentLanguage, loadStoredLocale, resolveInitialLocale } from './i18n/locale'
 import './style.css'
 
 const pinia = createPinia()
 
+const locale = resolveInitialLocale(loadStoredLocale(), navigator.languages)
+applyDocumentLanguage(locale)
+
 const i18n = createI18n({
   legacy: false,
-  locale: 'en',
-  fallbackLocale: 'en',
-  messages: { en },
+  locale,
+  fallbackLocale: DEFAULT_LOCALE,
+  messages: { en, fr },
 })
 
 const app = createApp(App)

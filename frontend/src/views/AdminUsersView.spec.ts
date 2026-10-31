@@ -5,6 +5,7 @@ import { createI18n } from 'vue-i18n'
 import AdminUsersView from './AdminUsersView.vue'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 import en from '../locales/en.json'
+import fr from '../locales/fr.json'
 import { MOCK_ADMIN_USERS_LIST } from '../__fixtures__/frontend.fixtures'
 import { ApiError } from '../api/client'
 
@@ -25,8 +26,8 @@ function mockAdminUsersList(): typeof MOCK_ADMIN_USERS_LIST {
   return MOCK_ADMIN_USERS_LIST.map((user) => ({ ...user }))
 }
 
-function mountView() {
-  const i18n = createI18n({ legacy: false, locale: 'en', messages: { en } })
+function mountView(locale: 'en' | 'fr' = 'en') {
+  const i18n = createI18n({ legacy: false, locale, fallbackLocale: 'en', messages: { en, fr } })
   return mount(AdminUsersView, {
     global: { plugins: [createPinia(), i18n] },
   })
@@ -115,5 +116,35 @@ describe('AdminUsersView', () => {
     await flushPromises()
 
     expect(wrapper.text()).toContain('You cannot modify your own account')
+  })
+
+  it('renders the role and the verified and active flags through i18n, not raw values', async () => {
+    vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
+    const wrapper = mountView('fr')
+    await flushPromises()
+
+    const firstRow = wrapper.findAll('tbody tr')[0].findAll('td').map((cell) => cell.text())
+    expect(firstRow.slice(1, 4)).toEqual(['Utilisateur', 'Oui', 'Oui'])
+    expect(wrapper.text()).not.toMatch(/\b(USER|true|false)\b/)
+  })
+
+  it('formats the creation date for the active locale instead of the raw ISO string', async () => {
+    vi.mocked(getJson).mockResolvedValue(mockAdminUsersList())
+    const wrapper = mountView('fr')
+    await flushPromises()
+
+    const createdAt = wrapper.findAll('tbody tr')[0].findAll('td')[4].text()
+    expect(createdAt).toBe(
+      new Intl.DateTimeFormat('fr', { dateStyle: 'medium' }).format(new Date('2026-09-01T00:00:00.000Z')),
+    )
+    expect(createdAt).not.toContain('T00:00')
+  })
+
+  it('shows the translated network error instead of the client English message', async () => {
+    vi.mocked(getJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+    const wrapper = mountView('fr')
+    await flushPromises()
+
+    expect(wrapper.get('[role="alert"]').text()).toBe(fr.errors.network)
   })
 })

@@ -18,6 +18,7 @@ interface AdminState {
   users: AdminUserSummary[]
   status: AdminStatus
   errorMessage: string | null
+  errorCode: 'network' | 'unknown' | null
 }
 
 function initialState(): AdminState {
@@ -25,11 +26,14 @@ function initialState(): AdminState {
     users: [],
     status: 'idle',
     errorMessage: null,
+    errorCode: null,
   }
 }
 
-function describeError(err: unknown): string {
-  return err instanceof ApiError ? err.message : 'Something went wrong'
+/** Keeps the backend's message for HTTP errors; other failures get a code the view translates. */
+function describeError(err: unknown): Pick<AdminState, 'errorMessage' | 'errorCode'> {
+  if (err instanceof ApiError && err.code === 'http') return { errorMessage: err.message, errorCode: null }
+  return { errorMessage: null, errorCode: err instanceof ApiError && err.code === 'network' ? 'network' : 'unknown' }
 }
 
 export const useAdminStore = defineStore('admin', {
@@ -38,17 +42,19 @@ export const useAdminStore = defineStore('admin', {
     async fetchUsers(): Promise<void> {
       this.status = 'loading'
       this.errorMessage = null
+      this.errorCode = null
       try {
         this.users = await getJson<AdminUserSummary[]>('/admin/users')
         this.status = 'success'
       } catch (err) {
         this.status = 'error'
-        this.errorMessage = describeError(err)
+        Object.assign(this, describeError(err))
       }
     },
 
     async setActive(id: string, active: boolean): Promise<void> {
       this.errorMessage = null
+      this.errorCode = null
       try {
         const updated = await patchJson<AdminUserSummary>(`/admin/users/${id}`, { active })
         const index = this.users.findIndex((user) => user.id === id)
@@ -56,20 +62,21 @@ export const useAdminStore = defineStore('admin', {
         this.status = 'success'
       } catch (err) {
         this.status = 'error'
-        this.errorMessage = describeError(err)
+        Object.assign(this, describeError(err))
         throw err
       }
     },
 
     async removeUser(id: string): Promise<void> {
       this.errorMessage = null
+      this.errorCode = null
       try {
         await deleteJson(`/admin/users/${id}`)
         this.users = this.users.filter((user) => user.id !== id)
         this.status = 'success'
       } catch (err) {
         this.status = 'error'
-        this.errorMessage = describeError(err)
+        Object.assign(this, describeError(err))
         throw err
       }
     },

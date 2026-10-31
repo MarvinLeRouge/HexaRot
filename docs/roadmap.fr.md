@@ -20,11 +20,12 @@
 
 ## V2
 
-- ⬜ Interface française (i18n)
+- ✅ Interface française (i18n)
 - ⬜ Mode de décodage animé
 - ⬜ Ordre de lecture en spirale
 - ⬜ Score de corrélation
 - ✅ Authentification utilisateur
+- ⬜ Page d'aide (principe et réglages, en anglais et en français)
 
 ## Idées pour plus tard (pas encore cadrées)
 

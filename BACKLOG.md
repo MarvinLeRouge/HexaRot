@@ -1164,7 +1164,7 @@ encoding (new reading order values in the key codec).
 - **type:** feat
 - **id:** FEAT-020
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** S
@@ -1185,6 +1185,30 @@ translation file and implementing the language switcher in the UI.
 - Language switcher is accessible from all views
 - Switching language does not reload the page
 - No English strings remain visible when French locale is active
+
+#### Resolution (2026-10-31)
+
+- Locale choice (`frontend/src/i18n/locale.ts`): the saved choice in
+  `localStorage` (`hexarot_locale`) wins, then the first supported browser
+  language (`fr-*` gives French), then English. `<html lang>` follows the
+  active locale.
+- `LanguageSwitcher` in `AppLayout`, on every view including the public ones:
+  a single button showing the other language in that language ("Français" /
+  "English"), with `lang` and an accessible name in the target language.
+  Switching does not reload or navigate.
+- `frontend/src/locales/fr.json` covers every key; `locales.spec.ts` fails CI
+  if a key or a named parameter differs from `en.json`.
+- Admin users view: role, verified and active flags go through i18n, the
+  creation date is formatted for the active locale (in the viewer's
+  timezone). Network and unexpected errors now show the translated
+  `errors.*` message, like the other views, instead of an English string
+  written by the store.
+- The nav bar now wraps on narrow screens: the extra switcher pushed it past a
+  390px viewport (398px in English, 468px in French).
+
+Out of scope, still in English in the French interface: backend error
+messages shown through `{detail}` and backend weakness warnings (both sent by
+the API as English text), and the verification email. See FEAT-024.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
@@ -2509,4 +2533,88 @@ change to the design system itself is documented there in both languages.
   one, reported against the merged state
 - `docs/design-system.md` and `docs/design-system.fr.md` updated if tokens or
   rules change
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-024] Localized emails and account-level language preference
+
+- **type:** feat
+- **id:** FEAT-024
+- **milestone:** v2
+- **status:** ready
+- **priority:** low
+- **domain:** backend
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** FEAT-020
+- **learning:** [locale negotiation between client and server]
+- **labels:** [feat, domain:backend, priority:low, milestone:v2]
+
+#### Description
+
+FEAT-020 keeps the language choice in the browser only (`localStorage`). The
+backend does not know the user's language, so the verification email and every
+API message (error details, weakness warnings) stay in English, even in the
+French interface.
+
+Store the preference on the account (a `locale` column on `User`), send it
+from the frontend at registration and on change, and use it to localize
+emails. API messages could be localized from the same preference or from the
+request's `Accept-Language` header, to be decided in this item's design.
+
+#### Acceptance criteria
+
+- `User` has a `locale` preference, set at registration from the active
+  interface language and updated when the user switches language while logged in
+- Verification emails are sent in the user's language
+- A decision is recorded for API messages (localized on the backend, or mapped
+  to i18n keys on the frontend), and implemented
+- When the browser choice and the account preference differ at login, the rule
+  for which one wins is documented and tested
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-025] Help page - concept and settings
+
+- **type:** feat
+- **id:** FEAT-025
+- **milestone:** v2
+- **status:** ready
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** FEAT-020
+- **learning:** [build-time Markdown to Vue components]
+- **labels:** [feat, domain:frontend, priority:medium, milestone:v2]
+
+#### Description
+
+There is no help page. Add a public `/help` view, reachable without logging
+in, that explains the concept and every setting, in English and French.
+
+Content: the principle (Hexahue alphabet, grid, dislocation by block
+rotations), each setting (pivot block size, rotation sequence and direction,
+reading order, cryptogram size), the key and why it can be reused, the GCD
+weakness warning, and how to decode. First draft written from `CONTEXT.md`
+and the code, then reviewed by the maintainer.
+
+Storage, decided with the maintainer: one Markdown file per locale
+(`src/content/help/en.md`, `fr.md`), compiled to Vue components at build time
+with `unplugin-vue-markdown` (dev dependency only). No runtime Markdown parser
+and no `v-html`, so nothing to sanitize. Short labels (page title, nav link)
+stay in `en.json`/`fr.json`. Check plugin compatibility with Vite 8 first; if
+it does not work, stop and discuss alternatives before picking another
+approach.
+
+#### Acceptance criteria
+
+- `/help` is public, linked from the nav bar ("Help" / "Aide") on every view
+- The page shows the Markdown content for the active locale and follows a
+  language switch without reloading
+- A test fails if a supported locale has no help file, or if the help files
+  do not share the same heading structure
+- Content covers the concept, every setting, the key, the weakness warning and
+  decoding, reviewed by the maintainer
+- Readable on mobile (no horizontal scroll at 390px)
 <!-- ITEM:END -->

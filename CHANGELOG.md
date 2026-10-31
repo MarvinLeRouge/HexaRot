@@ -443,5 +443,6 @@ automatically from Conventional Commits history.
 - Add end-to-end coverage for register/verify/login/admin flows
 - Fix vacuous route-protection assertion in e2e suite
 - Raise branch and function coverage across api/components/stores/views
+- Mock PrismaService in the key service spec
 
 

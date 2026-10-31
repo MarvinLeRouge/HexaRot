@@ -1,3 +1,8 @@
+// Prevent Jest from parsing PrismaService's generated ESM Prisma client.
+jest.mock('../prisma/prisma.service', () => ({
+  PrismaService: class MockPrismaService {},
+}));
+
 import { BadRequestException } from '@nestjs/common';
 import { KeyService } from './key.service';
 import { KeyGenerateRequestDto } from './dto/key-generate-request.dto';

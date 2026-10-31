@@ -281,6 +281,10 @@
       },
       "error": {
         "prefix": "Couldn't complete this action: {detail}"
+      },
+      "role": {
+        "USER": "User",
+        "ADMIN": "Admin"
       }
     }
   },
@@ -303,5 +307,13 @@
     "moved": "Moved to position {position} of {total}.",
     "dropped": "Dropped {angle}° at position {position} of {total}.",
     "cancelled": "Reorder cancelled."
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No"
+  },
+  "language": {
+    "name": "English",
+    "switchTo": "Switch to English"
   }
 }

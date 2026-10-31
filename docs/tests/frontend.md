@@ -1,7 +1,7 @@
 # HexaRot — Test Spec: Frontend Domain
 
 Covers: FEAT-014 (encode view), FEAT-015 (decode view), FEAT-016 (key view),
-and their associated Pinia stores.
+their associated Pinia stores, and FEAT-020 (French interface).
 
 All tests in this document are **unit tests** using Vitest and Vue Test Utils.
 API calls are mocked with `vi.mock` — no real HTTP requests are made.
@@ -160,6 +160,50 @@ describe('useKeyStore')
 - it stores the error from a failed parse response
 - it clears the previous generated key when a new generate action is dispatched
 - it clears the previous parsed params when a new parse action is dispatched
+
+---
+
+## 7. Locale selection and switching (FEAT-020)
+
+```
+describe('resolveInitialLocale')
+```
+
+- it returns the stored locale when it is supported
+- it ignores a stored value that is not a supported locale
+- it falls back to the first browser language whose primary subtag is supported
+  (`fr-FR`, `fr-CA` resolve to `fr`)
+- it returns `en` when neither the stored value nor any browser language is supported
+
+```
+describe('saveLocale')
+```
+
+- it writes the locale to localStorage
+- it sets `document.documentElement.lang` to the locale
+
+```
+describe('locale files')
+```
+
+- every locale file has exactly the same keys as `en.json`
+- every translation uses exactly the same named parameters as its `en.json` counterpart
+
+```
+describe('LanguageSwitcher')
+```
+
+- it shows the other language's name, written in that language, with a matching `lang` attribute
+- it switches the active locale when clicked, without any route navigation
+- it persists the chosen locale
+- it has an accessible name written in the target language
+
+```
+describe('AdminUsersView') - localized values
+```
+
+- it renders the role, the verified and active flags through i18n, not raw values
+- it formats the creation date for the active locale instead of showing the raw ISO string
 
 ---
 

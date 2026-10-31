@@ -4,8 +4,12 @@ import { useI18n } from 'vue-i18n'
 import { useAdminStore, type AdminUserSummary } from '../stores/admin'
 import ConfirmDialog from '../components/ConfirmDialog.vue'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const adminStore = useAdminStore()
+
+function formatDate(isoDate: string): string {
+  return new Intl.DateTimeFormat(locale.value, { dateStyle: 'medium' }).format(new Date(isoDate))
+}
 
 const pendingDelete = ref<AdminUserSummary | null>(null)
 
@@ -40,7 +44,7 @@ async function confirmDelete(): Promise<void> {
       class="admin-users-view__error"
       role="alert"
     >
-      {{ t('admin.users.error.prefix', { detail: adminStore.errorMessage }) }}
+      {{ adminStore.errorMessage ? t('admin.users.error.prefix', { detail: adminStore.errorMessage }) : t(`errors.${adminStore.errorCode}`) }}
     </p>
     <table
       v-if="adminStore.users.length > 0"
@@ -62,10 +66,10 @@ async function confirmDelete(): Promise<void> {
           :key="user.id"
         >
           <td>{{ user.email }}</td>
-          <td>{{ user.role }}</td>
-          <td>{{ user.emailVerified }}</td>
-          <td>{{ user.active }}</td>
-          <td>{{ user.createdAt }}</td>
+          <td>{{ t(`admin.users.role.${user.role}`) }}</td>
+          <td>{{ user.emailVerified ? t('common.yes') : t('common.no') }}</td>
+          <td>{{ user.active ? t('common.yes') : t('common.no') }}</td>
+          <td>{{ formatDate(user.createdAt) }}</td>
           <td>
             <button
               type="button"

@@ -51,14 +51,25 @@ describe('useAdminStore', () => {
       expect(store.errorMessage).toBe('Forbidden')
     })
 
-    it('falls back to a generic error message on a non-ApiError failure', async () => {
+    it('stores the unknown error code, not an English message, on a non-ApiError failure', async () => {
       vi.mocked(getJson).mockRejectedValue(new Error('boom'))
       const store = useAdminStore()
 
       await store.fetchUsers()
 
       expect(store.status).toBe('error')
-      expect(store.errorMessage).toBe('Something went wrong')
+      expect(store.errorMessage).toBeNull()
+      expect(store.errorCode).toBe('unknown')
+    })
+
+    it('stores the network error code, not the client message, on a network failure', async () => {
+      vi.mocked(getJson).mockRejectedValue(new ApiError('Network error: unable to reach the server', 'network'))
+      const store = useAdminStore()
+
+      await store.fetchUsers()
+
+      expect(store.errorMessage).toBeNull()
+      expect(store.errorCode).toBe('network')
     })
   })
 

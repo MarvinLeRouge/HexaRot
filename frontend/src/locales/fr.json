@@ -1,0 +1,319 @@
+{
+  "nav": {
+    "encode": "Encoder",
+    "decode": "Décoder",
+    "key": "Clé",
+    "admin": "Admin"
+  },
+  "encode": {
+    "title": "Encoder un message",
+    "form": {
+      "mode": {
+        "label": "Mode",
+        "params": "Nouveaux paramètres",
+        "key": "Clé existante"
+      },
+      "message": {
+        "label": "Message",
+        "placeholder": "Saisissez le message à encoder"
+      },
+      "transformGroup": {
+        "label": "Transformation"
+      },
+      "pivotBlockSize": {
+        "label": "Taille du bloc pivot"
+      },
+      "rotationSequence": {
+        "label": "Séquence de rotation"
+      },
+      "rotationDirection": {
+        "label": "Sens de rotation",
+        "cw": "Sens horaire",
+        "ccw": "Sens antihoraire"
+      },
+      "readingOrder": {
+        "label": "Sens de lecture"
+      },
+      "outputGroup": {
+        "label": "Sortie"
+      },
+      "size": {
+        "label": "Taille du cryptogramme",
+        "small": "Petite",
+        "medium": "Moyenne",
+        "large": "Grande"
+      },
+      "overrideWeaknessWarning": {
+        "label": "Ignorer les avertissements de faiblesse"
+      },
+      "key": {
+        "label": "Clé HexaRot",
+        "placeholder": "HR1·xxxx",
+        "formatError": "Une clé HexaRot ressemble à HR1·a3f9 : \"HR\", un numéro de version, un séparateur, puis 4 caractères."
+      },
+      "submit": {
+        "label": "Encoder",
+        "loading": "Encodage..."
+      },
+      "error": {
+        "prefix": "Impossible d'encoder ce message : {detail}"
+      }
+    },
+    "result": {
+      "regionLabel": "Résultat de l'encodage",
+      "emptyState": "Votre cryptogramme et votre clé apparaîtront ici.",
+      "keyLabel": "Clé",
+      "sizeLabel": "Taille du cryptogramme",
+      "keyHint": "Il vous faudra cette clé et la taille du cryptogramme pour décoder votre message. Aucune des deux n'est enregistrée : copiez-les ou téléchargez-les maintenant.",
+      "staleNotice": "Ces paramètres ont changé. Ré-encodez pour mettre à jour ce cryptogramme.",
+      "copy": "Copier la clé et la taille",
+      "copied": "Copié !",
+      "staleBadge": "Périmé",
+      "reencode": "Ré-encoder",
+      "warningsHeading": "Avertissements de faiblesse",
+      "warningsExplanation": "Cette combinaison affaiblit le motif de rotation du cryptogramme. Vous pouvez continuer quand même, ou ajuster la taille du bloc pivot pour supprimer l'avertissement :",
+      "unknownCharsExplanation": "Les caractères suivants ne font pas partie de l'alphabet et ont été ignorés à l'encodage :",
+      "downloadPng": "Télécharger le PNG",
+      "downloadSvg": "Télécharger le SVG",
+      "copyError": "La copie a échoué"
+    }
+  },
+  "decode": {
+    "title": "Décoder un cryptogramme",
+    "upload": {
+      "browse": "Choisir un fichier",
+      "dropHint": "ou glissez-déposez un fichier PNG ou SVG ici",
+      "invalidExtension": "Seuls les fichiers .png et .svg sont acceptés."
+    },
+    "form": {
+      "upload": {
+        "label": "Fichier du cryptogramme"
+      },
+      "key": {
+        "label": "Clé HexaRot",
+        "placeholder": "HR1·xxxx",
+        "formatError": "Une clé HexaRot ressemble à HR1·a3f9 : \"HR\", un numéro de version, un séparateur, puis 4 caractères."
+      },
+      "size": {
+        "label": "Taille du cryptogramme",
+        "small": "Petite",
+        "medium": "Moyenne",
+        "large": "Grande",
+        "hint": "Doit correspondre à la taille utilisée lors de l'encodage du cryptogramme."
+      },
+      "submit": {
+        "label": "Décoder",
+        "loading": "Décodage..."
+      },
+      "error": {
+        "prefix": "Impossible de décoder ce cryptogramme : {detail}"
+      }
+    },
+    "result": {
+      "label": "Message décodé",
+      "emptyState": "Votre message décodé apparaîtra ici.",
+      "staleNotice": "Ces paramètres ont changé. Décodez à nouveau pour mettre à jour ce message.",
+      "redecode": "Re-décoder",
+      "copy": "Copier",
+      "copied": "Copié !",
+      "copyError": "La copie a échoué"
+    }
+  },
+  "key": {
+    "title": "Générer ou analyser une clé",
+    "generator": {
+      "title": "Générer une clé",
+      "form": {
+        "pivotBlockSize": {
+          "label": "Taille du bloc pivot"
+        },
+        "rotationSequence": {
+          "label": "Séquence de rotation"
+        },
+        "rotationDirection": {
+          "label": "Sens de rotation",
+          "cw": "Sens horaire",
+          "ccw": "Sens antihoraire"
+        },
+        "readingOrder": {
+          "label": "Sens de lecture"
+        },
+        "submit": {
+          "label": "Générer",
+          "loading": "Génération..."
+        },
+        "error": {
+          "prefix": "Impossible de générer une clé : {detail}"
+        }
+      },
+      "result": {
+        "regionLabel": "Clé générée",
+        "keyLabel": "Clé",
+        "keyHint": "Cette clé n'est enregistrée nulle part. Copiez-la maintenant.",
+        "copy": "Copier",
+        "copied": "Copié !",
+        "copyError": "La copie a échoué",
+        "staleNotice": "Ces paramètres ont changé. Générez à nouveau pour mettre à jour cette clé.",
+        "regenerate": "Re-générer"
+      }
+    },
+    "parser": {
+      "title": "Analyser une clé",
+      "form": {
+        "key": {
+          "label": "Clé HexaRot",
+          "placeholder": "HR1·xxxx",
+          "formatError": "Une clé HexaRot ressemble à HR1·a3f9 : \"HR\", un numéro de version, un séparateur, puis 4 caractères."
+        },
+        "submit": {
+          "label": "Analyser",
+          "loading": "Analyse..."
+        },
+        "error": {
+          "prefix": "Impossible d'analyser cette clé : {detail}"
+        }
+      },
+      "result": {
+        "regionLabel": "Paramètres de la clé analysée",
+        "pivotBlockSize": "Taille du bloc pivot",
+        "rotationSequence": "Séquence de rotation",
+        "rotationDirection": "Sens de rotation",
+        "readingOrder": "Sens de lecture",
+        "staleNotice": "La clé a changé. Analysez-la à nouveau pour mettre à jour ces paramètres.",
+        "reparse": "Ré-analyser"
+      }
+    }
+  },
+  "auth": {
+    "nav": {
+      "login": "Se connecter",
+      "logout": "Se déconnecter"
+    },
+    "resendVerification": {
+      "form": {
+        "email": {
+          "label": "E-mail"
+        },
+        "submit": {
+          "label": "Renvoyer",
+          "loading": "Envoi..."
+        }
+      },
+      "success": "Si un compte existe avec cet e-mail, un e-mail de vérification a été envoyé."
+    },
+    "verifyEmail": {
+      "title": "Vérification de l'e-mail",
+      "success": "Votre adresse e-mail a été vérifiée. Vous pouvez maintenant vous connecter.",
+      "loginLink": "Aller à la connexion",
+      "error": "Ce lien de vérification est invalide ou a expiré."
+    },
+    "login": {
+      "title": "Se connecter",
+      "form": {
+        "email": {
+          "label": "E-mail"
+        },
+        "password": {
+          "label": "Mot de passe"
+        },
+        "submit": {
+          "label": "Se connecter",
+          "loading": "Connexion..."
+        },
+        "error": {
+          "invalidCredentials": "E-mail ou mot de passe incorrect.",
+          "disabled": "Ce compte a été désactivé.",
+          "unverified": "Veuillez vérifier votre adresse e-mail avant de vous connecter."
+        }
+      }
+    },
+    "register": {
+      "title": "Créer un compte",
+      "form": {
+        "email": {
+          "label": "E-mail"
+        },
+        "password": {
+          "label": "Mot de passe",
+          "criteria": {
+            "minLength": "Au moins 12 caractères",
+            "lowercase": "Une lettre minuscule",
+            "uppercase": "Une lettre majuscule",
+            "digit": "Un chiffre",
+            "special": "Un caractère spécial"
+          }
+        },
+        "submit": {
+          "label": "S'inscrire",
+          "loading": "Inscription..."
+        },
+        "error": {
+          "duplicateEmail": "Un compte existe déjà avec cet e-mail."
+        }
+      },
+      "success": {
+        "heading": "Vérifiez vos e-mails",
+        "body": "Nous avons envoyé un lien de vérification à votre adresse e-mail. Suivez-le pour activer votre compte."
+      }
+    }
+  },
+  "admin": {
+    "users": {
+      "title": "Gestion des utilisateurs",
+      "table": {
+        "email": "E-mail",
+        "role": "Rôle",
+        "verified": "Vérifié",
+        "active": "Actif",
+        "createdAt": "Créé le",
+        "actions": "Actions"
+      },
+      "actions": {
+        "activate": "Activer",
+        "deactivate": "Désactiver",
+        "delete": "Supprimer"
+      },
+      "confirmDelete": {
+        "title": "Supprimer ce compte ?",
+        "body": "Le compte de {email} sera définitivement supprimé. Cette action est irréversible.",
+        "confirm": "Supprimer",
+        "cancel": "Annuler"
+      },
+      "error": {
+        "prefix": "Impossible d'effectuer cette action : {detail}"
+      },
+      "role": {
+        "USER": "Utilisateur",
+        "ADMIN": "Admin"
+      }
+    }
+  },
+  "errors": {
+    "network": "Impossible de joindre le serveur. Vérifiez votre connexion et réessayez.",
+    "unknown": "Une erreur est survenue. Veuillez réessayer."
+  },
+  "readingOrder": {
+    "LR-TB": "De gauche à droite, de haut en bas",
+    "RL-TB": "De droite à gauche, de haut en bas",
+    "TB-LR": "De haut en bas, de gauche à droite",
+    "BT-LR": "De bas en haut, de gauche à droite",
+    "LR-TB-ALT": "De gauche à droite, de haut en bas (lignes alternées)",
+    "RL-TB-ALT": "De droite à gauche, de haut en bas (lignes alternées)",
+    "TB-LR-ALT": "De haut en bas, de gauche à droite (colonnes alternées)",
+    "BT-LR-ALT": "De bas en haut, de gauche à droite (colonnes alternées)"
+  },
+  "rotationSequence": {
+    "grabbed": "{angle}° saisi, position {position} sur {total}. Utilisez les flèches pour déplacer, Espace pour déposer, Échap pour annuler.",
+    "moved": "Déplacé en position {position} sur {total}.",
+    "dropped": "{angle}° déposé en position {position} sur {total}.",
+    "cancelled": "Réorganisation annulée."
+  },
+  "common": {
+    "yes": "Oui",
+    "no": "Non"
+  },
+  "language": {
+    "name": "Français",
+    "switchTo": "Passer en français"
+  }
+}

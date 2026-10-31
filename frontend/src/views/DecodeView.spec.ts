@@ -115,7 +115,7 @@ describe('DecodeView', () => {
       await vi.waitFor(() =>
         expect(postJson).toHaveBeenCalledWith(
           '/decode',
-          expect.objectContaining({ format: 'png', key: 'HR1·a1b2', size: 'medium' }),
+          { cryptogram: expect.any(String), format: 'png', key: 'HR1·a1b2' },
         ),
       )
     })
@@ -130,18 +130,9 @@ describe('DecodeView', () => {
       expect(postJson).not.toHaveBeenCalled()
     })
 
-    it('includes the selected size value in the API payload', async () => {
-      vi.mocked(postJson).mockResolvedValue(MOCK_DECODE_RESPONSE)
+    it('does not ask for the cryptogram size, since the key carries it', () => {
       const wrapper = mountView()
-      await selectFile(wrapper, MOCK_PNG_FILE)
-      await wrapper.find('input[type="text"]').setValue('HR1·a1b2')
-      await wrapper.find('select[name="size"]').setValue('large')
-
-      await wrapper.find('form').trigger('submit')
-
-      await vi.waitFor(() =>
-        expect(postJson).toHaveBeenCalledWith('/decode', expect.objectContaining({ size: 'large' })),
-      )
+      expect(wrapper.find('select[name="size"]').exists()).toBe(false)
     })
 
     it('shows a loading indicator while the API call is in progress', async () => {

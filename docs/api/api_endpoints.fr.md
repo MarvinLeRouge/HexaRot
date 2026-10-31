@@ -48,8 +48,7 @@ POST /api/decode
 {
   "cryptogram": "<PNG encodé en base64 ou chaîne SVG brute>",
   "format": "png",
-  "key": "HR1·2T51",
-  "size": "medium"
+  "key": "HR1·2T51"
 }
 ```
 
@@ -58,6 +57,9 @@ POST /api/decode
   "message": "HELLO WORLD"
 }
 ```
+
+L'image est toujours lue à la taille enregistrée dans la clé. Un champ `size`
+est encore accepté par compatibilité, quelle que soit sa valeur, mais ignoré.
 
 ## `POST /correlation-score`
 

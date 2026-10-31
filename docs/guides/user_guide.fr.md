@@ -34,8 +34,8 @@ Ce guide couvre l'usage de l'interface web HexaRot : Encode, Decode et Key.
 
 1. Aller sur la vue **Decode**.
 2. Charger le fichier cryptogramme (PNG ou SVG) à décoder.
-3. Saisir la clé utilisée pour l'encoder, ainsi que la taille de sortie utilisée
-   lors de l'encodage.
+3. Saisir la clé utilisée pour l'encoder. La clé contient aussi la taille de
+   sortie, il n'y a donc rien d'autre à choisir.
 4. Soumettre pour révéler le message décodé.
 
 Le décodage traite toujours la grille entière ; si le message original était

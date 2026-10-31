@@ -28,7 +28,6 @@ describe('useDecodeStore', () => {
 
     expect(store.file).toBeNull()
     expect(store.keyInput).toBe('')
-    expect(store.size).toBe('medium')
     expect(store.status).toBe('idle')
     expect(store.result).toBeNull()
     expect(store.errorMessage).toBeNull()
@@ -56,7 +55,6 @@ describe('useDecodeStore', () => {
       cryptogram: TINY_PNG_BASE64,
       format: 'png',
       key: 'HR1·a1b2',
-      size: 'medium',
     })
   })
 
@@ -83,7 +81,6 @@ describe('useDecodeStore', () => {
       cryptogram: SVG_CRYPTOGRAM_CONTENT,
       format: 'svg',
       key: 'HR1·a1b2',
-      size: 'medium',
     })
   })
 

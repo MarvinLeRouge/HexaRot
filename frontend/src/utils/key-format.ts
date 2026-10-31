@@ -12,9 +12,12 @@ const KEY_FORMAT_REGEX = /^HR\d·[0-9A-Za-z]{4}$/
  * the middle dot (U+00B7) the backend requires verbatim. Deliberately does
  * not touch anything that isn't already this exact shape, so a genuinely
  * malformed key still fails validation with a diagnostic message instead
- * of being silently "fixed" into something else.
+ * of being silently "fixed" into something else. Also accepts, and drops,
+ * the trailing " · <size label>" that the encode page's copy button added
+ * before the size moved into the key (e.g. "HR1·A1B2 · Medium"), so keys
+ * saved that way still paste cleanly.
  */
-const KEY_INPUT_NEAR_MISS = /^hr(\d)[·.\-_ ]([0-9a-z]{4})$/i
+const KEY_INPUT_NEAR_MISS = /^hr(\d)[·.\-_ ]([0-9a-z]{4})(?:\s*·\s*\p{L}+)?$/iu
 
 /** Rewrites a near-miss key into the exact form the backend accepts. */
 export function normalizeKeyInput(key: string): string {

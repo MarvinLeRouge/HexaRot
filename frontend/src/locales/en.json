@@ -65,8 +65,8 @@
       "emptyState": "Your cryptogram and key will appear here.",
       "keyLabel": "Key",
       "sizeLabel": "Cryptogram size",
-      "keyHint": "You'll need both this key and the cryptogram size to decode your message. Neither is stored anywhere - copy or download them now.",
-      "copy": "Copy key and size",
+      "keyHint": "You'll need this key to decode your message. It is not stored anywhere - copy it now.",
+      "copy": "Copy key",
       "copied": "Copied!",
       "staleNotice": "These parameters changed. Re-encode to update this cryptogram.",
       "staleBadge": "Out of date",
@@ -94,13 +94,6 @@
         "label": "HexaRot key",
         "placeholder": "HR1·xxxx",
         "formatError": "A HexaRot key looks like HR1·a3f9 - \"HR\", a version number, a separator, then 4 characters."
-      },
-      "size": {
-        "label": "Cryptogram size",
-        "small": "Small",
-        "medium": "Medium",
-        "large": "Large",
-        "hint": "Must match the size used when the cryptogram was encoded."
       },
       "submit": {
         "label": "Decode",

@@ -43,8 +43,14 @@ describe('normalizeKeyInput', () => {
     ['HR1 a1b2', 'HR1·a1b2'],
     [' HR1·a1b2 ', 'HR1·a1b2'],
     ['HR1·a1b2', 'HR1·a1b2'],
+    ['HR1·A1B2 · Medium', 'HR1·A1B2'],
+    ['HR1·A1B2 · Petite', 'HR1·A1B2'],
   ])('rewrites %s to the canonical form %s', (input, expected) => {
     expect(normalizeKeyInput(input)).toBe(expected)
+  })
+
+  it('keeps an unknown suffix, so it still fails validation', () => {
+    expect(isValidKeyFormat('HR1·A1B2 · not a size')).toBe(false)
   })
 
   it('leaves genuinely malformed input untouched', () => {

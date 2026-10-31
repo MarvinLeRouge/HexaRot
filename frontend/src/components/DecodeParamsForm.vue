@@ -10,7 +10,7 @@ const store = useDecodeStore()
 const { t } = useI18n()
 
 watch(
-  () => [store.file, store.keyInput, store.size],
+  () => [store.file, store.keyInput],
   () => store.invalidateResult(),
 )
 
@@ -57,21 +57,6 @@ function handleSubmit(): void {
       {{ keyFormatError }}
     </p>
 
-    <label class="decode-params-form__field">
-      {{ t('decode.form.size.label') }}
-      <select
-        v-model="store.size"
-        name="size"
-      >
-        <option value="small">{{ t('decode.form.size.small') }}</option>
-        <option value="medium">{{ t('decode.form.size.medium') }}</option>
-        <option value="large">{{ t('decode.form.size.large') }}</option>
-      </select>
-    </label>
-    <p class="decode-params-form__hint">
-      {{ t('decode.form.size.hint') }}
-    </p>
-
     <button
       type="submit"
       class="decode-params-form__submit btn-primary"
@@ -100,12 +85,6 @@ function handleSubmit(): void {
 
 .decode-params-form__error {
   color: var(--danger);
-}
-
-.decode-params-form__hint {
-  font-size: 0.85em;
-  color: var(--text-muted);
-  margin: 0;
 }
 
 .decode-params-form__submit {

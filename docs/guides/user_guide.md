@@ -32,8 +32,8 @@ This guide covers using the HexaRot web interface: Encode, Decode, and Key.
 
 1. Go to the **Decode** view.
 2. Upload the cryptogram file (PNG or SVG) you want to decode.
-3. Enter the key that was used to encode it, and the output size used at encode
-   time.
+3. Enter the key that was used to encode it. The key also carries the output
+   size, so there is nothing else to pick.
 4. Submit to reveal the decoded message.
 
 Decoding always processes the full grid; if the original message was shorter

@@ -2658,7 +2658,7 @@ anchors. Tracked as FEAT-026.
 - **type:** feat
 - **id:** FEAT-026
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** low
 - **domain:** frontend
 - **complexity:** S

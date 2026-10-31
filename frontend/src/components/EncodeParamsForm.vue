@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useEncodeStore } from '../stores/encode'
 import { READING_ORDERS } from '../constants/reading-orders'
 import { isValidKeyFormat } from '../utils/key-format'
+import { countEncodedCharacters, imageFits } from '../utils/image-budget'
 import RotationSequencePicker from './RotationSequencePicker.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 
@@ -30,6 +31,18 @@ const keyFormatError = computed(() => {
   return isValidKeyFormat(store.keyInput) ? null : t('encode.form.key.formatError')
 })
 
+const validPivotBlockSize = computed(
+  () => Number.isInteger(store.pivotBlockSize) && store.pivotBlockSize >= 1 && store.pivotBlockSize <= 255,
+)
+
+// Key mode can't be checked here (the key's own size and pivot are unknown
+// client-side): the server answers 400 with an explicit message instead.
+const imageBudgetWarning = computed<'tooLarge' | 'neverFits' | null>(() => {
+  if (store.mode !== 'params' || !validPivotBlockSize.value) return null
+  if (!imageFits(0, store.pivotBlockSize, store.size)) return 'neverFits'
+  return imageFits(countEncodedCharacters(store.message), store.pivotBlockSize, store.size) ? null : 'tooLarge'
+})
+
 const canSubmit = computed(() => {
   if (store.status === 'loading') return false
   if (store.message.trim().length === 0) return false
@@ -37,7 +50,7 @@ const canSubmit = computed(() => {
     return store.keyInput.length > 0 && keyFormatError.value === null
   }
   if (store.mode === 'params') {
-    return Number.isInteger(store.pivotBlockSize) && store.pivotBlockSize >= 1 && store.pivotBlockSize <= 255
+    return validPivotBlockSize.value && imageBudgetWarning.value === null
   }
   return true
 })
@@ -164,6 +177,13 @@ function handleSubmit(): void {
           <option value="large">{{ t('encode.form.size.large') }}</option>
         </select>
       </label>
+      <p
+        v-if="imageBudgetWarning"
+        class="encode-params-form__error encode-params-form__budget-warning"
+        role="alert"
+      >
+        {{ t(`encode.form.imageBudget.${imageBudgetWarning}`) }}
+      </p>
 
       <label class="encode-params-form__checkbox">
         <input

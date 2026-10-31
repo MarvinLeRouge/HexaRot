@@ -81,6 +81,7 @@ automatically from Conventional Commits history.
 - Show the key's own size in "Existing key" mode results
 - Read the cryptogram size from the key instead of the form
 - Cap messages at 29,000 characters and raise the decode body limit to 24 MB
+- Enforce a 200 MB image budget per request
 
 ### CI/CD
 

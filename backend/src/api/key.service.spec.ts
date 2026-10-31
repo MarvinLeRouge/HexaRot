@@ -2,11 +2,28 @@ import { BadRequestException } from '@nestjs/common';
 import { KeyService } from './key.service';
 import { KeyGenerateRequestDto } from './dto/key-generate-request.dto';
 import { KeyCodec } from '../key/key-codec';
+import { HexahueAlphabet } from '../alphabet/hexahue-alphabet.service';
 
 describe('KeyService', () => {
-  const service = new KeyService();
+  // Only the symbol shape matters to KeyService
+  const service = new KeyService({
+    symbolWidth: 2,
+    symbolHeight: 3,
+  } as HexahueAlphabet);
 
   describe('generate', () => {
+    it('throws BadRequestException when the pivot block size can never fit the size', () => {
+      expect(() =>
+        service.generate({ pivotBlockSize: 181, size: 'large' }),
+      ).toThrow(/cannot be used/);
+    });
+
+    it('accepts a large pivot block size at a size it fits', () => {
+      expect(() =>
+        service.generate({ pivotBlockSize: 181, size: 'medium' }),
+      ).not.toThrow();
+    });
+
     it('returns a valid HR key string for a fully specified parameter set', () => {
       const dto: KeyGenerateRequestDto = {
         pivotBlockSize: 7,

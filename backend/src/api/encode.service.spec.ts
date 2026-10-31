@@ -200,6 +200,39 @@ describe('EncodeService', () => {
       await expect(service.encode(dto)).rejects.toThrow(BadRequestException);
     });
 
+    it('throws BadRequestException naming the image size when the combination is over the pixel budget', async () => {
+      // MockAlphabet symbols are 3 x 2: pivot 254 gives a 762 x 254 case grid
+      const service = makeService();
+      const renderSpy = jest.spyOn(PngRenderer.prototype, 'render');
+      const dto = {
+        ...VALID_PARAMS_DTO,
+        message: 'a',
+        pivotBlockSize: 254,
+        size: 'large' as const,
+      };
+
+      await expect(service.encode(dto)).rejects.toThrow(/cannot be used/);
+      await expect(service.encode(dto)).rejects.toThrow(BadRequestException);
+      expect(renderSpy).not.toHaveBeenCalled();
+      renderSpy.mockRestore();
+    });
+
+    it('throws BadRequestException when a key sets a combination over the pixel budget', async () => {
+      const service = makeService();
+      const key = KeyCodec.encode({
+        version: 1,
+        pivotBlockSize: 254,
+        rotationSequence: [0, 1, 2, 3],
+        rotationDirection: 'cw',
+        readingOrder: 'LR-TB',
+        size: 'large',
+      });
+
+      await expect(service.encode({ message: 'ABC', key })).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
     it('throws BadRequestException when key unpacks to pivotBlockSize=0', async () => {
       const service = makeService();
       const dto = { message: 'ABC', key: 'HR1·0000' } as EncodeRequestDto;

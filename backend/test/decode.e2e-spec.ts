@@ -216,13 +216,13 @@ describe('POST /api/decode (e2e)', () => {
     it.each(['svg', 'png'] as const)(
       'decodes the largest %s cryptogram POST /encode can produce',
       async (format) => {
-        // Pivot 255 pads a maximum-length message the most (510 x 510 cases);
-        // size large gives the biggest SVG body and the biggest PNG in pixels
+        // Pivot 255 pads a maximum-length message the most (510 x 510 cases),
+        // and medium is the largest size that fits the pixel budget for it
         const encoded = await encode({
           ...BASE_ENCODE_BODY,
           message: 'A'.repeat(MAX_ENCODE_MESSAGE_LENGTH),
           pivotBlockSize: 255,
-          size: 'large',
+          size: 'medium',
         });
         const res = await request(app.getHttpServer())
           .post('/api/decode')

@@ -59,6 +59,12 @@ The size of each square in the image: small (8 pixels), medium (16 pixels) or
 large (32 pixels). It does not change the scramble, only how big the image
 is. The size is stored in the key, so you do not need to remember it.
 
+The image cannot exceed about 66 million pixels. Small and medium always fit,
+up to the 29,000 character limit. Large depends on the message length and the
+pivot block size: with the default block of 5 it fits about 10,000
+characters, and very large blocks may not fit at all. The Encode page warns
+you before sending when a combination is too large.
+
 ### Weakness warning {#weakness-warning}
 
 A Hexahue character is 2 squares wide and 3 squares tall. If the pivot block

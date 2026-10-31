@@ -44,6 +44,10 @@
         "medium": "Medium",
         "large": "Large"
       },
+      "imageBudget": {
+        "tooLarge": "This message is too long for this size and pivot block size: the image would be too large. Pick a smaller size, a smaller pivot block size or a shorter message.",
+        "neverFits": "This pivot block size is too large for this size: even a short message would make an image too large. Pick a smaller size or a smaller pivot block size."
+      },
       "overrideWeaknessWarning": {
         "label": "Suppress weakness warnings"
       },

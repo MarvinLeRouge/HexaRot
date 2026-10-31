@@ -261,6 +261,31 @@ describe('POST /api/encode (e2e)', () => {
       expect(res.status).toBe(400);
     });
 
+    it('returns 400 with an explicit message when the message is too long for the size and pivot', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({
+          ...VALID_ENCODE_BODY,
+          message: 'A'.repeat(10800),
+          pivotBlockSize: 5,
+          size: 'large',
+        });
+      expect(res.status).toBe(400);
+      expect((res.body as { message: string }).message).toContain(
+        'too long for size large with a pivot block size of 5',
+      );
+    });
+
+    it('returns 400 with an explicit message when the pivot can never fit the size', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({ ...VALID_ENCODE_BODY, pivotBlockSize: 255, size: 'large' });
+      expect(res.status).toBe(400);
+      expect((res.body as { message: string }).message).toContain(
+        'Size large cannot be used with a pivot block size of 255',
+      );
+    });
+
     it('returns 400 when message is an empty string', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/encode')

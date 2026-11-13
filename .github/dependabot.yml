@@ -15,6 +15,13 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    ignore:
+      # TypeScript 7 is not supported by typescript-eslint yet: lift once it is.
+      - dependency-name: "typescript"
+        versions: [">= 7"]
+      # Node types follow the Node runtime major (node:24 images, CI node 24).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       nestjs:
         patterns:
@@ -31,6 +38,13 @@ updates:
     schedule:
       interval: "weekly"
     open-pull-requests-limit: 5
+    ignore:
+      # TypeScript 7 is not supported by typescript-eslint yet: lift once it is.
+      - dependency-name: "typescript"
+        versions: [">= 7"]
+      # Node types follow the Node runtime major (node:24 images, CI node 24).
+      - dependency-name: "@types/node"
+        update-types: ["version-update:semver-major"]
     groups:
       vue:
         patterns:

@@ -399,6 +399,7 @@ automatically from Conventional Commits history.
 - Auto-promote ready items (#281)
 - Add FIX-004 and FIX-005 as high-priority fixes
 - Update CHANGELOG.md (#303)
+- Hold typescript 7 and node types majors in dependabot
 
 ### Other
 

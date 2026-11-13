@@ -37,6 +37,7 @@
 
 - [x] CI-006 - Run CI on the changelog bot PR so its auto-merge can complete
 - [x] FIX-007 - Install dotenv in the production image so `prisma migrate deploy` can load its config
+- [x] CHORE-014 - Hold TypeScript 7 and Node types majors in Dependabot
 
 ---
 

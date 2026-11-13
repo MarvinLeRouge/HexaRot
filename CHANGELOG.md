@@ -82,6 +82,7 @@ automatically from Conventional Commits history.
 - Read the cryptogram size from the key instead of the form
 - Cap messages at 29,000 characters and raise the decode body limit to 24 MB
 - Enforce a 200 MB image budget per request
+- Install dotenv in the production image
 
 ### CI/CD
 
@@ -397,6 +398,7 @@ automatically from Conventional Commits history.
 - Upgrade vue-i18n from 9 to 11
 - Auto-promote ready items (#281)
 - Add FIX-004 and FIX-005 as high-priority fixes
+- Update CHANGELOG.md (#303)
 
 ### Other
 

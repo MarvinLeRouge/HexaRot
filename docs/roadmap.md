@@ -36,6 +36,7 @@
 ## Section 4 - Maintenance
 
 - [x] CI-006 - Run CI on the changelog bot PR so its auto-merge can complete
+- [x] FIX-007 - Install dotenv in the production image so `prisma migrate deploy` can load its config
 
 ---
 

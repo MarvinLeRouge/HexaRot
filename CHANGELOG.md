@@ -412,6 +412,12 @@ automatically from Conventional Commits history.
 - Bump @types/node from 22.19.15 to 26.6.2 in /backend (#216)
 - Bump globals from 16.5.0 to 17.12.0 in /backend (#217)
 - Bump vue-router from 4.6.4 to 5.3.1 in /frontend (#213)
+- Bump fast-xml-parser from 5.11.1 to 5.12.0 in /backend
+- Bump brace-expansion from 1.1.18 to 1.1.21 in /backend
+- Bump the npm-minor-patch group across 1 directory with 20 updates
+- Bump the npm-minor-patch group across 1 directory with 13 updates
+- Bump lint-staged
+- Bump dotenv from 17.4.2 to 18.0.10 in /backend
 
 ### Refactoring
 

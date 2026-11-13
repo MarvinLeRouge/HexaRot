@@ -33,6 +33,10 @@
   correlation score) - could make cryptogram effectiveness more tangible,
   but no backlog item yet
 
+## Section 4 - Maintenance
+
+- [x] CI-006 - Run CI on the changelog bot PR so its auto-merge can complete
+
 ---
 
 `BACKLOG.md` (gitignored, local to the maintainer) is the single source of truth

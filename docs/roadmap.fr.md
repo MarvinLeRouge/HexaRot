@@ -33,6 +33,10 @@
   côté du score de corrélation) : pourrait rendre l'efficacité du
   cryptogramme plus tangible, mais aucun item de backlog pour l'instant
 
+## Section 4 - Maintenance
+
+- [x] CI-006 - Lancer la CI sur la PR du bot changelog pour que son auto-merge aboutisse
+
 ---
 
 `BACKLOG.md` (gitignored, local au mainteneur) est la source de vérité unique pour

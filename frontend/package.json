@@ -31,7 +31,7 @@
     "globals": "^17.14.0",
     "jsdom": "^31.0.0",
     "markdown-it-attrs": "^5.0.1",
-    "typescript": "~5.9.3",
+    "typescript": "~6.0.3",
     "typescript-eslint": "^8.72.2",
     "unplugin-vue-markdown": "^32.1.1",
     "vite": "^8.3.7",

@@ -9,10 +9,9 @@
 [![CI](https://github.com/MarvinLeRouge/HexaRot/actions/workflows/ci.yml/badge.svg)](https://github.com/MarvinLeRouge/HexaRot/actions)
 [![Backend coverage](https://img.shields.io/codecov/c/github/MarvinLeRouge/HexaRot/main?flag=backend&label=backend&logo=codecov)](https://app.codecov.io/gh/MarvinLeRouge/HexaRot)
 [![Frontend coverage](https://img.shields.io/codecov/c/github/MarvinLeRouge/HexaRot/main?flag=frontend&label=frontend&logo=codecov)](https://app.codecov.io/gh/MarvinLeRouge/HexaRot)
-[![NestJS](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)]()
-[![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?logo=vuedotjs&logoColor=white)]()
-[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)]()
-![Tests](https://img.shields.io/badge/Tests-792%20passing-brightgreen)
+[![NestJS](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![License](https://img.shields.io/github/license/MarvinLeRouge/HexaRot?cacheSeconds=3600)](LICENSE)
 
 ---
@@ -21,32 +20,32 @@
 
 HexaRot encodes any text message into a colour grid using the
 [Hexahue](https://www.geocachingtoolbox.com/index.php?lang=en&page=hexahue) visual alphabet,
-then scrambles that grid by applying geometric rotations to fixed-size pivot blocks —
+then scrambles that grid by applying geometric rotations to fixed-size pivot blocks,
 deliberately dislocating symbols to produce visual noise.
 
 All encryption parameters (block size, rotation sequence, reading order, direction, cryptogram size) are
-packed into a compact base36 key string prefixed with `HR` — for example `HR1·2T51`.
+packed into a compact base36 key string prefixed with `HR` (for example `HR1·2T51`).
 The same key decodes any message it was used to encode.
 
 ---
 
 ## Features
 
-- **Encode** — text → colour cryptogram (PNG + SVG output)
-- **Decode** — cryptogram + key → plaintext
-- **Key generation and parsing** — compact base36 format, human-copyable
-- **Parameter validation** — GCD-based weakness detection with override
-- **Transliteration** — accented characters handled automatically (é→E, à→A, ç→C…)
-- **Configurable rendering** — small / medium / large output size
-- **4 reading orders** — LR-TB, RL-TB, TB-LR, BT-LR, each with optional alternate mode
-- **REST API** — full encoding/decoding pipeline accessible programmatically
+- **Encode**: text → colour cryptogram (PNG + SVG output)
+- **Decode**: cryptogram + key → plaintext
+- **Key generation and parsing**: compact base36 format, human-copyable
+- **Parameter validation**: GCD-based weakness detection with override
+- **Transliteration**: accented characters handled automatically (é→E, à→A, ç→C…)
+- **Configurable rendering**: small / medium / large output size
+- **4 reading orders**: LR-TB, RL-TB, TB-LR, BT-LR, each with optional alternate mode
+- **REST API**: full encoding/decoding pipeline accessible programmatically
 
 ---
 
 ## Quick start
 
 **Prerequisites:** Docker, Docker Compose, and a local Traefik reverse proxy (local
-dev is routed through Traefik to mirror production — see
+dev is routed through Traefik to mirror production; see
 [CONTRIBUTING.md](CONTRIBUTING.md#local-development-environment) for the one-time
 setup, including the required `/etc/hosts` entry).
 
@@ -92,7 +91,7 @@ The parameters packed into the key, with example values:
 | Reading order | `LR-TB` | Left-right, top-bottom |
 | Cryptogram size | `medium` | 16-pixel squares |
 
-The key is **message-independent** — the same key encrypts and decrypts any number of
+The key is **message-independent**: the same key encrypts and decrypts any number of
 messages. The cryptogram carries no message-length metadata by design (a deliberate
 anti-leakage choice): decoding always processes the full grid, filling any padding
 with a `?` placeholder rather than storing or leaking the original length anywhere.
@@ -103,12 +102,12 @@ with a `?` placeholder rather than storing or leaking the original length anywhe
 
 | Layer | Technology |
 |---|---|
-| Backend | NestJS 11 + TypeScript (strict) |
+| Backend | NestJS 12 + TypeScript (strict) |
 | Database | PostgreSQL + Prisma |
 | Image rendering | Sharp (PNG) + native SVG |
 | Frontend | Vue.js 3 + TypeScript + vue-i18n |
-| DevOps | Docker Compose, GitHub Actions |
-| Tests | Jest (backend), Vitest (frontend) |
+| DevOps | Docker Compose, Traefik (local and production), GitHub Actions (CI, then build to GHCR and deploy to a VPS) |
+| Tests | Jest unit and Supertest e2e suites (backend), Vitest (frontend) |
 
 ---
 
@@ -121,14 +120,18 @@ backend/
 ├── alphabet/        # VisualAlphabet interface + HexahueAlphabet implementation
 ├── cipher/          # Pre-processing, grid construction (no metadata header, by design)
 ├── rotation/        # Block rotation engine (encode + inverse)
-├── key/             # KeyCodec — base36 encode/decode/validate
+├── key/             # KeyCodec: base36 encode/decode/validate
 ├── reading-order/   # ReadingOrderStrategy implementations
 ├── renderer/        # PngRenderer, SvgRenderer
 ├── validation/      # GCD-based parameter validator
+├── correlation/     # Correlation score: how much grid structure survives the rotations
+├── auth/            # Registration, email verification, JWT login and route guards
+├── admin/           # User moderation endpoints (admin role only)
+├── mailer/          # Verification emails (Nodemailer, no-op mailer in tests)
 └── api/             # NestJS controllers + DTOs
 
 frontend/
-├── views/           # Encode, Decode, Key
+├── views/           # Encode, Decode, Key, Help, sign-in and admin views
 ├── stores/          # Pinia stores
 └── i18n/            # English (V1), French (V2)
 ```
@@ -138,8 +141,9 @@ frontend/
 ## Roadmap
 
 V1 is complete: infra, cipher pipeline, key codec, API, frontend, and test
-coverage are all done. V2 targets a French interface, an animated decoding mode,
-a spiral reading order, a correlation score, and user authentication. See
+coverage are all done. V2 has already shipped the French interface, the
+correlation score (API endpoint), user authentication and the help page. Still
+to come: an animated decoding mode and a spiral reading order. See
 [docs/roadmap.md](docs/roadmap.md) for the full breakdown.
 
 ---
@@ -148,10 +152,10 @@ a spiral reading order, a correlation score, and user authentication. See
 
 Personal project with a dual purpose:
 
-- **Learning** — TypeScript strict mode, NestJS architecture (modules, dependency injection,
+- **Learning**: TypeScript strict mode, NestJS architecture (modules, dependency injection,
   pipes), Prisma + PostgreSQL, Vue.js 3 Composition API, image rendering with Sharp,
   base36 encoding, 2D matrix rotation algorithms, GitHub Actions CI/CD
-- **Portfolio** — demonstrates a structured approach across a non-trivial algorithmic domain,
+- **Portfolio**: demonstrates a structured approach across a non-trivial algorithmic domain,
   from cipher design to tested, documented full-stack delivery
 
 ---
@@ -165,4 +169,4 @@ token configuration required to run the full CI/CD pipeline.
 
 ## License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

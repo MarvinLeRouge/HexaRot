@@ -73,7 +73,7 @@ still open instead of opening a duplicate. The script's tests run with
 that runs git-cliff and folds the result into the same commit before it's
 ever pushed, so a feature PR already carries its own changelog entry. Each
 developer adds this call to their own local `.husky/post-commit` (gitignored,
-personal per-machine, like this repo's other non-`pre-commit` Husky hooks —
+personal per-machine, like this repo's other non-`pre-commit` Husky hooks;
 not automatable via `pre-commit install` since this repo uses Husky, not the
 `pre-commit` framework).
 

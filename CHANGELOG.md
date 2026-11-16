@@ -83,6 +83,7 @@ automatically from Conventional Commits history.
 - Cap messages at 29,000 characters and raise the decode body limit to 24 MB
 - Enforce a 200 MB image budget per request
 - Install dotenv in the production image
+- Drop the em dash from the API weakness warnings
 
 ### CI/CD
 
@@ -194,6 +195,12 @@ automatically from Conventional Commits history.
 - Add FIX-001 seed admin placeholder guard mismatch
 - Add REFACTOR-012 design polish pass
 - Critique REFACTOR-012 in both languages, after FEAT-020
+- Remove the hand-written test count badge
+- Link the NestJS, Vue.js and TypeScript badges
+- Align the stack table and architecture tree with the code
+- Rewrite the roadmap paragraph from the current roadmap
+- Replace em dashes with plain punctuation
+- Replace em dashes in the test specs and operations guide
 
 ### Features
 
@@ -400,6 +407,7 @@ automatically from Conventional Commits history.
 - Add FIX-004 and FIX-005 as high-priority fixes
 - Update CHANGELOG.md (#303)
 - Hold typescript 7 and node types majors in dependabot
+- Update CHANGELOG.md (#310)
 
 ### Other
 

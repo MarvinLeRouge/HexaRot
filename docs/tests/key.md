@@ -1,6 +1,6 @@
-# HexaRot — Test Spec: Key Domain
+# HexaRot Test Spec: Key Domain
 
-Covers: FEAT-004 (KeyCodec — encode, decode, validate).
+Covers: FEAT-004 (KeyCodec: encode, decode, validate).
 
 All tests in this document are **unit tests**. No database access, no filesystem.
 
@@ -11,7 +11,7 @@ All tests in this document are **unit tests**. No database access, no filesystem
 ### `encode(params)` / `decode(key)`
 
 ```
-describe('KeyCodec — round-trip')
+describe('KeyCodec: round-trip')
 ```
 
 **Round-trip correctness**
@@ -57,14 +57,14 @@ describe('KeyCodec.validate')
 - it returns false for a key with incorrect length
 - it returns false for a key containing non-base36 characters after the prefix
 - it returns false for a key with an unknown version identifier
-- it does not throw — it always returns a boolean
+- it does not throw, it always returns a boolean
 
 ---
 
 ## 2. Rotation sequence encoding
 
 ```
-describe('KeyCodec — rotation sequence permutations')
+describe('KeyCodec: rotation sequence permutations')
 ```
 
 The 24 permutations of [0°, 90°, 180°, 270°] must each map to a unique index (0–23)
@@ -83,8 +83,8 @@ and be fully recoverable.
 
 The following shared fixtures must be defined in `__fixtures__/key.fixtures.ts`:
 
-- `ALL_24_PERMUTATIONS` — exhaustive array of all 24 permutations of [0, 90, 180, 270]
-- `DEFAULT_KEY_PARAMS` — a valid `KeyParams` object using default values
-- `ALL_READING_ORDERS` — array of all V1 reading order values including alternate variants
-- `VALID_ENCODED_KEY` — a pre-computed valid key string matching `DEFAULT_KEY_PARAMS`,
+- `ALL_24_PERMUTATIONS`: exhaustive array of all 24 permutations of [0, 90, 180, 270]
+- `DEFAULT_KEY_PARAMS`: a valid `KeyParams` object using default values
+- `ALL_READING_ORDERS`: array of all V1 reading order values including alternate variants
+- `VALID_ENCODED_KEY`: a pre-computed valid key string matching `DEFAULT_KEY_PARAMS`,
   used to test `decode` and `validate` without relying on `encode`

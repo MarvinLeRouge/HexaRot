@@ -1,9 +1,9 @@
-# HexaRot — Test Strategy Index
+# HexaRot Test Strategy Index
 
 ## 1. Philosophy
 
 Tests are written **before implementation** (spec-first). Each spec document in this
-folder defines the expected behaviour of a module from the outside — inputs, outputs,
+folder defines the expected behaviour of a module from the outside: inputs, outputs,
 edge cases, and error conditions. The Implementation thread must honour these specs.
 Tests are the contract; implementation is the fulfilment.
 
@@ -39,19 +39,19 @@ the combined project total against the target on every pull request.
 
 ## 3. Test Layers
 
-### Unit tests (Jest — backend)
+### Unit tests (Jest, backend)
 - Scope: pure functions and classes, no I/O
 - Location: co-located with source files (`*.spec.ts`)
 - Mocking: Jest mocks for any injected dependency (PrismaClient, etc.)
 - Must run in under 30 seconds total
 
-### Integration tests (Jest — backend)
+### Integration tests (Jest, backend)
 - Scope: HTTP endpoints via NestJS testing module + supertest
 - Location: `test/` directory at backend root
 - Requires: seeded PostgreSQL test database
 - Must clean up state between runs (transactions or truncation)
 
-### Unit tests (Vitest — frontend)
+### Unit tests (Vitest, frontend)
 - Scope: Vue components and Pinia stores
 - Location: co-located with source files (`*.spec.ts`)
 - Mocking: `vi.mock` for API calls (fetch/axios)
@@ -64,7 +64,7 @@ the combined project total against the target on every pull request.
 - Each `describe` block maps to one class or function
 - Each `it` block describes one behaviour, written as a sentence:
   `it('returns an empty array when input is an empty string')`
-- No logic in tests: no loops, no conditionals — one assertion path per `it`
+- No logic in tests: no loops, no conditionals, one assertion path per `it`
 - Shared fixtures go in a `__fixtures__` directory adjacent to the spec file
 
 ---

@@ -1,4 +1,4 @@
-# HexaRot — Test Spec: API Domain
+# HexaRot Test Spec: API Domain
 
 Covers: FEAT-011 (POST /encode), FEAT-012 (POST /decode), FEAT-013 (POST /key/generate,
 POST /key/parse).
@@ -147,10 +147,10 @@ history/cache - a secret must not travel through that channel (REFACTOR-004).
 
 The following shared fixtures must be defined in `test/fixtures/api.fixtures.ts`:
 
-- `VALID_ENCODE_BODY` — a minimal valid POST /encode request body
-- `VALID_ENCODE_BODY_WITH_KEY` — same, with a pre-built HR key instead of individual params
-- `WEAK_ENCODE_BODY` — a valid body with pivotBlockSize=2 (triggers weakness warning)
-- `ENCODE_BODY_WITH_UNKNOWN_CHARS` — a valid body whose message contains unsupported characters
-- `VALID_KEY_STRING` — a pre-computed valid HR key string (matches DEFAULT_KEY_PARAMS
+- `VALID_ENCODE_BODY`: a minimal valid POST /encode request body
+- `VALID_ENCODE_BODY_WITH_KEY`: same, with a pre-built HR key instead of individual params
+- `WEAK_ENCODE_BODY`: a valid body with pivotBlockSize=2 (triggers weakness warning)
+- `ENCODE_BODY_WITH_UNKNOWN_CHARS`: a valid body whose message contains unsupported characters
+- `VALID_KEY_STRING`: a pre-computed valid HR key string (matches DEFAULT_KEY_PARAMS
   from key.fixtures.ts)
-- `MALFORMED_KEY_STRINGS` — array of strings that are structurally invalid HR keys
+- `MALFORMED_KEY_STRINGS`: array of strings that are structurally invalid HR keys

@@ -76,7 +76,7 @@ résultat dans le même commit avant même qu'il soit poussé, si bien qu'une PR
 de fonctionnalité contient déjà sa propre entrée de changelog. Chaque
 développeur ajoute cet appel à son propre `.husky/post-commit` local
 (gitignoré, personnel par machine, comme les autres hooks Husky non
-`pre-commit` de ce repo — non automatisable via `pre-commit install` puisque
+`pre-commit` de ce repo ; non automatisable via `pre-commit install` puisque
 ce repo utilise Husky et non le framework `pre-commit`).
 
 En secours, `changelog.yml` régénère toujours `CHANGELOG.md` à chaque push sur

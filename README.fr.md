@@ -9,10 +9,9 @@
 [![CI](https://github.com/MarvinLeRouge/HexaRot/actions/workflows/ci.yml/badge.svg)](https://github.com/MarvinLeRouge/HexaRot/actions)
 [![Backend coverage](https://img.shields.io/codecov/c/github/MarvinLeRouge/HexaRot/main?flag=backend&label=backend&logo=codecov)](https://app.codecov.io/gh/MarvinLeRouge/HexaRot)
 [![Frontend coverage](https://img.shields.io/codecov/c/github/MarvinLeRouge/HexaRot/main?flag=frontend&label=frontend&logo=codecov)](https://app.codecov.io/gh/MarvinLeRouge/HexaRot)
-[![NestJS](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)]()
-[![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?logo=vuedotjs&logoColor=white)]()
-[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)]()
-![Tests](https://img.shields.io/badge/Tests-792%20passing-brightgreen)
+[![NestJS](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)](https://nestjs.com)
+[![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?logo=vuedotjs&logoColor=white)](https://vuejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![License](https://img.shields.io/github/license/MarvinLeRouge/HexaRot?cacheSeconds=3600)](LICENSE)
 
 ---
@@ -22,31 +21,31 @@
 HexaRot encode n'importe quel message texte dans une grille de couleurs à l'aide de
 l'alphabet visuel [Hexahue](https://www.geocachingtoolbox.com/index.php?lang=en&page=hexahue),
 puis brouille cette grille en appliquant des rotations géométriques à des blocs pivots de
-taille fixe — disloquant délibérément les symboles pour produire du bruit visuel.
+taille fixe, disloquant délibérément les symboles pour produire du bruit visuel.
 
 Tous les paramètres de chiffrement (taille de bloc, séquence de rotations, ordre de lecture,
-direction, taille du cryptogramme) sont condensés dans une clé base36 compacte préfixée `HR` — par exemple `HR1·2T51`.
+direction, taille du cryptogramme) sont condensés dans une clé base36 compacte préfixée `HR` (par exemple `HR1·2T51`).
 La même clé déchiffre tous les messages qu'elle a servi à chiffrer.
 
 ---
 
 ## Fonctionnalités
 
-- **Encodage** — texte → cryptogramme coloré (sortie PNG + SVG)
-- **Décodage** — cryptogramme + clé → texte en clair
-- **Génération et analyse de clé** — format base36 compact, copiable à la main
-- **Validation des paramètres** — détection de faiblesse par PGCD, avec override possible
-- **Translittération** — caractères accentués traités automatiquement (é→E, à→A, ç→C…)
-- **Rendu configurable** — taille de sortie small / medium / large
-- **4 ordres de lecture** — LR-TB, RL-TB, TB-LR, BT-LR, chacun avec mode alterné optionnel
-- **API REST** — pipeline complet d'encodage/décodage accessible programmatiquement
+- **Encodage** : texte → cryptogramme coloré (sortie PNG + SVG)
+- **Décodage** : cryptogramme + clé → texte en clair
+- **Génération et analyse de clé** : format base36 compact, copiable à la main
+- **Validation des paramètres** : détection de faiblesse par PGCD, avec override possible
+- **Translittération** : caractères accentués traités automatiquement (é→E, à→A, ç→C…)
+- **Rendu configurable** : taille de sortie small / medium / large
+- **4 ordres de lecture** : LR-TB, RL-TB, TB-LR, BT-LR, chacun avec mode alterné optionnel
+- **API REST** : pipeline complet d'encodage/décodage accessible programmatiquement
 
 ---
 
 ## Démarrage rapide
 
 **Prérequis :** Docker, Docker Compose, et un reverse proxy Traefik local (le
-développement local passe par Traefik pour refléter la production — voir
+développement local passe par Traefik pour refléter la production ; voir
 [CONTRIBUTING.fr.md](docs/i18n/fr/CONTRIBUTING.fr.md#environnement-de-développement-local) pour
 la configuration initiale, notamment l'entrée `/etc/hosts` requise).
 
@@ -92,7 +91,7 @@ Les paramètres condensés dans la clé, avec exemples de valeurs :
 | Ordre de lecture | `LR-TB` | Gauche-droite, haut-bas |
 | Taille du cryptogramme | `medium` | Cases de 16 pixels |
 
-La clé est **indépendante du message** — la même clé chiffre et déchiffre autant de messages
+La clé est **indépendante du message** : la même clé chiffre et déchiffre autant de messages
 que souhaité. Le cryptogramme ne contient aucune métadonnée de longueur par conception (un
 choix délibéré anti-fuite) : le décodage traite toujours la grille entière, en remplissant
 le padding éventuel par un caractère `?` plutôt que de stocker ou de laisser fuiter la
@@ -104,12 +103,12 @@ longueur d'origine.
 
 | Couche | Technologie |
 |---|---|
-| Backend | NestJS 11 + TypeScript (strict) |
+| Backend | NestJS 12 + TypeScript (strict) |
 | Base de données | PostgreSQL + Prisma |
 | Rendu d'images | Sharp (PNG) + SVG natif |
 | Frontend | Vue.js 3 + TypeScript + vue-i18n |
-| DevOps | Docker Compose, GitHub Actions |
-| Tests | Jest (backend), Vitest (frontend) |
+| DevOps | Docker Compose, Traefik (en local et en production), GitHub Actions (CI, puis build vers GHCR et déploiement sur un VPS) |
+| Tests | Suites Jest unitaires et e2e Supertest (backend), Vitest (frontend) |
 
 ---
 
@@ -122,14 +121,18 @@ backend/
 ├── alphabet/        # Interface VisualAlphabet + implémentation HexahueAlphabet
 ├── cipher/          # Pré-traitement, construction de grille (pas d'en-tête de métadonnées, par conception)
 ├── rotation/        # Moteur de rotation de blocs (encodage + inverse)
-├── key/             # KeyCodec — encode/décode/valide en base36
+├── key/             # KeyCodec : encode/décode/valide en base36
 ├── reading-order/   # Implémentations de ReadingOrderStrategy
 ├── renderer/        # PngRenderer, SvgRenderer
 ├── validation/      # Validateur de paramètres par PGCD
+├── correlation/     # Score de corrélation : la structure de grille qui survit aux rotations
+├── auth/            # Inscription, vérification de l'e-mail, connexion JWT et gardes de routes
+├── admin/           # Endpoints de modération des utilisateurs (rôle admin uniquement)
+├── mailer/          # E-mails de vérification (Nodemailer, mailer inactif en test)
 └── api/             # Contrôleurs NestJS + DTOs
 
 frontend/
-├── views/           # Encodage, Décodage, Clé
+├── views/           # Encodage, Décodage, Clé, Aide, connexion et administration
 ├── stores/          # Stores Pinia
 └── i18n/            # Anglais (V1), Français (V2)
 ```
@@ -139,10 +142,11 @@ frontend/
 ## Roadmap
 
 La V1 est terminée : infra, pipeline de chiffrement, codec de clé, API, frontend
-et couverture de tests sont tous faits. La V2 vise une interface française, un
-mode de décodage animé, un ordre de lecture en spirale, un score de corrélation
-et l'authentification utilisateur. Voir [docs/roadmap.fr.md](docs/roadmap.fr.md)
-pour le détail complet.
+et couverture de tests sont tous faits. La V2 a déjà livré l'interface en
+français, le score de corrélation (endpoint d'API), l'authentification
+utilisateur et la page d'aide. Restent à venir : un mode de décodage animé et un
+ordre de lecture en spirale. Voir [docs/roadmap.fr.md](docs/roadmap.fr.md) pour
+le détail complet.
 
 ---
 
@@ -150,10 +154,10 @@ pour le détail complet.
 
 Projet personnel à double vocation :
 
-- **Apprentissage** — TypeScript strict, architecture NestJS (modules, injection de
+- **Apprentissage** : TypeScript strict, architecture NestJS (modules, injection de
   dépendances, pipes), Prisma + PostgreSQL, Vue.js 3 Composition API, rendu d'images avec
   Sharp, encodage base36, algorithmes de rotation de matrices 2D, CI/CD GitHub Actions
-- **Portfolio** — démontre une approche structurée sur un domaine algorithmique non trivial,
+- **Portfolio** : démontre une approche structurée sur un domaine algorithmique non trivial,
   du design du chiffre jusqu'à la livraison full-stack testée et documentée
 
 ---
@@ -167,4 +171,4 @@ notamment la mise en place du token GitHub Actions requis pour le pipeline CI/CD
 
 ## Licence
 
-Ce projet est sous licence MIT — voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.

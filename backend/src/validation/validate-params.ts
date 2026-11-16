@@ -3,10 +3,10 @@ import { VisualAlphabet } from '../shared/types';
 /**
  * Result of parameter validation.
  *
- * - `valid` — pivot block size T is coprime with both symbol dimensions
- * - `weak` — GCD(T, symbolWidth) or GCD(T, symbolHeight) is not 1; rotations
+ * - `valid`: pivot block size T is coprime with both symbol dimensions
+ * - `weak`: GCD(T, symbolWidth) or GCD(T, symbolHeight) is not 1; rotations
  *   may preserve partial symbol alignment, weakening the cryptogram
- * - `overridden` — same as `weak` but the user explicitly bypassed the warning
+ * - `overridden`: same as `weak` but the user explicitly bypassed the warning
  */
 export type ValidationResult =
   | { status: 'valid' }
@@ -28,7 +28,7 @@ export function gcd(a: number, b: number): number {
  * GCD(T, symbolHeight) is not 1, because rotations of T×T blocks will
  * realign with symbol boundaries, reducing visual entropy.
  *
- * The validator never blocks execution — it only informs via the returned result.
+ * The validator never blocks execution: it only informs via the returned result.
  *
  * @param pivotBlockSize - The T×T block size to validate.
  * @param alphabet - The visual alphabet providing symbol dimensions.
@@ -46,7 +46,7 @@ export function validateParams(
   if (gcdWidth !== 1) {
     warnings.push(
       `GCD(T=${pivotBlockSize}, symbolWidth=${alphabet.symbolWidth}) = ${gcdWidth} ≠ 1` +
-        ` — rotations may realign with symbol boundaries along the x-axis`,
+        `: rotations may realign with symbol boundaries along the x-axis`,
     );
   }
 
@@ -54,7 +54,7 @@ export function validateParams(
   if (gcdHeight !== 1) {
     warnings.push(
       `GCD(T=${pivotBlockSize}, symbolHeight=${alphabet.symbolHeight}) = ${gcdHeight} ≠ 1` +
-        ` — rotations may realign with symbol boundaries along the y-axis`,
+        `: rotations may realign with symbol boundaries along the y-axis`,
     );
   }
 

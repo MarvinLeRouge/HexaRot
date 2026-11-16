@@ -83,6 +83,7 @@ automatically from Conventional Commits history.
 - Cap messages at 29,000 characters and raise the decode body limit to 24 MB
 - Enforce a 200 MB image budget per request
 - Install dotenv in the production image
+- Drop the em dash from the API weakness warnings
 
 ### CI/CD
 

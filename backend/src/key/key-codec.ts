@@ -119,10 +119,10 @@ function unpack(payload: number): Omit<KeyParams, 'version'> {
  * Encodes and decodes HexaRot key strings.
  *
  * Key format: `HR{V}·{PAYLOAD}`
- * - `HR`      — literal prefix
- * - `{V}`     — version char in base36 (`1` for V1)
- * - `·`       — visual separator (middle dot U+00B7)
- * - `{PAYLOAD}` — 4 uppercase base36 characters
+ * - `HR`: literal prefix
+ * - `{V}`: version char in base36 (`1` for V1)
+ * - `·`: visual separator (middle dot U+00B7)
+ * - `{PAYLOAD}`: 4 uppercase base36 characters
  *
  * @example
  * const key = KeyCodec.encode({ version: 1, pivotBlockSize: 5, ... });

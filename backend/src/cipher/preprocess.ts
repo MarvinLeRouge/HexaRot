@@ -21,13 +21,13 @@ export interface PreprocessResult {
  * Pipeline (in order):
  * 1. Convert to uppercase
  * 2. Transliterate by NFD decomposition + stripping of Unicode combining
- *    diacritical marks (U+0300–U+036F) — covers French, Spanish, German,
+ *    diacritical marks (U+0300 to U+036F), which covers French, Spanish, German,
  *    Portuguese and the broader Latin script family
  * 3. Filter: characters recognised by the alphabet are kept in `text`;
  *    unrecognised characters are collected in `unknownChars` and excluded
  *    from the output
  *
- * The function is pure and deterministic — no side effects, same input always
+ * The function is pure and deterministic: no side effects, same input always
  * produces the same output.
  *
  * @param input - The raw text to process.

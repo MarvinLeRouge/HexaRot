@@ -198,6 +198,7 @@ automatically from Conventional Commits history.
 - Link the NestJS, Vue.js and TypeScript badges
 - Align the stack table and architecture tree with the code
 - Rewrite the roadmap paragraph from the current roadmap
+- Replace em dashes with plain punctuation
 
 ### Features
 

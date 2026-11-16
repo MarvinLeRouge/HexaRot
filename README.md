@@ -20,32 +20,32 @@
 
 HexaRot encodes any text message into a colour grid using the
 [Hexahue](https://www.geocachingtoolbox.com/index.php?lang=en&page=hexahue) visual alphabet,
-then scrambles that grid by applying geometric rotations to fixed-size pivot blocks —
+then scrambles that grid by applying geometric rotations to fixed-size pivot blocks,
 deliberately dislocating symbols to produce visual noise.
 
 All encryption parameters (block size, rotation sequence, reading order, direction, cryptogram size) are
-packed into a compact base36 key string prefixed with `HR` — for example `HR1·2T51`.
+packed into a compact base36 key string prefixed with `HR` (for example `HR1·2T51`).
 The same key decodes any message it was used to encode.
 
 ---
 
 ## Features
 
-- **Encode** — text → colour cryptogram (PNG + SVG output)
-- **Decode** — cryptogram + key → plaintext
-- **Key generation and parsing** — compact base36 format, human-copyable
-- **Parameter validation** — GCD-based weakness detection with override
-- **Transliteration** — accented characters handled automatically (é→E, à→A, ç→C…)
-- **Configurable rendering** — small / medium / large output size
-- **4 reading orders** — LR-TB, RL-TB, TB-LR, BT-LR, each with optional alternate mode
-- **REST API** — full encoding/decoding pipeline accessible programmatically
+- **Encode**: text → colour cryptogram (PNG + SVG output)
+- **Decode**: cryptogram + key → plaintext
+- **Key generation and parsing**: compact base36 format, human-copyable
+- **Parameter validation**: GCD-based weakness detection with override
+- **Transliteration**: accented characters handled automatically (é→E, à→A, ç→C…)
+- **Configurable rendering**: small / medium / large output size
+- **4 reading orders**: LR-TB, RL-TB, TB-LR, BT-LR, each with optional alternate mode
+- **REST API**: full encoding/decoding pipeline accessible programmatically
 
 ---
 
 ## Quick start
 
 **Prerequisites:** Docker, Docker Compose, and a local Traefik reverse proxy (local
-dev is routed through Traefik to mirror production — see
+dev is routed through Traefik to mirror production; see
 [CONTRIBUTING.md](CONTRIBUTING.md#local-development-environment) for the one-time
 setup, including the required `/etc/hosts` entry).
 
@@ -91,7 +91,7 @@ The parameters packed into the key, with example values:
 | Reading order | `LR-TB` | Left-right, top-bottom |
 | Cryptogram size | `medium` | 16-pixel squares |
 
-The key is **message-independent** — the same key encrypts and decrypts any number of
+The key is **message-independent**: the same key encrypts and decrypts any number of
 messages. The cryptogram carries no message-length metadata by design (a deliberate
 anti-leakage choice): decoding always processes the full grid, filling any padding
 with a `?` placeholder rather than storing or leaking the original length anywhere.
@@ -120,7 +120,7 @@ backend/
 ├── alphabet/        # VisualAlphabet interface + HexahueAlphabet implementation
 ├── cipher/          # Pre-processing, grid construction (no metadata header, by design)
 ├── rotation/        # Block rotation engine (encode + inverse)
-├── key/             # KeyCodec — base36 encode/decode/validate
+├── key/             # KeyCodec: base36 encode/decode/validate
 ├── reading-order/   # ReadingOrderStrategy implementations
 ├── renderer/        # PngRenderer, SvgRenderer
 ├── validation/      # GCD-based parameter validator
@@ -152,10 +152,10 @@ to come: an animated decoding mode and a spiral reading order. See
 
 Personal project with a dual purpose:
 
-- **Learning** — TypeScript strict mode, NestJS architecture (modules, dependency injection,
+- **Learning**: TypeScript strict mode, NestJS architecture (modules, dependency injection,
   pipes), Prisma + PostgreSQL, Vue.js 3 Composition API, image rendering with Sharp,
   base36 encoding, 2D matrix rotation algorithms, GitHub Actions CI/CD
-- **Portfolio** — demonstrates a structured approach across a non-trivial algorithmic domain,
+- **Portfolio**: demonstrates a structured approach across a non-trivial algorithmic domain,
   from cipher design to tested, documented full-stack delivery
 
 ---
@@ -169,4 +169,4 @@ token configuration required to run the full CI/CD pipeline.
 
 ## License
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

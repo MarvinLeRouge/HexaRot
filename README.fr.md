@@ -21,31 +21,31 @@
 HexaRot encode n'importe quel message texte dans une grille de couleurs à l'aide de
 l'alphabet visuel [Hexahue](https://www.geocachingtoolbox.com/index.php?lang=en&page=hexahue),
 puis brouille cette grille en appliquant des rotations géométriques à des blocs pivots de
-taille fixe — disloquant délibérément les symboles pour produire du bruit visuel.
+taille fixe, disloquant délibérément les symboles pour produire du bruit visuel.
 
 Tous les paramètres de chiffrement (taille de bloc, séquence de rotations, ordre de lecture,
-direction, taille du cryptogramme) sont condensés dans une clé base36 compacte préfixée `HR` — par exemple `HR1·2T51`.
+direction, taille du cryptogramme) sont condensés dans une clé base36 compacte préfixée `HR` (par exemple `HR1·2T51`).
 La même clé déchiffre tous les messages qu'elle a servi à chiffrer.
 
 ---
 
 ## Fonctionnalités
 
-- **Encodage** — texte → cryptogramme coloré (sortie PNG + SVG)
-- **Décodage** — cryptogramme + clé → texte en clair
-- **Génération et analyse de clé** — format base36 compact, copiable à la main
-- **Validation des paramètres** — détection de faiblesse par PGCD, avec override possible
-- **Translittération** — caractères accentués traités automatiquement (é→E, à→A, ç→C…)
-- **Rendu configurable** — taille de sortie small / medium / large
-- **4 ordres de lecture** — LR-TB, RL-TB, TB-LR, BT-LR, chacun avec mode alterné optionnel
-- **API REST** — pipeline complet d'encodage/décodage accessible programmatiquement
+- **Encodage** : texte → cryptogramme coloré (sortie PNG + SVG)
+- **Décodage** : cryptogramme + clé → texte en clair
+- **Génération et analyse de clé** : format base36 compact, copiable à la main
+- **Validation des paramètres** : détection de faiblesse par PGCD, avec override possible
+- **Translittération** : caractères accentués traités automatiquement (é→E, à→A, ç→C…)
+- **Rendu configurable** : taille de sortie small / medium / large
+- **4 ordres de lecture** : LR-TB, RL-TB, TB-LR, BT-LR, chacun avec mode alterné optionnel
+- **API REST** : pipeline complet d'encodage/décodage accessible programmatiquement
 
 ---
 
 ## Démarrage rapide
 
 **Prérequis :** Docker, Docker Compose, et un reverse proxy Traefik local (le
-développement local passe par Traefik pour refléter la production — voir
+développement local passe par Traefik pour refléter la production ; voir
 [CONTRIBUTING.fr.md](docs/i18n/fr/CONTRIBUTING.fr.md#environnement-de-développement-local) pour
 la configuration initiale, notamment l'entrée `/etc/hosts` requise).
 
@@ -91,7 +91,7 @@ Les paramètres condensés dans la clé, avec exemples de valeurs :
 | Ordre de lecture | `LR-TB` | Gauche-droite, haut-bas |
 | Taille du cryptogramme | `medium` | Cases de 16 pixels |
 
-La clé est **indépendante du message** — la même clé chiffre et déchiffre autant de messages
+La clé est **indépendante du message** : la même clé chiffre et déchiffre autant de messages
 que souhaité. Le cryptogramme ne contient aucune métadonnée de longueur par conception (un
 choix délibéré anti-fuite) : le décodage traite toujours la grille entière, en remplissant
 le padding éventuel par un caractère `?` plutôt que de stocker ou de laisser fuiter la
@@ -121,7 +121,7 @@ backend/
 ├── alphabet/        # Interface VisualAlphabet + implémentation HexahueAlphabet
 ├── cipher/          # Pré-traitement, construction de grille (pas d'en-tête de métadonnées, par conception)
 ├── rotation/        # Moteur de rotation de blocs (encodage + inverse)
-├── key/             # KeyCodec — encode/décode/valide en base36
+├── key/             # KeyCodec : encode/décode/valide en base36
 ├── reading-order/   # Implémentations de ReadingOrderStrategy
 ├── renderer/        # PngRenderer, SvgRenderer
 ├── validation/      # Validateur de paramètres par PGCD
@@ -154,10 +154,10 @@ le détail complet.
 
 Projet personnel à double vocation :
 
-- **Apprentissage** — TypeScript strict, architecture NestJS (modules, injection de
+- **Apprentissage** : TypeScript strict, architecture NestJS (modules, injection de
   dépendances, pipes), Prisma + PostgreSQL, Vue.js 3 Composition API, rendu d'images avec
   Sharp, encodage base36, algorithmes de rotation de matrices 2D, CI/CD GitHub Actions
-- **Portfolio** — démontre une approche structurée sur un domaine algorithmique non trivial,
+- **Portfolio** : démontre une approche structurée sur un domaine algorithmique non trivial,
   du design du chiffre jusqu'à la livraison full-stack testée et documentée
 
 ---
@@ -171,4 +171,4 @@ notamment la mise en place du token GitHub Actions requis pour le pipeline CI/CD
 
 ## Licence
 
-Ce projet est sous licence MIT — voir le fichier [LICENSE](LICENSE) pour plus de détails.
+Ce projet est sous licence MIT. Voir le fichier [LICENSE](LICENSE) pour plus de détails.

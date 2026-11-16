@@ -103,12 +103,12 @@ longueur d'origine.
 
 | Couche | Technologie |
 |---|---|
-| Backend | NestJS 11 + TypeScript (strict) |
+| Backend | NestJS 12 + TypeScript (strict) |
 | Base de données | PostgreSQL + Prisma |
 | Rendu d'images | Sharp (PNG) + SVG natif |
 | Frontend | Vue.js 3 + TypeScript + vue-i18n |
-| DevOps | Docker Compose, GitHub Actions |
-| Tests | Jest (backend), Vitest (frontend) |
+| DevOps | Docker Compose, Traefik (en local et en production), GitHub Actions (CI, puis build vers GHCR et déploiement sur un VPS) |
+| Tests | Suites Jest unitaires et e2e Supertest (backend), Vitest (frontend) |
 
 ---
 
@@ -125,10 +125,14 @@ backend/
 ├── reading-order/   # Implémentations de ReadingOrderStrategy
 ├── renderer/        # PngRenderer, SvgRenderer
 ├── validation/      # Validateur de paramètres par PGCD
+├── correlation/     # Score de corrélation : la structure de grille qui survit aux rotations
+├── auth/            # Inscription, vérification de l'e-mail, connexion JWT et gardes de routes
+├── admin/           # Endpoints de modération des utilisateurs (rôle admin uniquement)
+├── mailer/          # E-mails de vérification (Nodemailer, mailer inactif en test)
 └── api/             # Contrôleurs NestJS + DTOs
 
 frontend/
-├── views/           # Encodage, Décodage, Clé
+├── views/           # Encodage, Décodage, Clé, Aide, connexion et administration
 ├── stores/          # Stores Pinia
 └── i18n/            # Anglais (V1), Français (V2)
 ```

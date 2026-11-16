@@ -102,12 +102,12 @@ with a `?` placeholder rather than storing or leaking the original length anywhe
 
 | Layer | Technology |
 |---|---|
-| Backend | NestJS 11 + TypeScript (strict) |
+| Backend | NestJS 12 + TypeScript (strict) |
 | Database | PostgreSQL + Prisma |
 | Image rendering | Sharp (PNG) + native SVG |
 | Frontend | Vue.js 3 + TypeScript + vue-i18n |
-| DevOps | Docker Compose, GitHub Actions |
-| Tests | Jest (backend), Vitest (frontend) |
+| DevOps | Docker Compose, Traefik (local and production), GitHub Actions (CI, then build to GHCR and deploy to a VPS) |
+| Tests | Jest unit and Supertest e2e suites (backend), Vitest (frontend) |
 
 ---
 
@@ -124,10 +124,14 @@ backend/
 ├── reading-order/   # ReadingOrderStrategy implementations
 ├── renderer/        # PngRenderer, SvgRenderer
 ├── validation/      # GCD-based parameter validator
+├── correlation/     # Correlation score: how much grid structure survives the rotations
+├── auth/            # Registration, email verification, JWT login and route guards
+├── admin/           # User moderation endpoints (admin role only)
+├── mailer/          # Verification emails (Nodemailer, no-op mailer in tests)
 └── api/             # NestJS controllers + DTOs
 
 frontend/
-├── views/           # Encode, Decode, Key
+├── views/           # Encode, Decode, Key, Help, sign-in and admin views
 ├── stores/          # Pinia stores
 └── i18n/            # English (V1), French (V2)
 ```

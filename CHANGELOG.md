@@ -196,6 +196,7 @@ automatically from Conventional Commits history.
 - Critique REFACTOR-012 in both languages, after FEAT-020
 - Remove the hand-written test count badge
 - Link the NestJS, Vue.js and TypeScript badges
+- Align the stack table and architecture tree with the code
 
 ### Features
 

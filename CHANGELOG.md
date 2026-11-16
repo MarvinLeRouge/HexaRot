@@ -195,6 +195,7 @@ automatically from Conventional Commits history.
 - Add REFACTOR-012 design polish pass
 - Critique REFACTOR-012 in both languages, after FEAT-020
 - Remove the hand-written test count badge
+- Link the NestJS, Vue.js and TypeScript badges
 
 ### Features
 

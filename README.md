@@ -141,8 +141,9 @@ frontend/
 ## Roadmap
 
 V1 is complete: infra, cipher pipeline, key codec, API, frontend, and test
-coverage are all done. V2 targets a French interface, an animated decoding mode,
-a spiral reading order, a correlation score, and user authentication. See
+coverage are all done. V2 has already shipped the French interface, the
+correlation score (API endpoint), user authentication and the help page. Still
+to come: an animated decoding mode and a spiral reading order. See
 [docs/roadmap.md](docs/roadmap.md) for the full breakdown.
 
 ---

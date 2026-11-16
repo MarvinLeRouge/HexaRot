@@ -197,6 +197,7 @@ automatically from Conventional Commits history.
 - Remove the hand-written test count badge
 - Link the NestJS, Vue.js and TypeScript badges
 - Align the stack table and architecture tree with the code
+- Rewrite the roadmap paragraph from the current roadmap
 
 ### Features
 

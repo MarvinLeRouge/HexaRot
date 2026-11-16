@@ -1,9 +1,9 @@
-# HexaRot — Test Spec: Rotation Domain
+# HexaRot Test Spec: Rotation Domain
 
 Covers: FEAT-007 (block rotation engine).
 
 All tests in this document are **unit tests**. No database access, no filesystem.
-The rotation engine operates on pure 2D colour grids — no alphabet or key dependency
+The rotation engine operates on pure 2D colour grids, with no alphabet or key dependency
 at test time (those are resolved upstream).
 
 ---
@@ -82,7 +82,7 @@ describe('RotationEngine.decode')
 ## 3. Rotation direction
 
 ```
-describe('rotateBlock — direction symmetry')
+describe('rotateBlock: direction symmetry')
 ```
 
 - it produces different results for CW vs CCW at 90° for a non-uniform block
@@ -95,11 +95,11 @@ describe('rotateBlock — direction symmetry')
 
 The following shared fixtures must be defined in `__fixtures__/rotation.fixtures.ts`:
 
-- `KNOWN_2x2_BLOCK` — a 2×2 ColorGrid with four distinct colours, plus the expected
+- `KNOWN_2x2_BLOCK`: a 2×2 ColorGrid with four distinct colours, plus the expected
   outputs for each of the four rotation angles (CW and CCW).
-- `KNOWN_3x3_BLOCK` — same for a 3×3 grid.
-- `KNOWN_5x5_BLOCK` — same for a 5×5 grid.
-- `SAMPLE_FULL_GRID` — a small full grid (e.g. 10×6 cases = 2×2 blocks of T=5)
+- `KNOWN_3x3_BLOCK`: same for a 3×3 grid.
+- `KNOWN_5x5_BLOCK`: same for a 5×5 grid.
+- `SAMPLE_FULL_GRID`: a small full grid (e.g. 10×6 cases = 2×2 blocks of T=5)
   with known content, used for round-trip tests.
-- `ALL_ROTATION_SEQUENCES` — a representative subset of rotation sequences
+- `ALL_ROTATION_SEQUENCES`: a representative subset of rotation sequences
   (at minimum: all-zeros, all-90, [0,90,180,270], [270,180,90,0]).

@@ -200,6 +200,7 @@ automatically from Conventional Commits history.
 - Align the stack table and architecture tree with the code
 - Rewrite the roadmap paragraph from the current roadmap
 - Replace em dashes with plain punctuation
+- Replace em dashes in the test specs and operations guide
 
 ### Features
 

@@ -1,4 +1,4 @@
-# HexaRot — Test Spec: Cipher Domain
+# HexaRot Test Spec: Cipher Domain
 
 Covers: FEAT-001 (VisualAlphabet / HexahueAlphabet), FEAT-002 (pre-processing),
 FEAT-003 (parameter validation), FEAT-006 (grid construction), FEAT-008 (metadata header).
@@ -6,7 +6,7 @@ FEAT-003 (parameter validation), FEAT-006 (grid construction), FEAT-008 (metadat
 All tests in this document are **unit tests**. No database access.
 
 Tests that exercise the `VisualAlphabet` contract (pre-processing, parameter validation,
-grid construction) use `MockAlphabet` — the shared test double defined by TEST-004,
+grid construction) use `MockAlphabet`, the shared test double defined by TEST-004,
 located at `test/utils/mock-alphabet`. `MockAlphabet` uses dimensions **3×2** (width×height)
 and supports characters A–F with hardcoded colour grids.
 
@@ -17,13 +17,13 @@ that reproduces the Hexahue structure (dimensions 2×3).
 
 ## 1. VisualAlphabet / HexahueAlphabet (FEAT-001)
 
-### Contract tests — via MockAlphabet (TEST-004)
+### Contract tests via MockAlphabet (TEST-004)
 
 These tests verify the `VisualAlphabet` interface contract independently of any real
 alphabet. They use `MockAlphabet` (dimensions 3×2, characters A–F).
 
 ```
-describe('VisualAlphabet contract — MockAlphabet')
+describe('VisualAlphabet contract: MockAlphabet')
 ```
 
 - it returns a ColorGrid of the correct dimensions (symbolWidth × symbolHeight) for a supported character
@@ -225,13 +225,13 @@ describe('encodeHeader / decodeHeader')
 
 ## Fixtures
 
-**`MockAlphabet`** — imported from `test/utils/mock-alphabet` (defined by TEST-004).
+**`MockAlphabet`**: imported from `test/utils/mock-alphabet` (defined by TEST-004).
 This is the canonical shared test double for `VisualAlphabet`. Do not redefine it here.
 Properties: `symbolWidth: 3`, `symbolHeight: 2`, supported characters: A–F.
 
 The following additional fixtures must be defined in `__fixtures__/cipher.fixtures.ts`:
 
-- `VALID_PIVOT_SIZES` — `[5, 7, 11]` (coprime with both 3 and 2)
-- `WEAK_PIVOT_SIZES_MOCK` — `[2, 3, 6]` (share a factor with MockAlphabet dimensions)
-- `SAMPLE_MESSAGES` — a set of short strings using MockAlphabet's character set (A–F),
+- `VALID_PIVOT_SIZES`: `[5, 7, 11]` (coprime with both 3 and 2)
+- `WEAK_PIVOT_SIZES_MOCK`: `[2, 3, 6]` (share a factor with MockAlphabet dimensions)
+- `SAMPLE_MESSAGES`: a set of short strings using MockAlphabet's character set (A–F),
   covering: all supported chars, empty string, single char, string with unsupported chars.

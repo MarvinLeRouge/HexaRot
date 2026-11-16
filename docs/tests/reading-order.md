@@ -1,6 +1,6 @@
-# HexaRot — Test Spec: Reading Order Domain
+# HexaRot Test Spec: Reading Order Domain
 
-Covers: FEAT-005 (ReadingOrderStrategy — LR-TB, RL-TB, TB-LR, BT-LR, alternate modifier).
+Covers: FEAT-005 (ReadingOrderStrategy: LR-TB, RL-TB, TB-LR, BT-LR, alternate modifier).
 
 All tests in this document are **unit tests**. No database access, no filesystem.
 Each strategy is a pure function: given grid dimensions (in blocks), it returns an
@@ -11,10 +11,10 @@ ordered sequence of `{x, y}` coordinates.
 ## 1. Common invariants (all strategies)
 
 These invariants apply to every strategy and every variant (base + alternate).
-They are tested for each strategy individually — do not rely on a shared loop in tests.
+They are tested for each strategy individually. Do not rely on a shared loop in tests.
 
 ```
-describe('<StrategyName> — invariants')
+describe('<StrategyName>: invariants')
 ```
 
 - it covers every block exactly once for a 3×3 grid
@@ -114,10 +114,10 @@ can rely on.
 
 The following shared fixtures must be defined in `__fixtures__/reading-order.fixtures.ts`:
 
-- `GRID_3x3` — `{ width: 3, height: 3 }`
-- `GRID_1x5` — `{ width: 1, height: 5 }`
-- `GRID_5x1` — `{ width: 5, height: 1 }`
-- `GRID_1x1` — `{ width: 1, height: 1 }`
-- `EXPECTED_LR_TB_3x3` — hardcoded expected sequence for LR-TB on a 3×3 grid
-- `EXPECTED_LR_TB_ALT_3x3` — hardcoded expected sequence for LR-TB alternate on a 3×3 grid
+- `GRID_3x3`: `{ width: 3, height: 3 }`
+- `GRID_1x5`: `{ width: 1, height: 5 }`
+- `GRID_5x1`: `{ width: 5, height: 1 }`
+- `GRID_1x1`: `{ width: 1, height: 1 }`
+- `EXPECTED_LR_TB_3x3`: hardcoded expected sequence for LR-TB on a 3×3 grid
+- `EXPECTED_LR_TB_ALT_3x3`: hardcoded expected sequence for LR-TB alternate on a 3×3 grid
 - (and equivalents for the other three strategies)

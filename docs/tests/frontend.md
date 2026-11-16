@@ -1,10 +1,10 @@
-# HexaRot — Test Spec: Frontend Domain
+# HexaRot Test Spec: Frontend Domain
 
 Covers: FEAT-014 (encode view), FEAT-015 (decode view), FEAT-016 (key view),
 their associated Pinia stores, FEAT-020 (French interface) and FEAT-025 (help page).
 
 All tests in this document are **unit tests** using Vitest and Vue Test Utils.
-API calls are mocked with `vi.mock` — no real HTTP requests are made.
+API calls are mocked with `vi.mock`, so no real HTTP requests are made.
 
 ---
 
@@ -55,7 +55,7 @@ describe('EncodeView')
 - it clears the previous result when a new submission is made
 
 **i18n**
-- it renders no raw string literals — all visible text comes from i18n keys
+- it renders no raw string literals: all visible text comes from i18n keys
   (verified by checking that no hardcoded English strings appear outside the locale file)
 
 ---
@@ -247,11 +247,11 @@ describe('router guards') - help page
 
 The following shared fixtures must be defined in `src/__fixtures__/frontend.fixtures.ts`:
 
-- `MOCK_ENCODE_RESPONSE` — a realistic successful encode API response object
-- `MOCK_ENCODE_RESPONSE_WITH_WARNINGS` — encode response including warnings and unknownChars
-- `MOCK_DECODE_RESPONSE` — a successful decode API response object
-- `MOCK_KEY_GENERATE_RESPONSE` — a successful key generate response
-- `MOCK_KEY_PARSE_RESPONSE` — a successful key parse response with all fields populated
-- `MOCK_PNG_FILE` — a minimal File object with type 'image/png'
-- `MOCK_SVG_FILE` — a minimal File object with type 'image/svg+xml'
-- `MALFORMED_KEY` — a string that fails HR key client-side validation
+- `MOCK_ENCODE_RESPONSE`: a realistic successful encode API response object
+- `MOCK_ENCODE_RESPONSE_WITH_WARNINGS`: encode response including warnings and unknownChars
+- `MOCK_DECODE_RESPONSE`: a successful decode API response object
+- `MOCK_KEY_GENERATE_RESPONSE`: a successful key generate response
+- `MOCK_KEY_PARSE_RESPONSE`: a successful key parse response with all fields populated
+- `MOCK_PNG_FILE`: a minimal File object with type 'image/png'
+- `MOCK_SVG_FILE`: a minimal File object with type 'image/svg+xml'
+- `MALFORMED_KEY`: a string that fails HR key client-side validation

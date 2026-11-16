@@ -1,4 +1,4 @@
-# HexaRot — Test Spec: Renderer Domain
+# HexaRot Test Spec: Renderer Domain
 
 Covers: FEAT-009 (PngRenderer), FEAT-010 (SvgRenderer).
 
@@ -9,7 +9,7 @@ Renderer tests are split into two layers:
 
 ---
 
-## 1. PngRenderer — unit tests (FEAT-009)
+## 1. PngRenderer unit tests (FEAT-009)
 
 ```
 describe('PngRenderer')
@@ -23,15 +23,15 @@ describe('PngRenderer')
 - it returns a Buffer (not null, not undefined)
 - it returns a buffer whose first bytes match the PNG magic number (0x89 0x50 0x4E 0x47)
 
-**Dimensions — case size: small (8px per case)**
+**Dimensions, case size: small (8px per case)**
 - it produces an image of width = gridWidthInCases × 8 for a known grid
 - it produces an image of height = gridHeightInCases × 8 for a known grid
 
-**Dimensions — case size: medium (16px per case)**
+**Dimensions, case size: medium (16px per case)**
 - it produces an image of width = gridWidthInCases × 16
 - it produces an image of height = gridHeightInCases × 16
 
-**Dimensions — case size: large (32px per case)**
+**Dimensions, case size: large (32px per case)**
 - it produces an image of width = gridWidthInCases × 32
 - it produces an image of height = gridHeightInCases × 32
 
@@ -46,7 +46,7 @@ describe('PngRenderer')
 
 ---
 
-## 2. SvgRenderer — unit tests (FEAT-010)
+## 2. SvgRenderer unit tests (FEAT-010)
 
 ```
 describe('SvgRenderer')
@@ -90,7 +90,7 @@ output properties. They require the `HexahueAlphabet` backed by the seeded test
 database (or a complete in-memory fixture).
 
 ```
-describe('PngRenderer — integration')
+describe('PngRenderer: integration')
 ```
 
 - it encodes the message 'AB' with T=5, LR-TB, sequence [0,90,180,270], CW, size medium
@@ -99,7 +99,7 @@ describe('PngRenderer — integration')
   equals the expected pixel value
 
 ```
-describe('SvgRenderer — integration')
+describe('SvgRenderer: integration')
 ```
 
 - it encodes the message 'AB' with T=5, LR-TB, sequence [0,90,180,270], CW, size medium
@@ -113,9 +113,9 @@ describe('SvgRenderer — integration')
 
 The following shared fixtures must be defined in `__fixtures__/renderer.fixtures.ts`:
 
-- `MOCK_ROTATED_GRID_4x6` — a hardcoded 4-column × 6-row ColorGrid (all cells with
+- `MOCK_ROTATED_GRID_4x6`: a hardcoded 4-column × 6-row ColorGrid (all cells with
   known palette colours), representing a pre-rotated grid ready for rendering.
-- `HEXAHUE_PALETTE_MAP` — map of colour name → expected RGB tuple and hex string,
+- `HEXAHUE_PALETTE_MAP`: map of colour name → expected RGB tuple and hex string,
   covering all colours in the Hexahue palette.
 - `EXPECTED_PNG_DIMENSIONS` - map of size option → `{ casePixels }` for computing
   expected output dimensions.

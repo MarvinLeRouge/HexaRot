@@ -12,7 +12,6 @@
 [![NestJS](https://img.shields.io/badge/NestJS-12-E0234E?logo=nestjs&logoColor=white)]()
 [![Vue.js](https://img.shields.io/badge/Vue.js-3-4FC08D?logo=vuedotjs&logoColor=white)]()
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178C6?logo=typescript&logoColor=white)]()
-![Tests](https://img.shields.io/badge/Tests-792%20passing-brightgreen)
 [![License](https://img.shields.io/github/license/MarvinLeRouge/HexaRot?cacheSeconds=3600)](LICENSE)
 
 ---

@@ -194,6 +194,7 @@ automatically from Conventional Commits history.
 - Add FIX-001 seed admin placeholder guard mismatch
 - Add REFACTOR-012 design polish pass
 - Critique REFACTOR-012 in both languages, after FEAT-020
+- Remove the hand-written test count badge
 
 ### Features
 
@@ -400,6 +401,7 @@ automatically from Conventional Commits history.
 - Add FIX-004 and FIX-005 as high-priority fixes
 - Update CHANGELOG.md (#303)
 - Hold typescript 7 and node types majors in dependabot
+- Update CHANGELOG.md (#310)
 
 ### Other
 

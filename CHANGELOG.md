@@ -432,6 +432,8 @@ automatically from Conventional Commits history.
 - Bump the npm-minor-patch group in /frontend with 5 updates
 - Bump jsdom from 30.1.0 to 31.0.0 in /frontend
 - Bump typescript from 5.9.3 to 6.0.3 in /frontend
+- Bump the npm-minor-patch group in /frontend with 3 updates
+- Bump the npm-minor-patch group in /backend with 5 updates
 
 ### Refactoring
 

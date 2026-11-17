@@ -408,6 +408,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md (#303)
 - Hold typescript 7 and node types majors in dependabot
 - Update CHANGELOG.md (#310)
+- Update CHANGELOG.md (#314)
 
 ### Other
 
@@ -467,5 +468,6 @@ automatically from Conventional Commits history.
 - Fix vacuous route-protection assertion in e2e suite
 - Raise branch and function coverage across api/components/stores/views
 - Mock PrismaService in the key service spec
+- Close per-file coverage gaps
 
 

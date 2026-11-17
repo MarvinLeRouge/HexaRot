@@ -87,7 +87,9 @@
     },
     "collectCoverageFrom": [
       "**/*.(t|j)s",
-      "!**/*.module.ts"
+      "!**/*.module.ts",
+      "!main.ts",
+      "!**/__fixtures__/**"
     ],
     "coverageThreshold": {
       "src/cipher/**/*.ts": {

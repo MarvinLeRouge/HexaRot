@@ -1,4 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
+import { nextTick } from 'vue'
 import { mount, flushPromises, enableAutoUnmount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
 import { createRouter, createMemoryHistory } from 'vue-router'
@@ -65,6 +66,31 @@ describe('HelpView', () => {
     await waitForHeading(wrapper, 'Le principe de HexaRot')
 
     expect(scrollIntoView.mock.contexts.at(-1)).toBe(wrapper.get('#reading-order').element)
+  })
+
+  it('falls back to the English content for a locale with no help file', async () => {
+    const { wrapper, i18n } = await mountView('/help')
+    i18n.global.locale.value = 'fr'
+    await waitForHeading(wrapper, 'Le principe de HexaRot')
+
+    // 'de' is a deliberately unsupported locale, cast because the i18n instance only types en/fr
+    i18n.global.locale.value = 'de' as 'en'
+    await waitForHeading(wrapper, 'How HexaRot works')
+
+    expect(wrapper.get('#pivot-block-size').text()).toBe('Pivot block size')
+  })
+
+  it('shows the latest locale when the language changes again while a help file is loading', async () => {
+    const { wrapper, i18n } = await mountView('/help')
+
+    i18n.global.locale.value = 'fr'
+    await nextTick()
+    i18n.global.locale.value = 'en'
+    await flushPromises()
+    await vi.waitFor(() => expect(wrapper.text()).toContain('How HexaRot works'))
+    await flushPromises()
+
+    expect(wrapper.get('#pivot-block-size').text()).toBe('Pivot block size')
   })
 
   it('does not scroll when the URL has no hash', async () => {

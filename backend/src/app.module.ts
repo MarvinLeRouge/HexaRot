@@ -2,6 +2,8 @@ import { Module } from '@nestjs/common';
 import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { LoggerModule } from 'nestjs-pino';
+import { buildLoggerParams } from './logging/logger-params';
 import { AppController } from './app.controller';
 import { AppThrottlerGuard } from './app-throttler.guard';
 import { PrismaModule } from './prisma/prisma.module';
@@ -21,6 +23,7 @@ import { RolesGuard } from './auth/roles.guard';
 @Module({
   imports: [
     SentryModule.forRoot(),
+    LoggerModule.forRoot(buildLoggerParams()),
     PrismaModule,
     AlphabetModule,
     CipherModule,

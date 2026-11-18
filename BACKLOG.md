@@ -3100,3 +3100,47 @@ probes it with `wget` every 30 seconds, and `build-deploy.yml` waits up to 90
 seconds for `hexarot-backend` to be healthy, printing its last 50 log lines on
 failure.
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-030] Structured logging
+
+- **type:** feat
+- **id:** FEAT-030
+- **milestone:** v2
+- **status:** done
+- **priority:** medium
+- **domain:** infra
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [pino, structured logs, log privacy]
+- **labels:** [feat, domain:infra, priority:medium, milestone:v2]
+
+#### Description
+
+The backend only had Nest's default text logger and no access log, so a
+production incident could not be traced from `docker logs`. Engineering-Radar's
+"Structured logging" criterion found no structured logging library.
+
+#### Acceptance criteria
+
+- Every backend log entry, boot messages included, is one JSON line on stdout
+  in production, pretty-printed in local development
+- One access line per request (method, path, status, response time, request
+  id), health checks excluded
+- No header, cookie, body, query string, client address or email address in
+  the logs
+- The level is set by `LOG_LEVEL`; logging is documented in both languages
+
+#### Resolution (2026-11-18)
+
+`nestjs-pino` (with `pino` and `pino-http`), configured by
+`backend/src/logging/logger-params.ts` and installed as the app logger with
+`bufferLogs`, so existing `Logger` calls need no change. Custom `req` / `res`
+serializers keep only id, method, path and status code. `pino-pretty` (dev
+dependency) is the transport when `NODE_ENV=development`; tests default to
+`silent`. The verification email failure is now logged with the user id
+instead of the address. Verified on the local stack: boot and access lines
+come out structured, a request with a JWT, a cookie and a query token left
+none of them in the logs, health checks are skipped.
+<!-- ITEM:END -->

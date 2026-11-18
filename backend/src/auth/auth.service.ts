@@ -172,8 +172,9 @@ export class AuthService {
       try {
         await this.mailer.sendVerificationEmail(email, rawToken);
       } catch (err) {
+        // User id, not the address: logs must hold no personal data
         this.logger.error(
-          `Failed to send verification email to ${email}: ${(err as Error).message}`,
+          `Failed to send verification email for user ${userId}: ${(err as Error).message}`,
         );
       }
       return;

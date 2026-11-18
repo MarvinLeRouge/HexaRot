@@ -95,6 +95,20 @@ Configuration initiale, hors du dépôt :
    `SENTRY_ENVIRONMENT=production` dans `../shared/env/app.env`, puis
    redéployer. Le backend charge les deux fichiers, `secrets.env` en dernier.
 
+## Contrôle de santé
+
+`GET /api/health` est public et répond `200 {"status":"ok"}` après un
+`SELECT 1` sur la base, ou `503 {"status":"error"}` quand la base est
+injoignable (non remonté à Sentry, comme toute erreur HTTP attendue). Il est
+soumis à la limite de débit par défaut (20 requêtes par minute et par IP) : un
+moniteur externe doit l'interroger au plus toutes les quelques secondes.
+
+En production, `docker-compose.prod.yml` l'interroge toutes les 30 secondes
+avec `wget` : Traefik ne route vers le backend qu'une fois celui-ci en bonne
+santé, et le workflow de déploiement attend cet état jusqu'à 90 secondes, puis
+échoue en affichant les dernières lignes de log du backend. La stack locale n'a
+pas de healthcheck.
+
 ## CI/CD
 
 GitHub Actions s'exécute sur les pull requests vers `main` (`.github/workflows/ci.yml`) :

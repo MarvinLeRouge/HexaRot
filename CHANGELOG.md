@@ -290,6 +290,7 @@ automatically from Conventional Commits history.
 - Add a public help page with stable section anchors
 - Report unhandled backend and frontend errors to Sentry
 - Relay frontend Sentry events through the backend
+- Add health check endpoint wired to the container healthcheck
 
 ### Miscellaneous
 

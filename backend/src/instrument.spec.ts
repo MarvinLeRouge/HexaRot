@@ -6,7 +6,13 @@ import {
   stripRequestData,
 } from './instrument';
 
-jest.mock('@sentry/nestjs', () => ({ init: jest.fn() }));
+jest.mock('@sentry/nestjs', () => ({
+  init: jest.fn(),
+  serveTunnelIntegration: jest.fn((options: object) => ({
+    name: 'ServeTunnel',
+    options,
+  })),
+}));
 
 const init = Sentry.init as jest.Mock;
 
@@ -16,8 +22,9 @@ describe('initErrorTracking', () => {
   beforeEach(() => {
     init.mockClear();
     process.env = { ...originalEnv };
-    delete process.env.SENTRY_DSN;
+    delete process.env.SENTRY_BACKEND_DSN;
     delete process.env.SENTRY_ENVIRONMENT;
+    delete process.env.SENTRY_FRONTEND_DSN;
   });
 
   afterAll(() => {
@@ -27,16 +34,21 @@ describe('initErrorTracking', () => {
   it.each([
     ['unset', undefined],
     ['blank', '   '],
-  ])('does not initialise Sentry when SENTRY_DSN is %s', (_label, value) => {
-    if (value !== undefined) process.env.SENTRY_DSN = value;
+  ])(
+    'does not initialise Sentry when SENTRY_BACKEND_DSN is %s',
+    (_label, value) => {
+      if (value !== undefined) process.env.SENTRY_BACKEND_DSN = value;
 
-    initErrorTracking();
+      initErrorTracking();
 
-    expect(init).not.toHaveBeenCalled();
-  });
+      expect(init).not.toHaveBeenCalled();
+    },
+  );
 
   it('initialises Sentry with the trimmed DSN, the environment and no collected data', () => {
-    process.env.SENTRY_DSN = ' https://key@example.ingest.sentry.io/1 ';
+    process.env.SENTRY_BACKEND_DSN = ' https://key@example.ingest.sentry.io/1 ';
+    process.env.SENTRY_FRONTEND_DSN =
+      'https://front@example.ingest.sentry.io/2';
     process.env.SENTRY_ENVIRONMENT = 'production';
 
     initErrorTracking();
@@ -66,8 +78,86 @@ describe('initErrorTracking', () => {
     );
   });
 
+  it('relays the frontend events under /api, for the frontend DSN only', () => {
+    process.env.SENTRY_BACKEND_DSN = 'https://key@example.ingest.sentry.io/1';
+    process.env.SENTRY_FRONTEND_DSN =
+      ' https://front@example.ingest.sentry.io/2 ';
+
+    initErrorTracking();
+
+    expect(init).toHaveBeenCalledWith(
+      expect.objectContaining({
+        integrations: [
+          {
+            name: 'ServeTunnel',
+            options: {
+              basePath: '/api',
+              allowedDsns: ['https://front@example.ingest.sentry.io/2'],
+            },
+          },
+        ],
+      }),
+    );
+  });
+
+  it.each([
+    [
+      'the frontend DSN is set without a backend DSN',
+      { SENTRY_FRONTEND_DSN: 'https://front@example.ingest.sentry.io/2' },
+    ],
+    [
+      'the backend DSN is set without a frontend DSN',
+      { SENTRY_BACKEND_DSN: 'https://key@example.ingest.sentry.io/1' },
+    ],
+  ])(
+    'warns at startup that frontend events will be lost when %s',
+    (_label, env: Record<string, string>) => {
+      Object.assign(process.env, env);
+      const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      initErrorTracking();
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining('frontend errors will not reach Sentry'),
+      );
+      warn.mockRestore();
+    },
+  );
+
+  it('does not warn when both DSNs, or neither, are set', () => {
+    const warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+    initErrorTracking();
+    process.env.SENTRY_BACKEND_DSN = 'https://key@example.ingest.sentry.io/1';
+    process.env.SENTRY_FRONTEND_DSN =
+      'https://front@example.ingest.sentry.io/2';
+    initErrorTracking();
+
+    expect(warn).not.toHaveBeenCalled();
+    warn.mockRestore();
+  });
+
+  it('relays only the backend own DSN when SENTRY_FRONTEND_DSN is unset', () => {
+    process.env.SENTRY_BACKEND_DSN = 'https://key@example.ingest.sentry.io/1';
+
+    initErrorTracking();
+
+    expect(init).toHaveBeenCalledWith(
+      expect.objectContaining({
+        integrations: [
+          {
+            name: 'ServeTunnel',
+            options: { basePath: '/api', allowedDsns: [] },
+          },
+        ],
+      }),
+    );
+  });
+
   it('defaults the environment to development', () => {
-    process.env.SENTRY_DSN = 'https://key@example.ingest.sentry.io/1';
+    process.env.SENTRY_BACKEND_DSN = 'https://key@example.ingest.sentry.io/1';
+    process.env.SENTRY_FRONTEND_DSN =
+      'https://front@example.ingest.sentry.io/2';
 
     initErrorTracking();
 

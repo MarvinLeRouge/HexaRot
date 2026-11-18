@@ -289,6 +289,7 @@ automatically from Conventional Commits history.
 - Add the French interface with a language switcher
 - Add a public help page with stable section anchors
 - Report unhandled backend and frontend errors to Sentry
+- Relay frontend Sentry events through the backend
 
 ### Miscellaneous
 

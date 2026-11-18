@@ -42,6 +42,7 @@ describe('initErrorTracking', () => {
         dsn: 'https://key@example.ingest.sentry.io/2',
         environment: 'production',
         tracesSampleRate: 0,
+        tunnel: { basePath: '/api' },
         integrations: [{ name: 'Vue', options: { attachProps: false } }],
         beforeSend: stripRequestData,
         beforeBreadcrumb: dropBreadcrumb,

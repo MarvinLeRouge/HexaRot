@@ -60,13 +60,28 @@ session replay.
 
 | Variable | Lue par | Source en local | Source en production |
 |---|---|---|---|
-| `SENTRY_DSN` | backend, à l'exécution | `SENTRY_BACKEND_DSN` dans `.env` | `../shared/env/secrets.env` sur le VPS |
+| `SENTRY_BACKEND_DSN` | backend, à l'exécution | `.env` | `../shared/env/secrets.env` sur le VPS |
 | `SENTRY_ENVIRONMENT` | backend, à l'exécution | `SENTRY_ENVIRONMENT` dans `.env` (`development`) | `app.env` (`production`) |
+| `SENTRY_FRONTEND_DSN` | backend, à l'exécution (liste d'autorisation du relais) | `.env` | `secrets.env` |
 | `VITE_SENTRY_DSN` | frontend, au build | `SENTRY_FRONTEND_DSN` dans `.env` | secret GitHub `VITE_SENTRY_DSN`, passé en argument de build |
 | `VITE_SENTRY_ENVIRONMENT` | frontend, au build | `SENTRY_ENVIRONMENT` dans `.env` | `production`, fixé dans `build-deploy.yml` |
 
 Le DSN du frontend se retrouve dans le bundle public : il identifie le projet,
 ce n'est pas un secret.
+
+Le frontend n'appelle pas Sentry directement : les bloqueurs de publicité et
+la protection contre le pistage des navigateurs bloquent les requêtes vers
+`*.sentry.io`. Il envoie ses événements à `/api/<empreinte de son DSN>` sur sa
+propre origine, et le backend (`serveTunnelIntegration`) répond à ce chemin
+avant Nest et transmet l'enveloppe à Sentry en flux. Seules les enveloppes du
+`SENTRY_FRONTEND_DSN` et du DSN du backend sont relayées ; tout autre DSN
+reçoit une 403. Le relais ne tourne que si le backend a un `SENTRY_BACKEND_DSN`, et
+`SENTRY_FRONTEND_DSN` doit être exactement le DSN avec lequel le bundle a été
+construit (`VITE_SENTRY_DSN`) : sinon, les événements du frontend sont perdus.
+Le backend affiche un avertissement au démarrage quand un seul des deux est
+défini. Le relais répond avant Nest, donc la limitation de débit et les
+limites de taille de l'appli ne s'y appliquent pas ; un abus ne peut que
+consommer le quota Sentry.
 
 Configuration initiale, hors du dépôt :
 
@@ -75,10 +90,10 @@ Configuration initiale, hors du dépôt :
 2. Dans les réglages *Security & Privacy* de chaque projet, activer *Data
    Scrubber*, *Use Default Scrubbers* et *Prevent Storing of IP Addresses*.
 3. Ajouter le DSN du frontend comme secret du dépôt `VITE_SENTRY_DSN`.
-4. Sur le VPS, ajouter `SENTRY_DSN=<DSN backend>` dans
-   `../shared/env/secrets.env` et `SENTRY_ENVIRONMENT=production` dans
-   `../shared/env/app.env`, puis redéployer. Le backend charge les deux
-   fichiers, `secrets.env` en dernier.
+4. Sur le VPS, ajouter `SENTRY_BACKEND_DSN=<DSN backend>` et
+   `SENTRY_FRONTEND_DSN=<DSN frontend>` dans `../shared/env/secrets.env`, et
+   `SENTRY_ENVIRONMENT=production` dans `../shared/env/app.env`, puis
+   redéployer. Le backend charge les deux fichiers, `secrets.env` en dernier.
 
 ## CI/CD
 

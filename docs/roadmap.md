@@ -27,6 +27,7 @@
 - ✅ User authentication
 - ✅ Help page (concept and settings, English and French)
 - ✅ Error tracking (Sentry, backend and frontend)
+- ✅ Error tracking relay, so ad-blockers cannot drop frontend errors
 
 ## Ideas for later (not yet scoped)
 

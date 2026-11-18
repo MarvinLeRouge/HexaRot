@@ -41,6 +41,9 @@ export function initErrorTracking(app: App): void {
     // attachProps: false keeps component props (such as the generated key) out of events
     integrations: [Sentry.vueIntegration({ attachProps: false })],
     tracesSampleRate: 0,
+    // Sends events to /api/<DSN hash> on this origin, relayed by the backend,
+    // so ad-blockers and browser tracking protection cannot drop them
+    tunnel: { basePath: '/api' },
     beforeSend: stripRequestData,
     beforeBreadcrumb: dropBreadcrumb,
     dataCollection: {

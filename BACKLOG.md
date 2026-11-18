@@ -3012,3 +3012,51 @@ variable or breadcrumb; 400 and 401 requests were not reported; with empty
 DSNs nothing is sent. Not done: source map upload and release tagging, so
 production frontend stack traces stay minified.
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-028] Relay frontend Sentry events through the backend
+
+- **type:** feat
+- **id:** FEAT-028
+- **milestone:** v2
+- **status:** done
+- **priority:** medium
+- **domain:** infra
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** FEAT-027
+- **learning:** [Sentry tunnel, ad-blocker resilient telemetry]
+- **labels:** [feat, domain:infra, priority:medium, milestone:v2]
+
+#### Description
+
+uBlock Origin and Firefox Enhanced Tracking Protection drop the browser's
+requests to `*.sentry.io` (Firefox shows "CORS failed"), so frontend errors
+from visitors with such protection never reach Sentry. Send them to the app's
+own origin and let the backend forward them.
+
+#### Acceptance criteria
+
+- The browser sends no request to `*.sentry.io`; frontend events reach Sentry
+  through a same-origin path under `/api`
+- The backend forwards only envelopes for the frontend DSN and its own DSN;
+  others get a 403
+- The relay needs no change in Traefik and is documented in both languages
+
+#### Resolution (2026-11-18)
+
+Built-in SDK relay: `tunnel: { basePath: '/api' }` in the browser and
+`serveTunnelIntegration({ basePath: '/api', allowedDsns: [SENTRY_FRONTEND_DSN] })`
+on the server, which answers `/api/<DSN hash>` at the `node:http` level, before
+Nest, and streams the envelope. The path holds no word filter lists can match.
+Verified locally with real DSNs: the frontend event went through
+`/api/1xccwq8` (200) with no request to `sentry.io`; a foreign DSN got 403,
+garbage 400. New production setting: `SENTRY_FRONTEND_DSN` in `secrets.env`,
+which must equal the `VITE_SENTRY_DSN` the bundle is built with; the backend
+warns at startup when only one of the two DSNs is set. Known limit: the relay
+answers before Nest, so the app's throttling and body limits do not apply;
+abuse can only spend the Sentry quota.
+
+The backend variable `SENTRY_DSN` (FEAT-027) is renamed `SENTRY_BACKEND_DSN`,
+so the local `.env`, the container and the VPS use the same name for each DSN.
+<!-- ITEM:END -->

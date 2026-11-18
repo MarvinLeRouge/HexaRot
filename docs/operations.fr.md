@@ -43,6 +43,7 @@ Définies dans `.env` (à copier depuis `.env.example`, non commité) :
 | `POSTGRES_PASSWORD` | `postgres`, `backend` | Mot de passe de la base de données |
 | `POSTGRES_DB` | `postgres`, `backend` | Nom de la base de données |
 | `PORT` | `backend` | Port sur lequel le serveur NestJS écoute dans le conteneur (`3000`) |
+| `LOG_LEVEL` | `backend` | Niveau de log minimal (`info` par défaut ; `debug`, `warn`, `error`, `silent`...) |
 
 `DATABASE_URL` pour le backend et `VITE_PROXY_TARGET` pour le frontend sont
 dérivées automatiquement dans `docker-compose.yml` ; elles n'ont pas besoin
@@ -94,6 +95,21 @@ Configuration initiale, hors du dépôt :
    `SENTRY_FRONTEND_DSN=<DSN frontend>` dans `../shared/env/secrets.env`, et
    `SENTRY_ENVIRONMENT=production` dans `../shared/env/app.env`, puis
    redéployer. Le backend charge les deux fichiers, `secrets.env` en dernier.
+
+## Logs
+
+Le backend journalise via pino (`nestjs-pino`) : chaque entrée, y compris les
+messages de démarrage de Nest, est une ligne JSON sur stdout, lue avec
+`docker logs hexarot-backend`. En développement local, les mêmes entrées sont
+mises en forme (`pino-pretty`) ; avec `NODE_ENV=production`, c'est du JSON brut.
+
+Chaque requête ajoute une ligne d'accès (`request completed`) avec son
+identifiant, sa méthode, son chemin, son code de statut et son temps de
+réponse. Comme le suivi des erreurs, elle ne contient aucune donnée privée : ni
+en-têtes (donc pas de JWT), ni cookies, ni corps, ni query string, ni adresse du
+client, et les messages désignent les utilisateurs par leur identifiant, jamais
+par leur adresse e-mail. Les contrôles de santé ne sont pas journalisés.
+`LOG_LEVEL` fixe le niveau minimal (`info` par défaut, `silent` sous les tests).
 
 ## Contrôle de santé
 

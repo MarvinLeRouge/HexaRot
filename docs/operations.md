@@ -43,6 +43,7 @@ Defined in `.env` (copy from `.env.example`, not committed):
 | `POSTGRES_PASSWORD` | `postgres`, `backend` | Database password |
 | `POSTGRES_DB` | `postgres`, `backend` | Database name |
 | `PORT` | `backend` | Port the NestJS server listens on inside the container (`3000`) |
+| `LOG_LEVEL` | `backend` | Minimum log level (`info` by default; `debug`, `warn`, `error`, `silent`...) |
 
 `DATABASE_URL` for the backend and `VITE_PROXY_TARGET` for the frontend are
 derived automatically inside `docker-compose.yml`; they don't need to be set
@@ -91,6 +92,20 @@ One-time setup, outside the repository:
    `SENTRY_FRONTEND_DSN=<frontend DSN>` to `../shared/env/secrets.env`, and
    `SENTRY_ENVIRONMENT=production` to `../shared/env/app.env`, then redeploy.
    The backend loads both files, `secrets.env` last.
+
+## Logging
+
+The backend logs through pino (`nestjs-pino`): every entry, Nest's own boot
+messages included, is one JSON line on stdout, read with
+`docker logs hexarot-backend`. Local development pretty-prints the same entries
+(`pino-pretty`); `NODE_ENV=production` writes raw JSON.
+
+Each request adds one access line (`request completed`) with its id, method,
+path, status code and response time. Like error tracking, it holds no private
+data: no headers (so no JWT), cookies, bodies, query strings or client address,
+and log messages name users by id, never by email address. Health checks are not
+logged. `LOG_LEVEL` sets the minimum level (`info` by default, `silent` under
+tests).
 
 ## Health check
 

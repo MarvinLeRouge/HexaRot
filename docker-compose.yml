@@ -52,6 +52,7 @@ services:
       SENTRY_BACKEND_DSN: ${SENTRY_BACKEND_DSN:-}
       SENTRY_FRONTEND_DSN: ${SENTRY_FRONTEND_DSN:-}
       SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-development}
+      LOG_LEVEL: ${LOG_LEVEL:-info}
     depends_on:
       postgres:
         condition: service_healthy

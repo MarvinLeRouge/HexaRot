@@ -291,6 +291,7 @@ automatically from Conventional Commits history.
 - Report unhandled backend and frontend errors to Sentry
 - Relay frontend Sentry events through the backend
 - Add health check endpoint wired to the container healthcheck
+- Log backend entries and requests as structured JSON
 
 ### Miscellaneous
 

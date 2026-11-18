@@ -48,6 +48,38 @@ Définies dans `.env` (à copier depuis `.env.example`, non commité) :
 dérivées automatiquement dans `docker-compose.yml` ; elles n'ont pas besoin
 d'être définies manuellement.
 
+## Suivi des erreurs (Sentry)
+
+Les erreurs non gérées du backend (les 5xx, pas les 4xx attendues) et les
+erreurs non interceptées du frontend sont envoyées à Sentry. L'envoi est
+désactivé dès que le DSN est vide, ce qui est le cas par défaut en
+développement local et en CI. Seules les traces d'appel partent : ni corps de
+requête, ni en-têtes, ni cookies, ni query string, ni informations utilisateur,
+ni variables locales, ni lignes de code source, et pas de tracing ni de
+session replay.
+
+| Variable | Lue par | Source en local | Source en production |
+|---|---|---|---|
+| `SENTRY_DSN` | backend, à l'exécution | `SENTRY_BACKEND_DSN` dans `.env` | `../shared/env/secrets.env` sur le VPS |
+| `SENTRY_ENVIRONMENT` | backend, à l'exécution | `SENTRY_ENVIRONMENT` dans `.env` (`development`) | `app.env` (`production`) |
+| `VITE_SENTRY_DSN` | frontend, au build | `SENTRY_FRONTEND_DSN` dans `.env` | secret GitHub `VITE_SENTRY_DSN`, passé en argument de build |
+| `VITE_SENTRY_ENVIRONMENT` | frontend, au build | `SENTRY_ENVIRONMENT` dans `.env` | `production`, fixé dans `build-deploy.yml` |
+
+Le DSN du frontend se retrouve dans le bundle public : il identifie le projet,
+ce n'est pas un secret.
+
+Configuration initiale, hors du dépôt :
+
+1. Dans Sentry (région EU), créer deux projets : `hexarot-backend` (NestJS) et
+   `hexarot-frontend` (Vue).
+2. Dans les réglages *Security & Privacy* de chaque projet, activer *Data
+   Scrubber*, *Use Default Scrubbers* et *Prevent Storing of IP Addresses*.
+3. Ajouter le DSN du frontend comme secret du dépôt `VITE_SENTRY_DSN`.
+4. Sur le VPS, ajouter `SENTRY_DSN=<DSN backend>` dans
+   `../shared/env/secrets.env` et `SENTRY_ENVIRONMENT=production` dans
+   `../shared/env/app.env`, puis redéployer. Le backend charge les deux
+   fichiers, `secrets.env` en dernier.
+
 ## CI/CD
 
 GitHub Actions s'exécute sur les pull requests vers `main` (`.github/workflows/ci.yml`) :

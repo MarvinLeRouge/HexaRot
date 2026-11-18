@@ -7,6 +7,7 @@ import { useAuthStore } from './stores/auth'
 import en from './locales/en.json'
 import fr from './locales/fr.json'
 import { DEFAULT_LOCALE, applyDocumentLanguage, loadStoredLocale, resolveInitialLocale } from './i18n/locale'
+import { initErrorTracking } from './observability'
 import './style.css'
 
 const pinia = createPinia()
@@ -22,6 +23,8 @@ const i18n = createI18n({
 })
 
 const app = createApp(App)
+// Before anything else runs, so errors raised during bootstrap are reported
+initErrorTracking(app)
 app.use(pinia)
 app.use(i18n)
 

@@ -2957,3 +2957,58 @@ size are unknown in the browser: the server's 400 covers it.
 Not done: the 24 MB decode body is still parsed before the authentication and
 throttling guards (see FIX-005); a reverse-proxy rate limit would bound it.
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-027] Report unhandled backend and frontend errors to Sentry
+
+- **type:** feat
+- **id:** FEAT-027
+- **milestone:** v2
+- **status:** done
+- **priority:** medium
+- **domain:** infra
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [error tracking, privacy-preserving telemetry, NestJS exception filters]
+- **labels:** [feat, domain:infra, priority:medium, milestone:v2]
+
+#### Description
+
+HexaRot runs in production and nothing reports a crash: a 500 in the API or an
+uncaught exception in the browser is only visible in `docker logs`. Report
+unhandled errors to Sentry from both the NestJS backend (`@sentry/nestjs`) and
+the Vue frontend (`@sentry/vue`), disabled entirely when no DSN is set.
+
+HexaRot is a cipher app: request bodies carry plaintext, keys, passwords and
+JWTs. Only stack traces may leave the server: no request bodies, headers,
+cookies, query strings, user info, stack frame variables or context lines, no
+tracing, replay or profiling.
+
+#### Acceptance criteria
+
+- With no DSN, the app starts and behaves exactly as before, with no Sentry traffic
+- With a DSN, an unhandled backend error and an unhandled frontend error reach
+  Sentry, with no request data, header, cookie, query string or local variable
+- Expected HTTP errors (400, 401, 413, 429) are not reported
+- The backend DSN is read as `process.env.SENTRY_DSN`; the frontend DSN is a
+  build argument
+- Configuration and the manual Sentry setup are documented in both languages
+
+#### Resolution (2026-11-18)
+
+`backend/src/instrument.ts` (imported first in `main.ts`) starts `@sentry/nestjs`
+when `SENTRY_DSN` is set, with `dataCollection` fully off, `tracesSampleRate: 0`,
+and `beforeSend` / `beforeBreadcrumb` safety nets that drop request data and
+breadcrumbs. `SentryGlobalFilter` is the global exception filter: it skips
+`HttpException`, so 4xx are not reported. `frontend/src/observability.ts` does
+the same with `@sentry/vue`, plus `attachProps: false` (component props can hold
+the key) and page URLs stripped of their query string and fragment (they can
+carry the email verification token).
+
+Verified end to end with real DSNs: a temporary backend route and a frontend
+error reached their Sentry projects with no query string, header, cookie, local
+variable or breadcrumb; 400 and 401 requests were not reported; with empty
+DSNs nothing is sent. Not done: source map upload and release tagging, so
+production frontend stack traces stay minified.
+<!-- ITEM:END -->

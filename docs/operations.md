@@ -48,6 +48,35 @@ Defined in `.env` (copy from `.env.example`, not committed):
 derived automatically inside `docker-compose.yml`; they don't need to be set
 manually.
 
+## Error tracking (Sentry)
+
+Unhandled backend errors (any 5xx, not the expected 4xx) and uncaught frontend
+errors are reported to Sentry. Reporting is off whenever the DSN is empty, which
+is the default for local development and CI. Only stack traces are sent: no
+request bodies, headers, cookies, query strings, user info, stack frame
+variables or source lines, and no tracing or session replay.
+
+| Variable | Read by | Local source | Production source |
+|---|---|---|---|
+| `SENTRY_DSN` | backend, at runtime | `SENTRY_BACKEND_DSN` in `.env` | `../shared/env/secrets.env` on the VPS |
+| `SENTRY_ENVIRONMENT` | backend, at runtime | `SENTRY_ENVIRONMENT` in `.env` (`development`) | `app.env` (`production`) |
+| `VITE_SENTRY_DSN` | frontend, at build time | `SENTRY_FRONTEND_DSN` in `.env` | `VITE_SENTRY_DSN` GitHub secret, passed as a build argument |
+| `VITE_SENTRY_ENVIRONMENT` | frontend, at build time | `SENTRY_ENVIRONMENT` in `.env` | `production`, set in `build-deploy.yml` |
+
+The frontend DSN ends up in the public bundle: it identifies the project, it
+is not a secret.
+
+One-time setup, outside the repository:
+
+1. In Sentry (EU region), create two projects: `hexarot-backend` (NestJS) and
+   `hexarot-frontend` (Vue).
+2. In each project's *Security & Privacy* settings, enable *Data Scrubber*,
+   *Use Default Scrubbers* and *Prevent Storing of IP Addresses*.
+3. Add the frontend DSN as the `VITE_SENTRY_DSN` repository secret.
+4. On the VPS, add `SENTRY_DSN=<backend DSN>` to `../shared/env/secrets.env`
+   and `SENTRY_ENVIRONMENT=production` to `../shared/env/app.env`, then
+   redeploy. The backend loads both files, `secrets.env` last.
+
 ## CI/CD
 
 GitHub Actions runs on pull requests to `main` (`.github/workflows/ci.yml`):

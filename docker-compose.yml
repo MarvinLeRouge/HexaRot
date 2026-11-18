@@ -49,6 +49,8 @@ services:
       FRONTEND_BASE_URL: ${FRONTEND_BASE_URL}
       SEED_ADMIN_EMAIL: ${SEED_ADMIN_EMAIL}
       SEED_ADMIN_PASSWORD: ${SEED_ADMIN_PASSWORD}
+      SENTRY_DSN: ${SENTRY_BACKEND_DSN:-}
+      SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-development}
     depends_on:
       postgres:
         condition: service_healthy
@@ -74,6 +76,8 @@ services:
     environment:
       NODE_ENV: development
       VITE_PROXY_TARGET: http://backend:3000
+      VITE_SENTRY_DSN: ${SENTRY_FRONTEND_DSN:-}
+      VITE_SENTRY_ENVIRONMENT: ${SENTRY_ENVIRONMENT:-development}
     depends_on:
       - backend
     labels:

@@ -26,6 +26,7 @@
 - ✅ Score de corrélation (endpoint API)
 - ✅ Authentification utilisateur
 - ✅ Page d'aide (principe et réglages, en anglais et en français)
+- ✅ Suivi des erreurs (Sentry, backend et frontend)
 
 ## Idées pour plus tard (pas encore cadrées)
 

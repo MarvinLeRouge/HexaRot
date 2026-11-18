@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppThrottlerGuard } from './app-throttler.guard';
@@ -20,6 +21,7 @@ import { RolesGuard } from './auth/roles.guard';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     PrismaModule,
     AlphabetModule,
     CipherModule,
@@ -35,6 +37,10 @@ import { RolesGuard } from './auth/roles.guard';
   ],
   controllers: [AppController],
   providers: [
+    // Reports only unexpected errors: HttpExceptions (4xx) are skipped.
+    // Nest warns that its constructor argument is undefined: expected, the
+    // filter gets the HTTP adapter through property injection instead.
+    { provide: APP_FILTER, useClass: SentryGlobalFilter },
     AppService,
     { provide: APP_GUARD, useClass: AppThrottlerGuard },
     { provide: APP_GUARD, useClass: JwtAuthGuard },

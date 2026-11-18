@@ -26,6 +26,7 @@
 - ✅ Correlation score (API endpoint)
 - ✅ User authentication
 - ✅ Help page (concept and settings, English and French)
+- ✅ Error tracking (Sentry, backend and frontend)
 
 ## Ideas for later (not yet scoped)
 

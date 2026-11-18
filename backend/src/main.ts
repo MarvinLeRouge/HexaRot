@@ -1,3 +1,5 @@
+// Must stay the first import: Sentry patches modules before they load
+import './instrument';
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from 'helmet';

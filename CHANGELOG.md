@@ -288,6 +288,7 @@ automatically from Conventional Commits history.
 - Expose POST /api/correlation-score
 - Add the French interface with a language switcher
 - Add a public help page with stable section anchors
+- Report unhandled backend and frontend errors to Sentry
 
 ### Miscellaneous
 

@@ -24,17 +24,38 @@ export function dropBreadcrumb(): null {
 }
 
 /**
- * Starts Sentry error reporting when SENTRY_DSN is set; does nothing
+ * Starts Sentry error reporting when SENTRY_BACKEND_DSN is set; does nothing
  * otherwise (local dev and CI). Only stack traces are sent: no request data,
  * user info, stack frame variables or source lines, and no tracing.
  */
 export function initErrorTracking(): void {
-  const dsn = process.env.SENTRY_DSN?.trim();
+  const dsn = process.env.SENTRY_BACKEND_DSN?.trim();
+  const frontendDsn = process.env.SENTRY_FRONTEND_DSN?.trim();
+  // The frontend sends its events through this backend's relay only: one DSN
+  // without the other silently loses every frontend error.
+  if (Boolean(dsn) !== Boolean(frontendDsn)) {
+    console.warn(
+      'Sentry: SENTRY_BACKEND_DSN and SENTRY_FRONTEND_DSN must be set together, ' +
+        'otherwise frontend errors will not reach Sentry.',
+    );
+  }
   if (!dsn) return;
 
   Sentry.init({
     dsn,
     environment: process.env.SENTRY_ENVIRONMENT || 'development',
+    // Relays the frontend's events from /api/<DSN hash>, so ad-blockers and
+    // browser tracking protection cannot drop them. The SDK forwards
+    // envelopes for the frontend DSN and for this backend's own DSN only (403
+    // otherwise), streamed to Sentry. It answers before Nest, so the app's
+    // throttling and body limits do not apply: abuse can only spend the
+    // Sentry quota, whose own rate limits apply.
+    integrations: [
+      Sentry.serveTunnelIntegration({
+        basePath: '/api',
+        allowedDsns: frontendDsn ? [frontendDsn] : [],
+      }),
+    ],
     tracesSampleRate: 0,
     beforeSend: stripRequestData,
     beforeBreadcrumb: dropBreadcrumb,

@@ -3060,3 +3060,43 @@ abuse can only spend the Sentry quota.
 The backend variable `SENTRY_DSN` (FEAT-027) is renamed `SENTRY_BACKEND_DSN`,
 so the local `.env`, the container and the VPS use the same name for each DSN.
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-029] Health check endpoint
+
+- **type:** feat
+- **id:** FEAT-029
+- **milestone:** v2
+- **status:** done
+- **priority:** medium
+- **domain:** infra
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [container healthchecks, readiness probes]
+- **labels:** [feat, domain:infra, priority:medium, milestone:v2]
+
+#### Description
+
+Nothing tells Docker, Traefik or the deploy workflow whether the backend is
+actually up: a deploy can end green with a backend that crashed at boot, and
+Traefik routes to the container before Nest listens. The root route only
+answered "Hello World!".
+
+#### Acceptance criteria
+
+- `GET /api/health` is public and answers `200 {"status":"ok"}` when the
+  database answers, `503 {"status":"error"}` otherwise
+- The production backend container has a healthcheck on that route
+- The deploy workflow fails when the backend does not become healthy
+- The route and the healthcheck are documented in both languages
+
+#### Resolution (2026-11-18)
+
+`AppController` now only exposes `GET /api/health` (`SELECT 1` through Prisma,
+`ServiceUnavailableException` on failure, so it is not reported to Sentry); the
+"Hello World!" root route and `AppService` are gone. `docker-compose.prod.yml`
+probes it with `wget` every 30 seconds, and `build-deploy.yml` waits up to 90
+seconds for `hexarot-backend` to be healthy, printing its last 50 log lines on
+failure.
+<!-- ITEM:END -->

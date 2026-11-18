@@ -128,5 +128,9 @@ jobs:
             echo "==> Start all services"
             DOMAIN="$DOMAIN" docker compose -f docker-compose.prod.yml up -d --remove-orphans
 
+            echo "==> Wait for backend to be healthy"
+            timeout 90 sh -c 'until [ "$(docker inspect -f "{{.State.Health.Status}}" hexarot-backend)" = healthy ]; do sleep 3; done' \
+              || { docker compose -f docker-compose.prod.yml logs --tail 50 backend; exit 1; }
+
             echo "==> Stack status"
             docker compose -f docker-compose.prod.yml ps

@@ -15,6 +15,7 @@ la correspondance entre chaque endpoint et le pipeline sous-jacent.
 | `POST` | `/correlation-score` | Calculer le score de corrélation d'un cryptogramme |
 | `POST` | `/key/generate` | Générer une clé HR depuis des paramètres |
 | `POST` | `/key/parse` | Analyser une clé HR → paramètres structurés |
+| `GET` | `/health` | Contrôle de santé : `200 {"status":"ok"}`, ou `503 {"status":"error"}` si la base est injoignable |
 
 ## `POST /encode`
 

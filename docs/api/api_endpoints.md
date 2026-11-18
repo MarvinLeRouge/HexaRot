@@ -15,6 +15,7 @@ each endpoint maps onto the underlying pipeline.
 | `POST` | `/correlation-score` | Compute a cryptogram's correlation score |
 | `POST` | `/key/generate` | Generate an HR key from parameters |
 | `POST` | `/key/parse` | Parse an HR key → structured parameters |
+| `GET` | `/health` | Health check: `200 {"status":"ok"}`, or `503 {"status":"error"}` when the database is unreachable |
 
 ## `POST /encode`
 

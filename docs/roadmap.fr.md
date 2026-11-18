@@ -28,6 +28,7 @@
 - ✅ Page d'aide (principe et réglages, en anglais et en français)
 - ✅ Suivi des erreurs (Sentry, backend et frontend)
 - ✅ Relais du suivi des erreurs, pour que les bloqueurs ne perdent pas les erreurs du frontend
+- ✅ Endpoint de contrôle de santé, branché sur le healthcheck du conteneur de production
 
 ## Idées pour plus tard (pas encore cadrées)
 

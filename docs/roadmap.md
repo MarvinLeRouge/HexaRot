@@ -28,6 +28,7 @@
 - ✅ Help page (concept and settings, English and French)
 - ✅ Error tracking (Sentry, backend and frontend)
 - ✅ Error tracking relay, so ad-blockers cannot drop frontend errors
+- ✅ Health check endpoint, wired to the production container healthcheck
 
 ## Ideas for later (not yet scoped)
 

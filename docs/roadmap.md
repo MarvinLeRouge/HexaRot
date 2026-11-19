@@ -44,6 +44,7 @@
 - [x] CHORE-014 - Hold TypeScript 7 and Node types majors in Dependabot
 - [x] DOCS-002 - Correct the README and roadmap before the portfolio project sheet
 - [x] TEST-006 - Close per-file coverage gaps
+- [x] CHORE-015 - Load prod config only from shared/env, drop compose/.env interpolation and the DOMAIN secret
 
 ---
 

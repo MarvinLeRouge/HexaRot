@@ -49,6 +49,26 @@ Définies dans `.env` (à copier depuis `.env.example`, non commité) :
 dérivées automatiquement dans `docker-compose.yml` ; elles n'ont pas besoin
 d'être définies manuellement.
 
+### Production
+
+Sur le VPS, sous `/home/mlr/marvinlerouge.dev/hexarot/`, `compose/` contient
+uniquement le `docker-compose.prod.yml` récupéré par le workflow de déploiement,
+et `shared/env/` contient les deux fichiers d'environnement (`chmod 600`, jamais
+commités). Les conteneurs reçoivent leur configuration uniquement via
+`env_file` : le fichier compose n'interpole rien depuis un fichier (le domaine
+est écrit dans les règles Traefik, `IMAGE_TAG` vaut `latest` par défaut).
+`postgres` et `backend` chargent tous deux `app.env`, puis `secrets.env`, qui
+est prioritaire.
+
+| Fichier | Contenu | Modèle |
+|---|---|---|
+| `shared/env/app.env` | réglages non secrets : `NODE_ENV`, `PORT`, `FRONTEND_BASE_URL`, `JWT_EXPIRES_IN`, hôte SMTP et noms d'expéditeur, `SENTRY_ENVIRONMENT` | [`docker/env/app.env.example`](../docker/env/app.env.example) |
+| `shared/env/secrets.env` | chaque sujet contenant un secret, regroupé en entier : `POSTGRES_*` et `DATABASE_URL`, `JWT_SECRET`, identifiants SMTP, `SEED_ADMIN_*`, DSN Sentry | [`docker/env/secrets.env.example`](../docker/env/secrets.env.example) |
+
+`POSTGRES_PASSWORD` et le mot de passe contenu dans `DATABASE_URL` doivent
+correspondre : le premier initialise le volume de la base (au premier démarrage
+uniquement), le second sert à Prisma pour se connecter.
+
 ## Suivi des erreurs (Sentry)
 
 Les erreurs non gérées du backend (les 5xx, pas les 4xx attendues) et les

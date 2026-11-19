@@ -4,14 +4,15 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: hexarot-postgres
-    environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+    # POSTGRES_USER / POSTGRES_PASSWORD / POSTGRES_DB come from secrets.env
+    env_file:
+      - ../shared/env/app.env
+      - ../shared/env/secrets.env
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      # $$ defers expansion to the container shell, which has the env_file values
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -43,7 +44,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-public"
-      - "traefik.http.routers.hexarot-api.rule=Host(`${DOMAIN}`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.hexarot-api.rule=Host(`hexarot.marvinlerouge.dev`) && PathPrefix(`/api`)"
       - "traefik.http.routers.hexarot-api.entrypoints=websecure"
       - "traefik.http.routers.hexarot-api.tls=true"
       - "traefik.http.routers.hexarot-api.tls.certresolver=letsencrypt"
@@ -62,7 +63,7 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-public"
-      - "traefik.http.routers.hexarot-frontend.rule=Host(`${DOMAIN}`)"
+      - "traefik.http.routers.hexarot-frontend.rule=Host(`hexarot.marvinlerouge.dev`)"
       - "traefik.http.routers.hexarot-frontend.entrypoints=websecure"
       - "traefik.http.routers.hexarot-frontend.tls=true"
       - "traefik.http.routers.hexarot-frontend.tls.certresolver=letsencrypt"

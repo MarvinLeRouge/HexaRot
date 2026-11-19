@@ -45,6 +45,7 @@
 - [x] DOCS-002 - Correct the README and roadmap before the portfolio project sheet
 - [x] TEST-006 - Close per-file coverage gaps
 - [x] CHORE-015 - Load prod config only from shared/env, drop compose/.env interpolation and the DOMAIN secret
+- [x] FIX-008 - Deploy the images tagged with the commit SHA instead of `latest` (`IMAGE_TAG` was never set)
 
 ---
 

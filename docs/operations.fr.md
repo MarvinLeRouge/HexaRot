@@ -56,7 +56,9 @@ uniquement le `docker-compose.prod.yml` récupéré par le workflow de déploiem
 et `shared/env/` contient les deux fichiers d'environnement (`chmod 600`, jamais
 commités). Les conteneurs reçoivent leur configuration uniquement via
 `env_file` : le fichier compose n'interpole rien depuis un fichier (le domaine
-est écrit dans les règles Traefik, `IMAGE_TAG` vaut `latest` par défaut).
+est écrit dans les règles Traefik ; `IMAGE_TAG` reçoit le SHA du commit déployé
+via le workflow de déploiement, et vaut `latest` par défaut pour les commandes
+compose manuelles).
 `postgres` et `backend` chargent tous deux `app.env`, puis `secrets.env`, qui
 est prioritaire.
 

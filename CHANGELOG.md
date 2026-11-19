@@ -84,6 +84,7 @@ automatically from Conventional Commits history.
 - Enforce a 200 MB image budget per request
 - Install dotenv in the production image
 - Drop the em dash from the API weakness warnings
+- Deploy the images tagged with the commit SHA (FIX-008)
 
 ### CI/CD
 

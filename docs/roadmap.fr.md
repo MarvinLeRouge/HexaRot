@@ -44,6 +44,7 @@
 - [x] CHORE-014 - Bloquer TypeScript 7 et les majeures des types Node dans Dependabot
 - [x] DOCS-002 - Corriger le README et la roadmap avant la fiche projet du portfolio
 - [x] TEST-006 - Combler les trous de couverture par fichier
+- [x] CHORE-015 - Charger la config prod uniquement depuis shared/env, supprimer l'interpolation via compose/.env et le secret DOMAIN
 
 ---
 

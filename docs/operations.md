@@ -49,6 +49,25 @@ Defined in `.env` (copy from `.env.example`, not committed):
 derived automatically inside `docker-compose.yml`; they don't need to be set
 manually.
 
+### Production
+
+On the VPS, under `/home/mlr/marvinlerouge.dev/hexarot/`, `compose/` holds only
+the `docker-compose.prod.yml` fetched by the deploy workflow, and `shared/env/`
+holds the two env files (`chmod 600`, never committed). Containers get their
+configuration only through `env_file`: the compose file interpolates nothing
+from a file (the domain is written in the Traefik rules, `IMAGE_TAG` defaults to
+`latest`). Both `postgres` and `backend` load `app.env`, then `secrets.env`,
+which wins.
+
+| File | Holds | Template |
+|---|---|---|
+| `shared/env/app.env` | non-secret settings: `NODE_ENV`, `PORT`, `FRONTEND_BASE_URL`, `JWT_EXPIRES_IN`, SMTP host and sender names, `SENTRY_ENVIRONMENT` | [`docker/env/app.env.example`](../docker/env/app.env.example) |
+| `shared/env/secrets.env` | every topic holding a secret, kept whole: `POSTGRES_*` and `DATABASE_URL`, `JWT_SECRET`, SMTP credentials, `SEED_ADMIN_*`, Sentry DSNs | [`docker/env/secrets.env.example`](../docker/env/secrets.env.example) |
+
+`POSTGRES_PASSWORD` and the password inside `DATABASE_URL` must match: the first
+initialises the database volume (first start only), the second is what Prisma
+connects with.
+
 ## Error tracking (Sentry)
 
 Unhandled backend errors (any 5xx, not the expected 4xx) and uncaught frontend

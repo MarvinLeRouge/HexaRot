@@ -151,7 +151,6 @@ Go to **repo GitHub → Settings → Secrets and variables → Actions → Repos
 | `DEPLOY_SSH_HOST` | Hostname or IP of the VPS |
 | `DEPLOY_SSH_USER` | SSH user used to connect to the VPS |
 | `DEPLOY_SSH_PRIVATE_KEY` | Private key authorized on the VPS for that user |
-| `DOMAIN` | Public domain the app is served on, used by `docker-compose.prod.yml`'s Traefik labels |
 | `VITE_API_BASE_URL` | Base URL the frontend uses to reach the backend API, baked in at build time |
 
 ### Security

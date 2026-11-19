@@ -413,6 +413,7 @@ automatically from Conventional Commits history.
 - Hold typescript 7 and node types majors in dependabot
 - Update CHANGELOG.md (#310)
 - Update CHANGELOG.md (#314)
+- Load prod config only from shared/env (CHORE-015)
 
 ### Other
 

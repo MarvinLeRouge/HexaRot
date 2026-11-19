@@ -101,6 +101,9 @@ jobs:
 
             cd /home/mlr/marvinlerouge.dev/hexarot/compose
 
+            # pin the images pushed above for this commit, instead of the compose default (latest)
+            export IMAGE_TAG="${SHA}"
+
             echo "==> Authenticate with GHCR"
             echo "$GHCR_TOKEN" | docker login ghcr.io -u "$ACTOR" --password-stdin
 

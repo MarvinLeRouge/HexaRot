@@ -83,7 +83,7 @@ variables or source lines, and no tracing or session replay.
 | `SENTRY_ENVIRONMENT` | backend, at runtime | `SENTRY_ENVIRONMENT` in `.env` (`development`) | `app.env` (`production`) |
 | `SENTRY_FRONTEND_DSN` | backend, at runtime (relay allow-list) | `.env` | `secrets.env` |
 | `VITE_SENTRY_DSN` | frontend, at build time | `SENTRY_FRONTEND_DSN` in `.env` | `VITE_SENTRY_DSN` GitHub secret, passed as a build argument |
-| `VITE_SENTRY_ENVIRONMENT` | frontend, at build time | `SENTRY_ENVIRONMENT` in `.env` | `production`, set in `build-deploy.yml` |
+| `VITE_SENTRY_ENVIRONMENT` | frontend, at build time | `SENTRY_ENVIRONMENT` in `.env` | `production`, set in `build-push-deploy.yml` |
 
 The frontend DSN ends up in the public bundle: it identifies the project, it
 is not a secret.

@@ -140,9 +140,9 @@ Go to **repo GitHub → Settings → Secrets and variables → Actions → Repos
 
 The token is tied to the account that owns the repository. Never commit it to the codebase. Rotate it immediately if compromised.
 
-## Build & Deploy pipeline secrets
+## Build, Push & Deploy pipeline secrets
 
-`.github/workflows/build-deploy.yml` builds the backend and frontend production images, pushes them to GHCR, and deploys to the VPS over SSH. It requires the following repository secrets, in addition to the ambient `GITHUB_TOKEN` used for the GHCR push (no extra token needed there).
+`.github/workflows/build-push-deploy.yml` builds the backend and frontend production images, pushes them to GHCR, and deploys to the VPS over SSH. It requires the following repository secrets, in addition to the ambient `GITHUB_TOKEN` used for the GHCR push (no extra token needed there).
 
 Go to **repo GitHub → Settings → Secrets and variables → Actions → Repository secrets** and create each of the following:
 

@@ -111,6 +111,7 @@ automatically from Conventional Commits history.
 - Auto-merge the catch-up CHANGELOG.md PR
 - Run CI on the changelog bot PR so its auto-merge can complete
 - Pin actions to current majors by sha (CI-007)
+- Split deploy workflow into build & push and deploy jobs (CI-008)
 
 ### Documentation
 

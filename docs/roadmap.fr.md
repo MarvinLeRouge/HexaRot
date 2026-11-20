@@ -49,6 +49,7 @@
 - [x] CHORE-016 - Aligner le runtime Node sur la 26 LTS (CI, images Docker, engines, @types/node du frontend, docs)
 - [x] FIX-009 - Corriger l'alerte ReDoS de effect (haute, figée par @prisma/config de Prisma 7)
 - [x] CI-007 - Épingler chaque GitHub Action sur sa majeure actuelle par SHA de commit, workflow changelog sur Node 26, aligner la config Dependabot (groupe actions unique)
+- [x] CI-008 - Renommer le workflow de déploiement en build-push-deploy.yml, deux jobs explicites (Build & push, Deploy), sans changement fonctionnel
 
 ---
 

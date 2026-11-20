@@ -49,6 +49,7 @@
 - [x] CHORE-016 - Align the Node runtime on 26 LTS (CI, Docker images, engines, frontend @types/node, docs)
 - [x] FIX-009 - Patch the effect ReDoS advisory (high, pinned by Prisma 7 @prisma/config)
 - [x] CI-007 - Pin every GitHub Action to its current major by commit SHA, changelog workflow on Node 26, align the Dependabot config (single actions group)
+- [x] CI-008 - Rename the deploy workflow to build-push-deploy.yml, two explicit jobs (Build & push, Deploy), no functional change
 
 ---
 

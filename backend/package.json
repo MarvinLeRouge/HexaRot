@@ -54,7 +54,8 @@
     "@nestjs/throttler": {
       "@nestjs/common": "$@nestjs/common",
       "@nestjs/core": "$@nestjs/core"
-    }
+    },
+    "effect": ">=3.22.1 <4"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.3.7",

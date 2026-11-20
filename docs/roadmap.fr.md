@@ -47,6 +47,7 @@
 - [x] CHORE-015 - Charger la config prod uniquement depuis shared/env, supprimer l'interpolation via compose/.env et le secret DOMAIN
 - [x] FIX-008 - Déployer les images taguées avec le SHA du commit plutôt que `latest` (`IMAGE_TAG` n'était jamais fixé)
 - [x] CHORE-016 - Aligner le runtime Node sur la 26 LTS (CI, images Docker, engines, @types/node du frontend, docs)
+- [x] FIX-009 - Corriger l'alerte ReDoS de effect (haute, figée par @prisma/config de Prisma 7)
 
 ---
 

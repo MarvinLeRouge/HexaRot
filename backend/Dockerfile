@@ -1,5 +1,5 @@
 # ─── base ────────────────────────────────────────────────────────────────
-FROM node:24-alpine AS base
+FROM node:26-alpine AS base
 WORKDIR /app
 
 # ─── dev — hot reload via nest start --watch ───────────────────────────────

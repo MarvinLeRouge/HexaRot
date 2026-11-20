@@ -85,6 +85,7 @@ automatically from Conventional Commits history.
 - Install dotenv in the production image
 - Drop the em dash from the API weakness warnings
 - Deploy the images tagged with the commit SHA (FIX-008)
+- Patch the effect redos advisory (FIX-009)
 
 ### CI/CD
 

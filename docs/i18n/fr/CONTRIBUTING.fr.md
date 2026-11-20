@@ -9,7 +9,7 @@ Il s'agit avant tout d'un projet personnel. Les contributions externes (rapports
 ## Prérequis
 
 - **Docker & Docker Compose** : pour lancer la stack complète (backend, frontend, PostgreSQL)
-- **Node.js 20+** : pour développer le backend ou le frontend sans Docker
+- **Node.js 26 LTS** : pour développer le backend ou le frontend sans Docker
 - **Une instance Traefik locale** : nécessaire pour accéder à l'application via son domaine local, voir [Reverse proxy local](#reverse-proxy-local) ci-dessous
 - **Git**
 

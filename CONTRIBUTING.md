@@ -9,7 +9,7 @@ This is primarily a personal project. External contributions (bug reports, fixes
 ## Prerequisites
 
 - **Docker & Docker Compose**: to run the full stack (backend, frontend, PostgreSQL)
-- **Node.js 20+**: for backend or frontend development without Docker
+- **Node.js 26 LTS**: for backend or frontend development without Docker
 - **A local Traefik instance**: required to reach the app through its local domain, see [Local reverse proxy](#local-reverse-proxy) below
 - **Git**
 

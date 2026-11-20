@@ -110,6 +110,7 @@ automatically from Conventional Commits history.
 - Split backend/frontend jobs into lint, test, and security stages
 - Auto-merge the catch-up CHANGELOG.md PR
 - Run CI on the changelog bot PR so its auto-merge can complete
+- Pin actions to current majors by sha (CI-007)
 
 ### Documentation
 

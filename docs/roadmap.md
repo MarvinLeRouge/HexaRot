@@ -48,6 +48,7 @@
 - [x] FIX-008 - Deploy the images tagged with the commit SHA instead of `latest` (`IMAGE_TAG` was never set)
 - [x] CHORE-016 - Align the Node runtime on 26 LTS (CI, Docker images, engines, frontend @types/node, docs)
 - [x] FIX-009 - Patch the effect ReDoS advisory (high, pinned by Prisma 7 @prisma/config)
+- [x] CI-007 - Pin every GitHub Action to its current major by commit SHA, changelog workflow on Node 26, align the Dependabot config (single actions group)
 
 ---
 

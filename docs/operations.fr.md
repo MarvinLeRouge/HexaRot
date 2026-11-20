@@ -87,7 +87,7 @@ session replay.
 | `SENTRY_ENVIRONMENT` | backend, à l'exécution | `SENTRY_ENVIRONMENT` dans `.env` (`development`) | `app.env` (`production`) |
 | `SENTRY_FRONTEND_DSN` | backend, à l'exécution (liste d'autorisation du relais) | `.env` | `secrets.env` |
 | `VITE_SENTRY_DSN` | frontend, au build | `SENTRY_FRONTEND_DSN` dans `.env` | secret GitHub `VITE_SENTRY_DSN`, passé en argument de build |
-| `VITE_SENTRY_ENVIRONMENT` | frontend, au build | `SENTRY_ENVIRONMENT` dans `.env` | `production`, fixé dans `build-deploy.yml` |
+| `VITE_SENTRY_ENVIRONMENT` | frontend, au build | `SENTRY_ENVIRONMENT` dans `.env` | `production`, fixé dans `build-push-deploy.yml` |
 
 Le DSN du frontend se retrouve dans le bundle public : il identifie le projet,
 ce n'est pas un secret.

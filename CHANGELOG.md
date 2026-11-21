@@ -426,6 +426,7 @@ automatically from Conventional Commits history.
 - Align the node runtime on 26 lts (CHORE-016)
 - Auto-promote ready items (#339)
 - Update CHANGELOG.md (#340)
+- Auto-promote ready items (#342)
 
 ### Other
 

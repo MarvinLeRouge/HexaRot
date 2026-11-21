@@ -45,7 +45,7 @@ jobs:
               }
             }
           ' -f owner="MarvinLeRouge" -f repo="HexaRot" \
-            --jq ".data.repository.issues.nodes[] | select(.body | contains(\"backlog-id: $ID\")) | .number")
+            --jq ".data.repository.issues.nodes[] | select(.body | contains(\"backlog-id: $ID\")) | .number" | sort -n | head -n 1)
 
           if [ -z "$ISSUE_NUMBER" ]; then
             echo "No open issue found for backlog ID '$ID' — ignored."

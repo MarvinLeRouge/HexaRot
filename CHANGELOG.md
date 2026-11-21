@@ -113,6 +113,7 @@ automatically from Conventional Commits history.
 - Pin actions to current majors by sha (CI-007)
 - Split deploy workflow into build & push and deploy jobs (CI-008)
 - Scan staged changes for secrets with gitleaks (CI-009)
+- Run backlog syncs one at a time and tolerate duplicate issues
 
 ### Documentation
 

@@ -53,6 +53,7 @@
 - [x] CI-007 - Épingler chaque GitHub Action sur sa majeure actuelle par SHA de commit, workflow changelog sur Node 26, aligner la config Dependabot (groupe actions unique)
 - [x] CI-008 - Renommer le workflow de déploiement en build-push-deploy.yml, deux jobs explicites (Build & push, Deploy), sans changement fonctionnel
 - [x] CI-009 - Analyser les modifications indexées avec gitleaks dans le hook pre-commit
+- [x] CI-010 - Exécuter les synchronisations du backlog une par une (plus d'issues en double), et garder l'issue la plus ancienne quand les workflows Track en trouvent plusieurs
 
 ---
 

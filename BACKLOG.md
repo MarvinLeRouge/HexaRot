@@ -3269,7 +3269,7 @@ generate/parse round trips matching.
 - **type:** feat
 - **id:** FEAT-033
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** M
@@ -3308,7 +3308,7 @@ the V2 sequence in the encode and key generation forms.
 - **type:** feat
 - **id:** FEAT-034
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** cipher
 - **complexity:** S

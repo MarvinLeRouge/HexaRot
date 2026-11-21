@@ -53,6 +53,7 @@
 - [x] CI-007 - Pin every GitHub Action to its current major by commit SHA, changelog workflow on Node 26, align the Dependabot config (single actions group)
 - [x] CI-008 - Rename the deploy workflow to build-push-deploy.yml, two explicit jobs (Build & push, Deploy), no functional change
 - [x] CI-009 - Scan staged changes for secrets with gitleaks in the pre-commit hook
+- [x] CI-010 - Run backlog syncs one at a time (no duplicate issues), and keep the oldest issue when the Track workflows find several
 
 ---
 

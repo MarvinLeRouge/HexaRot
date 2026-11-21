@@ -9,6 +9,12 @@ on:
       - 'BACKLOG.md'
   workflow_dispatch:
 
+# Two merges close together (a feature PR, then the bot's auto-promotion PR)
+# used to sync in parallel and both create the issues of new items.
+concurrency:
+  group: sync-backlog
+  cancel-in-progress: false
+
 jobs:
   sync:
     name: Sync BACKLOG.md

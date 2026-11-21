@@ -299,6 +299,7 @@ automatically from Conventional Commits history.
 - Relay frontend Sentry events through the backend
 - Add health check endpoint wired to the container healthcheck
 - Log backend entries and requests as structured JSON
+- Start on a random rotation sequence with a shuffle control
 
 ### Miscellaneous
 

@@ -11,6 +11,11 @@ import {
 } from '../__fixtures__/frontend.fixtures'
 import { ApiError } from '../api/client'
 
+// Deterministic starting sequence: these tests assert on the exact payload.
+vi.mock('../utils/random-rotation-sequence', () => ({
+  generateRandomRotationSequence: () => [0, 1, 2, 3],
+}))
+
 vi.mock('../api/client', async () => {
   const actual = await vi.importActual<typeof import('../api/client')>('../api/client')
   return { ...actual, postJson: vi.fn() }

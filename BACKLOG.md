@@ -3151,7 +3151,7 @@ none of them in the logs, health checks are skipped.
 - **type:** feat
 - **id:** FEAT-031
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** high
 - **domain:** frontend
 - **complexity:** S
@@ -3173,11 +3173,21 @@ likely guesses from an attacker's list.
   `[0, 1, 2, 3]`, drawn with `crypto.getRandomValues` (not `Math.random`)
 - A "shuffle" control draws a new random sequence; manual reordering still
   works as today (drag and drop, keyboard)
-- A sequence loaded from an existing key is never overwritten by the random
-  default
+- A sequence coming from an existing key is never overwritten by the random
+  default (no form loads one today: key mode sends the raw key and the parser
+  shows its result apart, so only the initial state is randomised)
 - Help page (EN and FR) says the default sequence is random
-- Tests cover the random default, the shuffle control and the loaded-key case
+- Tests cover the random default and the shuffle control (the loaded-key case
+  has no code path to test, see above)
 
+#### Resolution (2026-11-21)
+
+`frontend/src/utils/random-rotation-sequence.ts` draws a Fisher-Yates
+permutation from `crypto.getRandomValues`. Both stores call it in
+`initialState()`, so `reset()` draws again. `RotationSequencePicker` gets a
+Shuffle button (shared by the encode and key generation forms) that emits a
+new draw and announces the new order in its live region. Help page, locales
+and `docs/tests/frontend.md` updated in English and French where user-facing.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->

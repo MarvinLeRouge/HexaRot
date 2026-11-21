@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { postJson, ApiError } from '../api/client'
 import { normalizeKeyInput } from '../utils/key-format'
+import { generateRandomRotationSequence } from '../utils/random-rotation-sequence'
 import type { ReadingOrder } from '../constants/reading-orders'
 
 export type EncodeMode = 'params' | 'key'
@@ -45,7 +46,7 @@ function initialState(): EncodeState {
     mode: 'params',
     message: '',
     pivotBlockSize: 5,
-    rotationSequence: [0, 1, 2, 3],
+    rotationSequence: generateRandomRotationSequence(),
     rotationDirection: 'cw',
     readingOrder: 'LR-TB',
     size: 'medium',

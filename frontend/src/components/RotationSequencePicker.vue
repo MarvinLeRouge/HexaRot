@@ -2,6 +2,7 @@
 import { computed, nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
 import { useI18n } from 'vue-i18n'
+import { generateRandomRotationSequence } from '../utils/random-rotation-sequence'
 
 const ANGLES = [0, 90, 180, 270] as const
 
@@ -55,6 +56,15 @@ function announce(key: string, params: Record<string, number>): void {
   liveMessage.value = t(key, params)
 }
 
+function shuffle(): void {
+  const sequence = generateRandomRotationSequence()
+  grabbedKey.value = null
+  emit('update:modelValue', sequence)
+  liveMessage.value = t('rotationSequence.shuffled', {
+    order: sequence.map((index) => `${ANGLES[index]}°`).join(', '),
+  })
+}
+
 function onKeydown(event: KeyboardEvent, key: number): void {
   const pos = items.value.findIndex((item) => item.index === key)
   const angle = ANGLES[key]
@@ -101,85 +111,101 @@ function onKeydown(event: KeyboardEvent, key: number): void {
 </script>
 
 <template>
-  <draggable
-    v-model="items"
-    item-key="index"
-    tag="ul"
-    class="rotation-sequence-picker"
-    role="listbox"
-    :aria-label="t('encode.form.rotationSequence.label')"
-  >
-    <template #item="{ element }: { element: RotationItem }">
-      <li
-        :ref="(el) => setItemRef(element.index, el as Element | null)"
-        class="rotation-sequence-picker__item"
-        role="option"
-        aria-roledescription="sortable item"
-        :aria-selected="element.index === grabbedKey"
-        :tabindex="element.index === focusedKey ? 0 : -1"
-        :class="{ 'rotation-sequence-picker__item--grabbed': element.index === grabbedKey }"
-        @keydown="onKeydown($event, element.index)"
-        @focus="focusedKey = element.index"
-      >
-        <svg
-          class="rotation-sequence-picker__handle"
-          width="10"
-          height="16"
-          viewBox="0 0 10 16"
-          aria-hidden="true"
-          focusable="false"
+  <div class="rotation-sequence-picker-field">
+    <draggable
+      v-model="items"
+      item-key="index"
+      tag="ul"
+      class="rotation-sequence-picker"
+      role="listbox"
+      :aria-label="t('encode.form.rotationSequence.label')"
+    >
+      <template #item="{ element }: { element: RotationItem }">
+        <li
+          :ref="(el) => setItemRef(element.index, el as Element | null)"
+          class="rotation-sequence-picker__item"
+          role="option"
+          aria-roledescription="sortable item"
+          :aria-selected="element.index === grabbedKey"
+          :tabindex="element.index === focusedKey ? 0 : -1"
+          :class="{ 'rotation-sequence-picker__item--grabbed': element.index === grabbedKey }"
+          @keydown="onKeydown($event, element.index)"
+          @focus="focusedKey = element.index"
         >
-          <circle
-            cx="2.5"
-            cy="2.5"
-            r="1.5"
-            fill="currentColor"
-          />
-          <circle
-            cx="7.5"
-            cy="2.5"
-            r="1.5"
-            fill="currentColor"
-          />
-          <circle
-            cx="2.5"
-            cy="8"
-            r="1.5"
-            fill="currentColor"
-          />
-          <circle
-            cx="7.5"
-            cy="8"
-            r="1.5"
-            fill="currentColor"
-          />
-          <circle
-            cx="2.5"
-            cy="13.5"
-            r="1.5"
-            fill="currentColor"
-          />
-          <circle
-            cx="7.5"
-            cy="13.5"
-            r="1.5"
-            fill="currentColor"
-          />
-        </svg>
-        <span>{{ element.angle }}°</span>
-      </li>
-    </template>
-  </draggable>
-  <div
-    class="rotation-sequence-picker__live"
-    role="status"
-    aria-live="polite"
-  >
-    {{ liveMessage }}
+          <svg
+            class="rotation-sequence-picker__handle"
+            width="10"
+            height="16"
+            viewBox="0 0 10 16"
+            aria-hidden="true"
+            focusable="false"
+          >
+            <circle
+              cx="2.5"
+              cy="2.5"
+              r="1.5"
+              fill="currentColor"
+            />
+            <circle
+              cx="7.5"
+              cy="2.5"
+              r="1.5"
+              fill="currentColor"
+            />
+            <circle
+              cx="2.5"
+              cy="8"
+              r="1.5"
+              fill="currentColor"
+            />
+            <circle
+              cx="7.5"
+              cy="8"
+              r="1.5"
+              fill="currentColor"
+            />
+            <circle
+              cx="2.5"
+              cy="13.5"
+              r="1.5"
+              fill="currentColor"
+            />
+            <circle
+              cx="7.5"
+              cy="13.5"
+              r="1.5"
+              fill="currentColor"
+            />
+          </svg>
+          <span>{{ element.angle }}°</span>
+        </li>
+      </template>
+    </draggable>
+    <button
+      type="button"
+      class="rotation-sequence-picker__shuffle btn-secondary"
+      @click="shuffle"
+    >
+      {{ t('rotationSequence.shuffle') }}
+    </button>
+    <div
+      class="rotation-sequence-picker__live"
+      role="status"
+      aria-live="polite"
+    >
+      {{ liveMessage }}
+    </div>
   </div>
 </template>
 
 <style scoped>
+.rotation-sequence-picker-field {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
 .rotation-sequence-picker {
   display: flex;
   gap: 8px;
@@ -212,6 +238,10 @@ function onKeydown(event: KeyboardEvent, key: number): void {
 .rotation-sequence-picker__handle {
   color: var(--text-muted);
   flex-shrink: 0;
+}
+
+.rotation-sequence-picker__shuffle {
+  align-self: flex-start;
 }
 
 .rotation-sequence-picker__live {

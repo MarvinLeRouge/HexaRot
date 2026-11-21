@@ -1,7 +1,8 @@
 # HexaRot Test Spec: Frontend Domain
 
 Covers: FEAT-014 (encode view), FEAT-015 (decode view), FEAT-016 (key view),
-their associated Pinia stores, FEAT-020 (French interface) and FEAT-025 (help page).
+their associated Pinia stores, FEAT-020 (French interface), FEAT-025 (help page) and FEAT-031 (random rotation
+sequence).
 
 All tests in this document are **unit tests** using Vitest and Vue Test Utils.
 API calls are mocked with `vi.mock`, so no real HTTP requests are made.
@@ -72,6 +73,7 @@ describe('useEncodeStore')
 - it stores the PNG, SVG, key, warnings, and unknownChars from a successful response
 - it stores the error message from a failed response
 - it clears the previous result when a new encode action is dispatched
+- it starts on a random rotation sequence and draws a new one on reset
 
 ---
 
@@ -169,6 +171,7 @@ describe('useKeyStore')
 - it stores the error from a failed parse response
 - it clears the previous generated key when a new generate action is dispatched
 - it clears the previous parsed params when a new parse action is dispatched
+- it starts on a random rotation sequence and draws a new one on reset
 
 ---
 
@@ -240,6 +243,33 @@ describe('router guards') - help page
 ```
 
 - it does not gate `/help`
+
+---
+
+## 9. Random rotation sequence (FEAT-031)
+
+```
+describe('generateRandomRotationSequence')
+```
+
+- it always returns a permutation of [0, 1, 2, 3]
+- it draws its randomness from crypto.getRandomValues
+- it produces more than one ordering across draws
+- it returns the identity permutation when every draw selects the current index
+
+```
+describe('RotationSequencePicker') - shuffle
+```
+
+- it emits a freshly drawn random sequence when the shuffle button is clicked
+- it labels the shuffle button and announces the new order
+- it drops a keyboard-grabbed item when shuffling
+
+```
+describe('KeyGeneratorForm') - stale key invalidation
+```
+
+- it marks the generated key stale when the rotation sequence is shuffled
 
 ---
 

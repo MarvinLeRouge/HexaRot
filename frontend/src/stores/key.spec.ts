@@ -11,6 +11,15 @@ vi.mock('../api/client', async () => {
 
 import { postJson } from '../api/client'
 
+vi.mock('../utils/random-rotation-sequence', async () => {
+  const actual = await vi.importActual<typeof import('../utils/random-rotation-sequence')>(
+    '../utils/random-rotation-sequence',
+  )
+  return { generateRandomRotationSequence: vi.fn(actual.generateRandomRotationSequence) }
+})
+
+import { generateRandomRotationSequence } from '../utils/random-rotation-sequence'
+
 describe('useKeyStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -21,7 +30,7 @@ describe('useKeyStore', () => {
     const store = useKeyStore()
 
     expect(store.pivotBlockSize).toBe(5)
-    expect(store.rotationSequence).toEqual([0, 1, 2, 3])
+    expect([...store.rotationSequence].sort()).toEqual([0, 1, 2, 3])
     expect(store.rotationDirection).toBe('cw')
     expect(store.readingOrder).toBe('LR-TB')
     expect(store.generateStatus).toBe('idle')
@@ -42,12 +51,13 @@ describe('useKeyStore', () => {
     store.pivotBlockSize = 7
     store.rotationDirection = 'ccw'
     store.readingOrder = 'RL-TB'
+    store.rotationSequence = [3, 1, 0, 2]
 
     await store.generate()
 
     expect(postJson).toHaveBeenCalledWith('/key/generate', {
       pivotBlockSize: 7,
-      rotationSequence: [0, 1, 2, 3],
+      rotationSequence: [3, 1, 0, 2],
       rotationDirection: 'ccw',
       readingOrder: 'RL-TB',
     })
@@ -216,6 +226,17 @@ describe('useKeyStore', () => {
     expect(store.parsedParams).toEqual(MOCK_KEY_PARSE_RESPONSE)
     expect(store.parseStatus).toBe('loading')
     expect(store.generatedKey).toBe(MOCK_KEY_GENERATE_RESPONSE.key)
+  })
+
+  it('starts on a random rotation sequence and draws a new one on reset', () => {
+    vi.mocked(generateRandomRotationSequence).mockReturnValueOnce([2, 0, 3, 1]).mockReturnValueOnce([1, 3, 0, 2])
+    const store = useKeyStore()
+
+    expect(store.rotationSequence).toEqual([2, 0, 3, 1])
+
+    store.reset()
+
+    expect(store.rotationSequence).toEqual([1, 3, 0, 2])
   })
 
   it('restores default state when reset is called', async () => {

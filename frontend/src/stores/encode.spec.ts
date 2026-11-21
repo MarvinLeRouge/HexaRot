@@ -11,6 +11,15 @@ vi.mock('../api/client', async () => {
 
 import { postJson } from '../api/client'
 
+vi.mock('../utils/random-rotation-sequence', async () => {
+  const actual = await vi.importActual<typeof import('../utils/random-rotation-sequence')>(
+    '../utils/random-rotation-sequence',
+  )
+  return { generateRandomRotationSequence: vi.fn(actual.generateRandomRotationSequence) }
+})
+
+import { generateRandomRotationSequence } from '../utils/random-rotation-sequence'
+
 describe('useEncodeStore', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
@@ -23,7 +32,7 @@ describe('useEncodeStore', () => {
     expect(store.mode).toBe('params')
     expect(store.message).toBe('')
     expect(store.pivotBlockSize).toBe(5)
-    expect(store.rotationSequence).toEqual([0, 1, 2, 3])
+    expect([...store.rotationSequence].sort()).toEqual([0, 1, 2, 3])
     expect(store.rotationDirection).toBe('cw')
     expect(store.readingOrder).toBe('LR-TB')
     expect(store.size).toBe('medium')
@@ -35,7 +44,7 @@ describe('useEncodeStore', () => {
   })
 
   it.each([
-    ['params', { message: 'hi', pivotBlockSize: 5, rotationSequence: [0, 1, 2, 3], rotationDirection: 'cw', readingOrder: 'LR-TB', size: 'medium', overrideWeaknessWarning: false }],
+    ['params', { message: 'hi', pivotBlockSize: 5, rotationSequence: [3, 1, 0, 2], rotationDirection: 'cw', readingOrder: 'LR-TB', size: 'medium', overrideWeaknessWarning: false }],
     ['key', { message: 'hi', key: 'HR1·a1b2', overrideWeaknessWarning: false }],
   ])('builds the %s-mode payload correctly when submitting', async (mode, expectedPayload) => {
     vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
@@ -43,6 +52,7 @@ describe('useEncodeStore', () => {
     store.mode = mode as 'params' | 'key'
     store.message = 'hi'
     store.keyInput = 'HR1·a1b2'
+    store.rotationSequence = [3, 1, 0, 2]
 
     await store.submit()
 
@@ -151,6 +161,17 @@ describe('useEncodeStore', () => {
 
     expect(store.result).toEqual(MOCK_ENCODE_RESPONSE)
     expect(store.status).toBe('error')
+  })
+
+  it('starts on a random rotation sequence and draws a new one on reset', () => {
+    vi.mocked(generateRandomRotationSequence).mockReturnValueOnce([2, 0, 3, 1]).mockReturnValueOnce([1, 3, 0, 2])
+    const store = useEncodeStore()
+
+    expect(store.rotationSequence).toEqual([2, 0, 3, 1])
+
+    store.reset()
+
+    expect(store.rotationSequence).toEqual([1, 3, 0, 2])
   })
 
   it('restores default state when reset is called', async () => {

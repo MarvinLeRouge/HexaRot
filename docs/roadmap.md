@@ -30,7 +30,7 @@
 - ✅ Error tracking relay, so ad-blockers cannot drop frontend errors
 - ✅ Health check endpoint, wired to the production container healthcheck
 - ✅ Structured JSON logging, with no private data
-- ⬜ Random rotation sequence by default
+- ✅ Random rotation sequence by default
 - ⬜ Variable-length rotation sequence (key format v2)
 
 ## Ideas for later (not yet scoped)

@@ -40,9 +40,10 @@ hauteur soient toutes deux des multiples de cette taille.
 L'ordre dans lequel les quatre rotations (0°, 90°, 180° et 270°) sont
 appliquées aux blocs. Le premier bloc reçoit la première rotation, le deuxième
 bloc la deuxième, et ainsi de suite ; après le quatrième bloc, la séquence
-recommence. Faites glisser les rotations pour les réordonner, ou utilisez le
-clavier : saisissez-en une avec Espace, déplacez-la avec les flèches,
-déposez-la avec Espace.
+recommence. Le formulaire démarre sur un ordre aléatoire, pour que la valeur
+par défaut ne soit pas devinable ; Mélanger en tire un autre. Faites glisser
+les rotations pour les réordonner, ou utilisez le clavier : saisissez-en une
+avec Espace, déplacez-la avec les flèches, déposez-la avec Espace.
 
 ### Sens de rotation {#rotation-direction}
 

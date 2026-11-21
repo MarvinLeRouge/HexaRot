@@ -3196,7 +3196,7 @@ and `docs/tests/frontend.md` updated in English and French where user-facing.
 - **type:** feat
 - **id:** FEAT-032
 - **milestone:** v2
-- **status:** backlog
+- **status:** ready
 - **priority:** medium
 - **domain:** key
 - **complexity:** L

@@ -423,6 +423,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md (#314)
 - Load prod config only from shared/env (CHORE-015)
 - Align the node runtime on 26 lts (CHORE-016)
+- Auto-promote ready items (#339)
 
 ### Other
 

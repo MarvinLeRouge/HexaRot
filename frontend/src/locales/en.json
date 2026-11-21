@@ -27,11 +27,6 @@
       "rotationSequence": {
         "label": "Rotation sequence"
       },
-      "rotationDirection": {
-        "label": "Rotation direction",
-        "cw": "Clockwise",
-        "ccw": "Counter-clockwise"
-      },
       "readingOrder": {
         "label": "Reading order"
       },
@@ -127,11 +122,6 @@
         },
         "rotationSequence": {
           "label": "Rotation sequence"
-        },
-        "rotationDirection": {
-          "label": "Rotation direction",
-          "cw": "Clockwise",
-          "ccw": "Counter-clockwise"
         },
         "readingOrder": {
           "label": "Reading order"
@@ -302,12 +292,11 @@
     "BT-LR-ALT": "Bottom to top, left to right (alternating columns)"
   },
   "rotationSequence": {
-    "grabbed": "Picked up {angle}°, position {position} of {total}. Use arrow keys to move, space to drop, escape to cancel.",
-    "moved": "Moved to position {position} of {total}.",
-    "dropped": "Dropped {angle}° at position {position} of {total}.",
-    "cancelled": "Reorder cancelled.",
+    "length": "Number of rotations",
+    "angle": "Rotation {position} of {total}",
+    "allZero": "At least one rotation must be other than 0°, or the cryptogram would be the message in clear.",
     "shuffle": "Shuffle",
-    "shuffled": "New random order: {order}."
+    "shuffled": "New random sequence: {order}."
   },
   "common": {
     "yes": "Yes",
@@ -316,5 +305,9 @@
   "language": {
     "name": "English",
     "switchTo": "Switch to English"
+  },
+  "rotationDirection": {
+    "cw": "Clockwise",
+    "ccw": "Counter-clockwise"
   }
 }

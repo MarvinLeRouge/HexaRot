@@ -37,17 +37,18 @@ hauteur soient toutes deux des multiples de cette taille.
 
 ### Séquence de rotation {#rotation-sequence}
 
-L'ordre dans lequel les quatre rotations (0°, 90°, 180° et 270°) sont
-appliquées aux blocs. Le premier bloc reçoit la première rotation, le deuxième
-bloc la deuxième, et ainsi de suite ; après le quatrième bloc, la séquence
-recommence. Le formulaire démarre sur un ordre aléatoire, pour que la valeur
-par défaut ne soit pas devinable ; Mélanger en tire un autre. Faites glisser
-les rotations pour les réordonner, ou utilisez le clavier : saisissez-en une
-avec Espace, déplacez-la avec les flèches, déposez-la avec Espace.
+Les angles (0°, 90°, 180° ou 270°, dans le sens horaire) appliqués aux blocs,
+de 4 à 32 ; un même angle peut revenir plusieurs fois. Le premier bloc reçoit
+le premier angle, le deuxième bloc le deuxième, et ainsi de suite ; après le
+dernier angle, la séquence recommence. Le formulaire démarre sur 8 angles
+aléatoires, pour que la valeur par défaut ne soit pas devinable : réglez le
+nombre de rotations, choisissez chaque angle, ou appuyez sur Mélanger pour en
+tirer de nouveaux. Au moins un angle doit être différent de 0°.
 
-### Sens de rotation {#rotation-direction}
-
-Indique si les rotations se font dans le sens horaire ou antihoraire.
+Une séquence plus longue rend une clé plus difficile à deviner, mais HexaRot
+reste un chiffrement visuel, pas un chiffrement fort : quelqu'un qui devine la
+taille du bloc pivot et le sens de lecture peut retrouver les angles bloc par
+bloc.
 
 ### Sens de lecture {#reading-order}
 
@@ -83,12 +84,13 @@ un résultat plus solide.
 
 ## La clé {#key}
 
-La clé regroupe tous les réglages (taille du bloc pivot, séquence et sens de
+La clé regroupe tous les réglages (taille du bloc pivot, séquence de
 rotation, sens de lecture et taille du cryptogramme) dans un code court comme
 `HR2·0ZL3ID` : les lettres HR, un numéro de version, un séparateur, puis 6 à
 16 caractères (davantage pour une séquence de rotation plus longue). Les clés
 commençant par `HR1`, créées avant que la séquence puisse varier en longueur,
-fonctionnent toujours.
+fonctionnent toujours ; elles contiennent aussi un sens de rotation, affiché
+quand vous en analysez une.
 
 La clé ne dépend pas du message : vous pouvez la réutiliser pour autant de
 messages que vous le souhaitez. Choisissez "Clé existante" sur la page

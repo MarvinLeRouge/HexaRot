@@ -36,17 +36,17 @@ both multiples of this size.
 
 ### Rotation sequence {#rotation-sequence}
 
-The order in which the four rotations (0°, 90°, 180° and 270°) are applied to
-the blocks. The first block gets the first rotation, the second block the
-second one, and so on; after the fourth block, the sequence starts over.
-The form starts on a random order, so the default is not a guessable one;
-Shuffle draws another. Drag the rotations to reorder them, or use the
-keyboard: pick one up with Space, move it with the arrow keys, drop it with
-Space again.
+The angles (0°, 90°, 180° or 270°, clockwise) applied to the blocks, from 4
+to 32 of them; the same angle can come back several times. The first block
+gets the first angle, the second block the second one, and so on; after the
+last angle, the sequence starts over. The form starts on 8 random angles, so
+the default is not a guessable one: set the number of rotations, pick each
+angle, or press Shuffle to draw new ones. At least one angle must be other
+than 0°.
 
-### Rotation direction {#rotation-direction}
-
-Whether the rotations turn clockwise or counter-clockwise.
+A longer sequence makes a key harder to guess, but HexaRot remains a visual
+cipher, not strong encryption: someone who guesses the pivot block size and
+the reading order can work out the angles one block at a time.
 
 ### Reading order {#reading-order}
 
@@ -79,11 +79,12 @@ stronger result.
 
 ## The key {#key}
 
-The key packs every setting (pivot block size, rotation sequence, rotation
-direction, reading order and cryptogram size) into a short code such as
+The key packs every setting (pivot block size, rotation sequence, reading
+order and cryptogram size) into a short code such as
 `HR2·0ZL3ID`: the letters HR, a version number, a separator, then 6 to 16
 characters (more for a longer rotation sequence). Keys starting with `HR1`,
-made before the rotation sequence could vary in length, still work.
+made before the rotation sequence could vary in length, still work; they
+also hold a rotation direction, shown when you parse one.
 
 The key does not depend on the message, so you can reuse it for as many
 messages as you like. Use "Existing key" on the Encode page to encode with a

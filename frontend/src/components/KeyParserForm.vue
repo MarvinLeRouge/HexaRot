@@ -122,8 +122,10 @@ watch(
         <dt>{{ t('key.parser.result.rotationSequence') }}</dt>
         <dd>{{ store.parsedParams.rotationSequence.map((angle) => `${angle}°`).join(', ') }}</dd>
 
-        <dt>{{ t('key.parser.result.rotationDirection') }}</dt>
-        <dd>{{ t(`key.generator.form.rotationDirection.${store.parsedParams.rotationDirection}`) }}</dd>
+        <template v-if="store.parsedKey?.startsWith('HR1')">
+          <dt>{{ t('key.parser.result.rotationDirection') }}</dt>
+          <dd>{{ t(`rotationDirection.${store.parsedParams.rotationDirection}`) }}</dd>
+        </template>
 
         <dt>{{ t('key.parser.result.readingOrder') }}</dt>
         <dd>{{ t(`readingOrder.${store.parsedParams.readingOrder}`) }}</dd>

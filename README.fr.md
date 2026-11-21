@@ -143,7 +143,7 @@ frontend/
 La V1 est terminée : infra, pipeline de chiffrement, codec de clé, API, frontend
 et couverture de tests sont tous faits. La V2 a déjà livré l'interface en
 français, le score de corrélation (endpoint d'API), l'authentification
-utilisateur, la page d'aide et une séquence de rotation aléatoire par défaut. Restent à venir : un mode de décodage animé et un
+utilisateur, la page d'aide et une séquence de rotation aléatoire de longueur variable (4 à 32 angles). Restent à venir : un mode de décodage animé et un
 ordre de lecture en spirale. Voir [docs/roadmap.fr.md](docs/roadmap.fr.md) pour
 le détail complet.
 

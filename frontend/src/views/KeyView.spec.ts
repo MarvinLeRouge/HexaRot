@@ -31,8 +31,8 @@ describe('KeyView', () => {
   describe('key generator section', () => {
     it('renders all parameter controls', () => {
       const wrapper = mountView()
-      expect(wrapper.find('input[type="number"]').exists()).toBe(true)
-      expect(wrapper.find('select[name="rotationDirection"]').exists()).toBe(true)
+      expect(wrapper.find('input[name="pivotBlockSize"]').exists()).toBe(true)
+      expect(wrapper.find('select[name="rotationDirection"]').exists()).toBe(false)
       expect(wrapper.find('select[name="readingOrder"]').exists()).toBe(true)
     })
 

@@ -12,9 +12,15 @@ import {
 import { ApiError } from '../api/client'
 
 // Deterministic starting sequence: these tests assert on the exact payload.
-vi.mock('../utils/random-rotation-sequence', () => ({
-  generateRandomRotationSequence: () => [0, 1, 2, 3],
-}))
+vi.mock('../utils/random-rotation-sequence', async () => {
+  const actual = await vi.importActual<typeof import('../utils/random-rotation-sequence')>(
+    '../utils/random-rotation-sequence',
+  )
+  return {
+    ...actual,
+    generateRandomRotationSequence: (length = 8) => Array.from({ length }, (_, i) => i % 4),
+  }
+})
 
 vi.mock('../api/client', async () => {
   const actual = await vi.importActual<typeof import('../api/client')>('../api/client')
@@ -48,8 +54,7 @@ describe('EncodeView', () => {
     })
 
     it.each([
-      ['pivotBlockSize', 'input[type="number"]'],
-      ['rotationDirection', 'select[name="rotationDirection"]'],
+      ['pivotBlockSize', 'input[name="pivotBlockSize"]'],
       ['readingOrder', 'select[name="readingOrder"]'],
       ['size', 'select[name="size"]'],
     ])('renders the %s control', (_field, selector) => {
@@ -59,7 +64,7 @@ describe('EncodeView', () => {
 
     it('renders the rotation sequence picker', () => {
       const wrapper = mountView()
-      expect(wrapper.findAll('li').length).toBe(4)
+      expect(wrapper.findAll('.rotation-sequence-picker select').length).toBe(8)
     })
 
     it('renders the submit button', () => {
@@ -94,21 +99,33 @@ describe('EncodeView', () => {
       )
     })
 
-    it('includes the reordered rotation sequence in the payload after using the picker', async () => {
+    it('includes the edited rotation sequence in the payload after using the picker', async () => {
       vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
       const wrapper = mountView()
       await wrapper.find('textarea').setValue('hello world')
-
-      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
-      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
+      await wrapper.find('.rotation-sequence-picker select').setValue('2')
 
       await wrapper.find('form').trigger('submit')
       await flushPromises()
 
       expect(postJson).toHaveBeenCalledWith(
         '/encode',
-        expect.objectContaining({ rotationSequence: [1, 0, 2, 3] }),
+        expect.objectContaining({ rotationSequence: [2, 1, 2, 3, 0, 1, 2, 3], rotationDirection: 'cw' }),
       )
+    })
+
+    it('does not render a rotation direction control', () => {
+      const wrapper = mountView()
+      expect(wrapper.find('select[name="rotationDirection"]').exists()).toBe(false)
+    })
+
+    it('disables submit when every rotation is 0°', async () => {
+      const wrapper = mountView()
+      await wrapper.find('textarea').setValue('hello world')
+      for (const select of wrapper.findAll('.rotation-sequence-picker select')) {
+        await select.setValue('0')
+      }
+      expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
     })
 
     it('shows a loading indicator while the API call is in progress', async () => {
@@ -146,7 +163,6 @@ describe('EncodeView', () => {
     it.each([
       ['size', 'select[name="size"]', 'large'],
       ['readingOrder', 'select[name="readingOrder"]', 'BT-LR-ALT'],
-      ['rotationDirection', 'select[name="rotationDirection"]', 'ccw'],
     ])('includes the selected %s value in the API payload', async (field, selector, value) => {
       vi.mocked(postJson).mockResolvedValue(MOCK_ENCODE_RESPONSE)
       const wrapper = mountView()
@@ -172,7 +188,7 @@ describe('EncodeView', () => {
 
     it('says the size and pivot cannot be combined, rather than blaming the message, when no message could fit', async () => {
       const wrapper = mountView()
-      await wrapper.find('input[type="number"]').setValue(181)
+      await wrapper.find('input[name="pivotBlockSize"]').setValue(181)
       await wrapper.find('select[name="size"]').setValue('large')
 
       expect(wrapper.find('.encode-params-form__budget-warning').text()).toBe(en.encode.form.imageBudget.neverFits)
@@ -181,7 +197,7 @@ describe('EncodeView', () => {
     it('clears the warning once a smaller size is picked', async () => {
       const wrapper = mountView()
       await wrapper.find('textarea').setValue('hello world')
-      await wrapper.find('input[type="number"]').setValue(181)
+      await wrapper.find('input[name="pivotBlockSize"]').setValue(181)
       await wrapper.find('select[name="size"]').setValue('large')
 
       await wrapper.find('select[name="size"]').setValue('medium')
@@ -229,7 +245,7 @@ describe('EncodeView', () => {
 
       await wrapper.find('input[type="radio"][value="params"]').setValue()
 
-      expect(wrapper.find('input[type="number"]').exists()).toBe(true)
+      expect(wrapper.find('input[name="pivotBlockSize"]').exists()).toBe(true)
       expect(wrapper.find('input[type="text"]').exists()).toBe(false)
     })
 
@@ -310,7 +326,7 @@ describe('EncodeView', () => {
     it('marks the result stale when the pivot block size is edited after a successful encode', async () => {
       const wrapper = await submitAndResolve()
 
-      await wrapper.find('input[type="number"]').setValue(99)
+      await wrapper.find('input[name="pivotBlockSize"]').setValue(99)
 
       expect(wrapper.find('.encode-result-panel__stale-notice').exists()).toBe(true)
     })
@@ -335,7 +351,7 @@ describe('EncodeView', () => {
 
     it('clears the stale flag when re-submitting', async () => {
       const wrapper = await submitAndResolve()
-      await wrapper.find('input[type="number"]').setValue(99)
+      await wrapper.find('input[name="pivotBlockSize"]').setValue(99)
       expect(wrapper.find('.encode-result-panel__stale-notice').exists()).toBe(true)
 
       await wrapper.find('form').trigger('submit')

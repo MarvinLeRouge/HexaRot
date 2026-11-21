@@ -8,9 +8,15 @@ import { MOCK_KEY_GENERATE_RESPONSE } from '../__fixtures__/frontend.fixtures'
 import { ApiError } from '../api/client'
 
 // Deterministic starting sequence: these tests assert on the exact payload.
-vi.mock('../utils/random-rotation-sequence', () => ({
-  generateRandomRotationSequence: vi.fn(() => [0, 1, 2, 3]),
-}))
+vi.mock('../utils/random-rotation-sequence', async () => {
+  const actual = await vi.importActual<typeof import('../utils/random-rotation-sequence')>(
+    '../utils/random-rotation-sequence',
+  )
+  return {
+    ...actual,
+    generateRandomRotationSequence: vi.fn((length = 8) => Array.from({ length }, (_, i) => i % 4)),
+  }
+})
 
 vi.mock('../api/client', async () => {
   const actual = await vi.importActual<typeof import('../api/client')>('../api/client')
@@ -35,9 +41,9 @@ describe('KeyGeneratorForm', () => {
 
   it('renders all parameter controls', () => {
     const wrapper = mountForm()
-    expect(wrapper.find('input[type="number"]').exists()).toBe(true)
+    expect(wrapper.find('input[name="pivotBlockSize"]').exists()).toBe(true)
     expect(wrapper.find('.rotation-sequence-picker').exists()).toBe(true)
-    expect(wrapper.find('select[name="rotationDirection"]').exists()).toBe(true)
+    expect(wrapper.find('select[name="rotationDirection"]').exists()).toBe(false)
     expect(wrapper.find('select[name="readingOrder"]').exists()).toBe(true)
   })
 
@@ -50,34 +56,47 @@ describe('KeyGeneratorForm', () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
     const wrapper = mountForm()
 
-    await wrapper.find('input[type="number"]').setValue(7)
-    await wrapper.find('select[name="rotationDirection"]').setValue('ccw')
+    await wrapper.find('input[name="pivotBlockSize"]').setValue(7)
     await wrapper.find('select[name="readingOrder"]').setValue('RL-TB')
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
     expect(postJson).toHaveBeenCalledWith('/key/generate', {
       pivotBlockSize: 7,
-      rotationSequence: [0, 1, 2, 3],
-      rotationDirection: 'ccw',
+      rotationSequence: [0, 1, 2, 3, 0, 1, 2, 3],
+      rotationDirection: 'cw',
       readingOrder: 'RL-TB',
     })
   })
 
-  it('includes the reordered rotation sequence when using the picker', async () => {
+  it('includes the edited rotation sequence when using the picker', async () => {
     vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
     const wrapper = mountForm()
 
-    await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
-    await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
-
+    await wrapper.find('.rotation-sequence-picker select').setValue('2')
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
     expect(postJson).toHaveBeenCalledWith(
       '/key/generate',
-      expect.objectContaining({ rotationSequence: [1, 0, 2, 3] }),
+      expect.objectContaining({ rotationSequence: [2, 1, 2, 3, 0, 1, 2, 3] }),
     )
+  })
+
+  it('names the rotation sequence group for assistive technology', () => {
+    const wrapper = mountForm()
+    const group = wrapper.find('[role="group"]')
+    expect(wrapper.find(`#${group.attributes('aria-labelledby')}`).text()).toBe(
+      en.key.generator.form.rotationSequence.label,
+    )
+  })
+
+  it('disables generate when every rotation is 0°', async () => {
+    const wrapper = mountForm()
+    for (const select of wrapper.findAll('.rotation-sequence-picker select')) {
+      await select.setValue('0')
+    }
+    expect(wrapper.find('button[type="submit"]').attributes('disabled')).toBeDefined()
   })
 
   it('displays the returned HR key after a successful generate response', async () => {
@@ -147,7 +166,7 @@ describe('KeyGeneratorForm', () => {
   it('does not call the API when submitted with an out-of-range pivot block size', async () => {
     const wrapper = mountForm()
 
-    await wrapper.find('input[type="number"]').setValue(0)
+    await wrapper.find('input[name="pivotBlockSize"]').setValue(0)
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
@@ -205,7 +224,7 @@ describe('KeyGeneratorForm', () => {
       await flushPromises()
       expect(wrapper.text()).toContain(MOCK_KEY_GENERATE_RESPONSE.key)
 
-      await wrapper.find('input[type="number"]').setValue(99)
+      await wrapper.find('input[name="pivotBlockSize"]').setValue(99)
 
       expect(wrapper.text()).toContain(MOCK_KEY_GENERATE_RESPONSE.key)
       expect(wrapper.find('.key-generator-form__stale-notice').exists()).toBe(true)
@@ -213,7 +232,7 @@ describe('KeyGeneratorForm', () => {
 
     it('marks the generated key stale when the rotation sequence is shuffled', async () => {
       vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
-      vi.mocked(generateRandomRotationSequence).mockReturnValueOnce([3, 2, 1, 0])
+      vi.mocked(generateRandomRotationSequence).mockReturnValueOnce([3, 2, 1, 0, 0, 0, 1, 1])
       const wrapper = mountForm()
       await wrapper.find('form').trigger('submit')
       await flushPromises()
@@ -229,7 +248,7 @@ describe('KeyGeneratorForm', () => {
       await wrapper.find('form').trigger('submit')
       await flushPromises()
 
-      await wrapper.find('input[type="number"]').setValue(99)
+      await wrapper.find('input[name="pivotBlockSize"]').setValue(99)
 
       const copyButton = wrapper.find('.key-generator-form__result-content button')
       expect(copyButton.attributes('disabled')).toBeUndefined()
@@ -240,7 +259,7 @@ describe('KeyGeneratorForm', () => {
       const wrapper = mountForm()
       await wrapper.find('form').trigger('submit')
       await flushPromises()
-      await wrapper.find('input[type="number"]').setValue(99)
+      await wrapper.find('input[name="pivotBlockSize"]').setValue(99)
       expect(wrapper.find('.key-generator-form__stale-notice').exists()).toBe(true)
 
       await wrapper.find('.key-generator-form__stale-notice button').trigger('click')

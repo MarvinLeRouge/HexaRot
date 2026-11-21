@@ -27,11 +27,6 @@
       "rotationSequence": {
         "label": "Séquence de rotation"
       },
-      "rotationDirection": {
-        "label": "Sens de rotation",
-        "cw": "Sens horaire",
-        "ccw": "Sens antihoraire"
-      },
       "readingOrder": {
         "label": "Sens de lecture"
       },
@@ -127,11 +122,6 @@
         },
         "rotationSequence": {
           "label": "Séquence de rotation"
-        },
-        "rotationDirection": {
-          "label": "Sens de rotation",
-          "cw": "Sens horaire",
-          "ccw": "Sens antihoraire"
         },
         "readingOrder": {
           "label": "Sens de lecture"
@@ -302,12 +292,11 @@
     "BT-LR-ALT": "De bas en haut, de gauche à droite (colonnes alternées)"
   },
   "rotationSequence": {
-    "grabbed": "{angle}° saisi, position {position} sur {total}. Utilisez les flèches pour déplacer, Espace pour déposer, Échap pour annuler.",
-    "moved": "Déplacé en position {position} sur {total}.",
-    "dropped": "{angle}° déposé en position {position} sur {total}.",
-    "cancelled": "Réorganisation annulée.",
+    "length": "Nombre de rotations",
+    "angle": "Rotation {position} sur {total}",
+    "allZero": "Au moins une rotation doit être différente de 0°, sinon le cryptogramme serait le message en clair.",
     "shuffle": "Mélanger",
-    "shuffled": "Nouvel ordre aléatoire : {order}."
+    "shuffled": "Nouvelle séquence aléatoire : {order}."
   },
   "common": {
     "yes": "Oui",
@@ -316,5 +305,9 @@
   "language": {
     "name": "Français",
     "switchTo": "Passer en français"
+  },
+  "rotationDirection": {
+    "cw": "Sens horaire",
+    "ccw": "Sens antihoraire"
   }
 }

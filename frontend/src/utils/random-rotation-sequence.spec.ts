@@ -1,37 +1,47 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { generateRandomRotationSequence } from './random-rotation-sequence'
+import {
+  DEFAULT_ROTATION_SEQUENCE_LENGTH,
+  generateRandomRotationSequence,
+} from './random-rotation-sequence'
 
 describe('generateRandomRotationSequence', () => {
   afterEach(() => {
     vi.restoreAllMocks()
   })
 
-  it('always returns a permutation of [0, 1, 2, 3]', () => {
-    for (let i = 0; i < 200; i++) {
-      expect([...generateRandomRotationSequence()].sort()).toEqual([0, 1, 2, 3])
+  it('returns DEFAULT_ROTATION_SEQUENCE_LENGTH (8) angle indices by default', () => {
+    expect(DEFAULT_ROTATION_SEQUENCE_LENGTH).toBe(8)
+    expect(generateRandomRotationSequence()).toHaveLength(8)
+  })
+
+  it.each([4, 13, 32])('returns %i angle indices, each an integer 0-3', (length) => {
+    const sequence = generateRandomRotationSequence(length)
+    expect(sequence).toHaveLength(length)
+    for (const angle of sequence) {
+      expect([0, 1, 2, 3]).toContain(angle)
     }
   })
 
   it('draws its randomness from crypto.getRandomValues', () => {
     const spy = vi.spyOn(crypto, 'getRandomValues')
-    generateRandomRotationSequence()
+    generateRandomRotationSequence(4)
     expect(spy).toHaveBeenCalled()
   })
 
-  it('produces more than one ordering across draws', () => {
-    const seen = new Set<string>()
-    for (let i = 0; i < 200; i++) seen.add(generateRandomRotationSequence().join(','))
-    expect(seen.size).toBeGreaterThan(1)
+  it('allows repeated angles', () => {
+    const repeated = Array.from({ length: 50 }, () => generateRandomRotationSequence(8)).some(
+      (sequence) => new Set(sequence).size < sequence.length,
+    )
+    expect(repeated).toBe(true)
   })
 
-  it('returns the identity permutation when every draw selects the current index', () => {
-    // With j = r % (i + 1) and r = i, every swap is a no-op.
+  it('draws again when a draw is only 0° rotations', () => {
     let call = 0
     vi.spyOn(crypto, 'getRandomValues').mockImplementation((array) => {
-      const values = array as Uint32Array
-      values[0] = 3 - call++
+      const values = array as Uint8Array
+      values.fill(call++ === 0 ? 0 : 2)
       return array
     })
-    expect(generateRandomRotationSequence()).toEqual([0, 1, 2, 3])
+    expect(generateRandomRotationSequence(4)).toEqual([2, 2, 2, 2])
   })
 })

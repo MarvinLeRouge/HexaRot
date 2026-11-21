@@ -457,6 +457,9 @@ automatically from Conventional Commits history.
 - Bump typescript from 5.9.3 to 6.0.3 in /frontend
 - Bump the npm-minor-patch group in /frontend with 3 updates
 - Bump the npm-minor-patch group in /backend with 5 updates
+- Bump the npm-minor-patch group across 1 directory with 8 updates
+- Bump lint-staged
+- Bump the npm-minor-patch group across 1 directory with 11 updates
 
 ### Refactoring
 

@@ -179,6 +179,27 @@ describe('EncodeService', () => {
   });
 
   describe('errors', () => {
+    it('throws BadRequestException when the sequence leaves every block of the message unrotated', async () => {
+      const service = makeService();
+      const dto = { ...VALID_PARAMS_DTO, rotationSequence: [0, 0, 0, 0, 1] };
+      await expect(service.encode(dto)).rejects.toThrow(/in clear/);
+    });
+
+    it('throws BadRequestException in key mode when the key leaves every block of the message unrotated', async () => {
+      const service = makeService();
+      const key = KeyCodec.encode({
+        version: 2,
+        pivotBlockSize: VALID_PARAMS_DTO.pivotBlockSize as number,
+        rotationSequence: [0, 0, 0, 0, 1],
+        rotationDirection: 'cw',
+        readingOrder: 'LR-TB',
+        size: 'medium',
+      });
+      await expect(service.encode({ message: 'ABC', key })).rejects.toThrow(
+        BadRequestException,
+      );
+    });
+
     it('throws BadRequestException when key is malformed', async () => {
       const service = makeService();
       const dto = { message: 'ABC', key: 'not-a-key' } as EncodeRequestDto;

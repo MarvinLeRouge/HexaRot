@@ -3303,19 +3303,19 @@ the V2 sequence in the encode and key generation forms.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
-### [FEAT-034] Warn when the rotation sequence leaves every block of the grid unrotated
+### [FEAT-034] Reject a rotation sequence that leaves every block of the grid unrotated
 
 - **type:** feat
 - **id:** FEAT-034
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
-- **domain:** cipher
+- **domain:** api
 - **complexity:** S
 - **parent:** ~
 - **depends-on:** FEAT-032
 - **learning:** [effective key strength, weak parameter warnings]
-- **labels:** [feat, domain:cipher, priority:medium, milestone:v2]
+- **labels:** [feat, domain:api, priority:medium, milestone:v2]
 
 #### Description
 
@@ -3328,14 +3328,24 @@ Found by the FEAT-032 security review.
 
 #### Acceptance criteria
 
-- POST /encode (and /correlation-score) detects when every block of the
-  actual grid gets a 0° rotation and reports it as a weakness warning,
-  blocking unless overridden, like the existing GCD warning
-  (`overrideWeaknessWarning`)
-- The frontend shows the warning and the override the same way as the GCD
-  one, in English and French
-- Optionally also warn when most blocks stay unrotated (threshold to decide
-  at planning time)
+- POST /encode rejects with a 400 (individual params and key mode) a
+  sequence whose angles used by the actual grid are all 0°, naming how many
+  leading entries need a non-zero angle. A blocking error rather than the
+  GCD-style warning: that warning never blocks, and its override only hides
+  it, which would hide a cryptogram in clear
+- No frontend change needed: the encode form already shows 400 messages
+- POST /correlation-score is left as is (it only measures, and a perfect
+  correlation is the useful answer there); a "most blocks unrotated"
+  threshold is not added without a concrete need
 - Tests cover a sequence whose non-zero angles all fall beyond the block
-  count, and one that rotates at least one block
+  count, one that rotates at least one block, and a block count at least the
+  sequence length
+
+#### Resolution (2026-11-21)
+
+`backend/src/api/assert-grid-rotated.ts` checks the first min(N, L) angles
+(block i gets `seq[i % L]` whatever the reading order) and is called by
+`EncodeService` right after `buildGrid`, with N = grid cases / T². Unit
+tests on the helper and the service (both modes), an e2e test on
+POST /encode, API docs in English and French.
 <!-- ITEM:END -->

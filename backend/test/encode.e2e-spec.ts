@@ -310,6 +310,18 @@ describe('POST /api/encode (e2e)', () => {
       expect(res.status).toBe(400);
     });
 
+    it('returns 400 when the sequence leaves every block of a short message unrotated', async () => {
+      const res = await request(app.getHttpServer())
+        .post('/api/encode')
+        .send({
+          ...VALID_ENCODE_BODY,
+          message: 'HI',
+          rotationSequence: [0, 0, 0, 0, 0, 0, 0, 0, 1],
+        });
+      expect(res.status).toBe(400);
+      expect((res.body as { message: string }).message).toContain('in clear');
+    });
+
     it('returns 400 when rotationDirection is not cw or ccw', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/encode')

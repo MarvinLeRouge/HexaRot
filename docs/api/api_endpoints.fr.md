@@ -46,6 +46,14 @@ POST /api/encode
 majuscules (certains caractères, comme `ß`, en deviennent deux). Un message
 plus long reçoit une 400.
 
+Le bloc i reçoit l'angle à la position i de la séquence de rotation (la
+séquence recommence quand il y a plus de blocs que d'angles) : un message
+court n'utilise donc que les premiers angles. Si tous les blocs du message
+recevaient 0°, le cryptogramme serait le message en clair : la requête reçoit
+une 400 qui demande un angle non nul parmi les N premières entrées, N étant le
+nombre de blocs du message. Cela vaut avec des paramètres individuels comme
+avec une clé existante.
+
 L'image est limitée à 66 666 666 pixels (un budget mémoire de 200 Mo par
 requête). `small` et `medium` passent toujours dans la limite de longueur ;
 `large` dépend de la longueur du message et du bloc pivot. Une combinaison

@@ -12,6 +12,7 @@ This is primarily a personal project. External contributions (bug reports, fixes
 - **Node.js 26 LTS**: for backend or frontend development without Docker
 - **A local Traefik instance**: required to reach the app through its local domain, see [Local reverse proxy](#local-reverse-proxy) below
 - **Git**
+- [gitleaks](https://github.com/gitleaks/gitleaks): the pre-commit hook scans staged changes for secrets and refuses to commit without it
 
 ## Local setup
 

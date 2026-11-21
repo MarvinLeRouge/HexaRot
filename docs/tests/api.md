@@ -57,6 +57,7 @@ describe('POST /encode')
 - it returns 400 saying the size cannot be used with that pivot block size when
   even an empty message is over the pixel budget
 - it returns 400 when `key` is provided but malformed
+- it returns 400 when the sequence leaves every block of a short message unrotated (FEAT-034)
 - it returns 400 when `rotationDirection` is not 'cw' or 'ccw'
 - it returns 400 when `size` is not 'small', 'medium', or 'large'
 - it returns 400 when extra fields are present in the body (strict DTO)

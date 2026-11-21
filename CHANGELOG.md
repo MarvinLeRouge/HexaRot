@@ -301,6 +301,7 @@ automatically from Conventional Commits history.
 - Log backend entries and requests as structured JSON
 - Start on a random rotation sequence with a shuffle control
 - Encode keys as format v2 with a variable-length rotation sequence
+- Reject a rotation sequence that leaves every block unrotated
 
 ### Miscellaneous
 
@@ -427,6 +428,7 @@ automatically from Conventional Commits history.
 - Auto-promote ready items (#339)
 - Update CHANGELOG.md (#340)
 - Auto-promote ready items (#342)
+- Update CHANGELOG.md (#343)
 
 ### Other
 

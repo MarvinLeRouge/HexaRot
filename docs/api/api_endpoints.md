@@ -46,6 +46,13 @@ POST /api/encode
 uppercase (some characters, such as `ß`, become two). Longer messages get a
 400.
 
+Block i gets the angle at position i of the rotation sequence (cycling when
+there are more blocks than angles), so a short message only uses the first
+few angles. If every block of the message would get 0°, the cryptogram would
+be the message in clear: the request gets a 400 asking for a non-zero angle
+among the first N entries, N being the message's block count. This applies
+with individual params and with an existing key.
+
 The image is limited to 66,666,666 pixels (a 200 MB memory budget per
 request). `small` and `medium` always fit within the message limit; `large`
 depends on the message length and the pivot block size. A combination over

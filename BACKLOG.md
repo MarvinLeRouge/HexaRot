@@ -3191,7 +3191,7 @@ likely guesses from an attacker's list.
 - **domain:** key
 - **complexity:** L
 - **parent:** ~
-- **depends-on:** [FEAT-031]
+- **depends-on:** FEAT-031
 - **learning:** [key format versioning, bit packing, key space analysis]
 - **labels:** [feat, domain:key, priority:medium, milestone:v2]
 

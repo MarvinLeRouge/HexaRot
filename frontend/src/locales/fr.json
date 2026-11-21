@@ -305,7 +305,9 @@
     "grabbed": "{angle}° saisi, position {position} sur {total}. Utilisez les flèches pour déplacer, Espace pour déposer, Échap pour annuler.",
     "moved": "Déplacé en position {position} sur {total}.",
     "dropped": "{angle}° déposé en position {position} sur {total}.",
-    "cancelled": "Réorganisation annulée."
+    "cancelled": "Réorganisation annulée.",
+    "shuffle": "Mélanger",
+    "shuffled": "Nouvel ordre aléatoire : {order}."
   },
   "common": {
     "yes": "Oui",

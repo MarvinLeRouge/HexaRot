@@ -5,6 +5,10 @@ import draggable from 'vuedraggable'
 import RotationSequencePicker from './RotationSequencePicker.vue'
 import en from '../locales/en.json'
 
+vi.mock('../utils/random-rotation-sequence', () => ({
+  generateRandomRotationSequence: vi.fn(() => [2, 0, 3, 1]),
+}))
+
 const i18n = createI18n({ legacy: false, locale: 'en', messages: { en } })
 
 function mountPicker(modelValue: number[]) {
@@ -153,6 +157,38 @@ describe('RotationSequencePicker', () => {
 
       const items = wrapper.findAll('li')
       expect(items.map((item) => item.attributes('tabindex'))).toEqual(['-1', '-1', '0', '-1'])
+    })
+  })
+
+  describe('shuffle', () => {
+    it('emits a freshly drawn random sequence when the shuffle button is clicked', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+
+      await wrapper.find('button.rotation-sequence-picker__shuffle').trigger('click')
+
+      expect(wrapper.emitted('update:modelValue')).toEqual([[[2, 0, 3, 1]]])
+    })
+
+    it('labels the shuffle button and announces the new order', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      const button = wrapper.find('button.rotation-sequence-picker__shuffle')
+
+      expect(button.attributes('type')).toBe('button')
+      expect(button.text()).toBe('Shuffle')
+
+      await button.trigger('click')
+
+      expect(wrapper.find('[role="status"]').text()).toBe('New random order: 180°, 0°, 270°, 90°.')
+    })
+
+    it('drops a keyboard-grabbed item when shuffling', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3])
+      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
+      expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('true')
+
+      await wrapper.find('button.rotation-sequence-picker__shuffle').trigger('click')
+
+      expect(wrapper.findAll('[aria-selected="true"]')).toHaveLength(0)
     })
   })
 })

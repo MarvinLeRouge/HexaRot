@@ -39,8 +39,10 @@ both multiples of this size.
 The order in which the four rotations (0°, 90°, 180° and 270°) are applied to
 the blocks. The first block gets the first rotation, the second block the
 second one, and so on; after the fourth block, the sequence starts over.
-Drag the rotations to reorder them, or use the keyboard: pick one up with
-Space, move it with the arrow keys, drop it with Space again.
+The form starts on a random order, so the default is not a guessable one;
+Shuffle draws another. Drag the rotations to reorder them, or use the
+keyboard: pick one up with Space, move it with the arrow keys, drop it with
+Space again.
 
 ### Rotation direction {#rotation-direction}
 

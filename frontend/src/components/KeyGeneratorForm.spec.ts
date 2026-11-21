@@ -7,12 +7,18 @@ import en from '../locales/en.json'
 import { MOCK_KEY_GENERATE_RESPONSE } from '../__fixtures__/frontend.fixtures'
 import { ApiError } from '../api/client'
 
+// Deterministic starting sequence: these tests assert on the exact payload.
+vi.mock('../utils/random-rotation-sequence', () => ({
+  generateRandomRotationSequence: vi.fn(() => [0, 1, 2, 3]),
+}))
+
 vi.mock('../api/client', async () => {
   const actual = await vi.importActual<typeof import('../api/client')>('../api/client')
   return { ...actual, postJson: vi.fn() }
 })
 
 import { postJson } from '../api/client'
+import { generateRandomRotationSequence } from '../utils/random-rotation-sequence'
 
 function mountForm() {
   const i18n = createI18n({ legacy: false, locale: 'en', messages: { en } })
@@ -202,6 +208,18 @@ describe('KeyGeneratorForm', () => {
       await wrapper.find('input[type="number"]').setValue(99)
 
       expect(wrapper.text()).toContain(MOCK_KEY_GENERATE_RESPONSE.key)
+      expect(wrapper.find('.key-generator-form__stale-notice').exists()).toBe(true)
+    })
+
+    it('marks the generated key stale when the rotation sequence is shuffled', async () => {
+      vi.mocked(postJson).mockResolvedValue(MOCK_KEY_GENERATE_RESPONSE)
+      vi.mocked(generateRandomRotationSequence).mockReturnValueOnce([3, 2, 1, 0])
+      const wrapper = mountForm()
+      await wrapper.find('form').trigger('submit')
+      await flushPromises()
+
+      await wrapper.find('button.rotation-sequence-picker__shuffle').trigger('click')
+
       expect(wrapper.find('.key-generator-form__stale-notice').exists()).toBe(true)
     })
 

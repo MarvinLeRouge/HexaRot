@@ -1,13 +1,20 @@
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount } from '@vue/test-utils'
 import { createI18n } from 'vue-i18n'
-import draggable from 'vuedraggable'
 import RotationSequencePicker from './RotationSequencePicker.vue'
 import en from '../locales/en.json'
 
-vi.mock('../utils/random-rotation-sequence', () => ({
-  generateRandomRotationSequence: vi.fn(() => [2, 0, 3, 1]),
-}))
+vi.mock('../utils/random-rotation-sequence', async () => {
+  const actual = await vi.importActual<typeof import('../utils/random-rotation-sequence')>(
+    '../utils/random-rotation-sequence',
+  )
+  return {
+    ...actual,
+    generateRandomRotationSequence: vi.fn((length = 8) => Array.from({ length }, () => 3)),
+  }
+})
+
+import { generateRandomRotationSequence } from '../utils/random-rotation-sequence'
 
 const i18n = createI18n({ legacy: false, locale: 'en', messages: { en } })
 
@@ -18,177 +25,135 @@ function mountPicker(modelValue: number[]) {
   })
 }
 
+function lastEmitted(wrapper: ReturnType<typeof mountPicker>): number[] | undefined {
+  const events = wrapper.emitted('update:modelValue') as number[][][] | undefined
+  return events?.at(-1)?.[0]
+}
+
 describe('RotationSequencePicker', () => {
-  it('renders the four rotation angles in the order given by modelValue', () => {
-    const wrapper = mountPicker([0, 1, 2, 3])
-
-    const items = wrapper.findAll('li')
-    expect(items.map((item) => item.text())).toEqual(['0°', '90°', '180°', '270°'])
+  beforeEach(() => {
+    vi.mocked(generateRandomRotationSequence).mockClear()
   })
 
-  it('renders angles reordered when modelValue is a different permutation', () => {
-    const wrapper = mountPicker([3, 1, 0, 2])
-
-    const items = wrapper.findAll('li')
-    expect(items.map((item) => item.text())).toEqual(['270°', '90°', '0°', '180°'])
-  })
-
-  it('emits the reordered index permutation when the draggable list is reordered', async () => {
-    const wrapper = mountPicker([0, 1, 2, 3])
-
-    await wrapper.findComponent(draggable).vm.$emit('update:modelValue', [
-      { index: 2, angle: 180 },
-      { index: 0, angle: 0 },
-      { index: 1, angle: 90 },
-      { index: 3, angle: 270 },
+  it('renders one angle select per position, showing the sequence angles', () => {
+    const wrapper = mountPicker([0, 1, 2, 3, 3])
+    const selects = wrapper.findAll('select')
+    expect(selects).toHaveLength(5)
+    expect(selects.map((select) => (select.element as HTMLSelectElement).value)).toEqual([
+      '0',
+      '1',
+      '2',
+      '3',
+      '3',
     ])
-
-    expect(wrapper.emitted('update:modelValue')).toEqual([[[2, 0, 1, 3]]])
   })
 
-  describe('keyboard accessibility', () => {
-    it('exposes listbox/option roles for assistive technology', () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      expect(wrapper.find('[role="listbox"]').exists()).toBe(true)
-      expect(wrapper.findAll('[role="option"]').length).toBe(4)
-    })
+  it('offers the four angles in each select', () => {
+    const wrapper = mountPicker([0, 1, 2, 3])
+    const options = wrapper.findAll('select')[0].findAll('option')
+    expect(options.map((option) => option.text())).toEqual(['0°', '90°', '180°', '270°'])
+  })
 
-    it('gives only the first item a roving tabindex by default', () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      const items = wrapper.findAll('li')
-      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', '-1', '-1'])
-    })
+  it('labels each select with its position for assistive technology', () => {
+    const wrapper = mountPicker([0, 1, 2, 3])
+    expect(wrapper.findAll('select')[2].attributes('aria-label')).toBe('Rotation 3 of 4')
+  })
 
-    it('moves the roving tabindex to the next item on ArrowRight without reordering', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
+  it('emits the sequence with the edited angle when a select changes', async () => {
+    const wrapper = mountPicker([0, 1, 2, 3])
+    await wrapper.findAll('select')[1].setValue('3')
+    expect(lastEmitted(wrapper)).toEqual([0, 3, 2, 3])
+  })
 
-      const items = wrapper.findAll('li')
-      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['-1', '0', '-1', '-1'])
-      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
-    })
+  it('shows the length in a number input bounded to 4-32', () => {
+    const wrapper = mountPicker([0, 1, 2, 3, 1])
+    const input = wrapper.find('input[type="number"]')
+    expect((input.element as HTMLInputElement).value).toBe('5')
+    expect(input.attributes('min')).toBe('4')
+    expect(input.attributes('max')).toBe('32')
+  })
 
-    it('moves the roving tabindex to the previous item on ArrowLeft without reordering', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[1].trigger('keydown', { key: 'ArrowLeft' })
+  it('appends random angles when the length grows', async () => {
+    const wrapper = mountPicker([0, 1, 2, 3])
+    await wrapper.find('input[type="number"]').setValue('6')
+    expect(lastEmitted(wrapper)).toEqual([0, 1, 2, 3, 3, 3])
+    expect(generateRandomRotationSequence).toHaveBeenCalledWith(2)
+  })
 
-      const items = wrapper.findAll('li')
-      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', '-1', '-1'])
-      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
-    })
+  it('drops the last angles when the length shrinks', async () => {
+    const wrapper = mountPicker([0, 1, 2, 3, 1, 2])
+    await wrapper.find('input[type="number"]').setValue('4')
+    expect(lastEmitted(wrapper)).toEqual([0, 1, 2, 3])
+  })
 
-    it('does nothing on ArrowLeft from the first item', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowLeft' })
+  it('clamps a length over 32 instead of emitting an invalid sequence', async () => {
+    const wrapper = mountPicker([0, 1, 2, 3])
+    await wrapper.find('input[type="number"]').setValue('40')
+    expect(lastEmitted(wrapper)).toHaveLength(32)
+  })
 
-      const items = wrapper.findAll('li')
-      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', '-1', '-1'])
-    })
+  it('clamps a length under 4 and shows the clamped value back in the field', async () => {
+    const wrapper = mountPicker([0, 1, 2, 3, 1, 1])
+    const input = wrapper.find('input[type="number"]')
+    await input.setValue('1')
+    expect(lastEmitted(wrapper)).toHaveLength(4)
+    expect((input.element as HTMLInputElement).value).toBe('4')
+  })
 
-    it('does nothing on ArrowRight from the last item', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[3].trigger('keydown', { key: 'ArrowRight' })
+  it('shows the clamped value back even when it equals the current length', async () => {
+    const wrapper = mountPicker([0, 1, 2, 3])
+    const input = wrapper.find('input[type="number"]')
+    await input.setValue('2')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
+    expect((input.element as HTMLInputElement).value).toBe('4')
+  })
 
-      const items = wrapper.findAll('li')
-      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['0', '-1', '-1', '-1'])
-      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
-    })
-
-    it('moves actual DOM focus to the destination item on ArrowRight, not just the roving tabindex', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      const focusSpy = vi.spyOn(HTMLElement.prototype, 'focus')
-
-      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
-
-      const destination = wrapper.findAll('li')[1].element
-      expect(focusSpy.mock.instances).toContain(destination)
-      focusSpy.mockRestore()
-    })
-
-    it('grabs an item with Space, marking it aria-selected', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
-      expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('true')
-    })
-
-    it('moves a grabbed item with ArrowRight, emitting the reordered indices', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
-      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
-
-      expect(wrapper.emitted('update:modelValue')).toEqual([[[1, 0, 2, 3]]])
-    })
-
-    it('drops the grabbed item on a second Space, clearing aria-selected', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
-      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
-      expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('false')
-    })
-
-    it('cancels an in-progress reorder on Escape, emitting the pre-grab order', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
-      await wrapper.findAll('li')[0].trigger('keydown', { key: 'ArrowRight' })
-      await wrapper.findAll('li')[0].trigger('keydown', { key: 'Escape' })
-
-      expect(wrapper.emitted('update:modelValue')?.at(-1)).toEqual([[0, 1, 2, 3]])
-      expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('false')
-    })
-
-    it('does nothing on Escape when no item is grabbed', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[0].trigger('keydown', { key: 'Escape' })
-
-      expect(wrapper.emitted('update:modelValue')).toBeUndefined()
-      expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('false')
-    })
-
-    it('announces the grabbed state through the live region', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
-      expect(wrapper.find('[role="status"]').text()).toContain('Picked up')
-    })
-
-    it('moves the roving tabindex to whichever item receives real DOM focus', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-
-      await wrapper.findAll('li')[2].trigger('focus')
-
-      const items = wrapper.findAll('li')
-      expect(items.map((item) => item.attributes('tabindex'))).toEqual(['-1', '-1', '0', '-1'])
-    })
+  it('ignores an empty or non-numeric length while the user is typing', async () => {
+    const wrapper = mountPicker([0, 1, 2, 3])
+    await wrapper.find('input[type="number"]').setValue('')
+    expect(wrapper.emitted('update:modelValue')).toBeUndefined()
   })
 
   describe('shuffle', () => {
-    it('emits a freshly drawn random sequence when the shuffle button is clicked', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-
+    it('emits a fresh random sequence of the current length', async () => {
+      const wrapper = mountPicker([0, 1, 2, 3, 1])
       await wrapper.find('button.rotation-sequence-picker__shuffle').trigger('click')
-
-      expect(wrapper.emitted('update:modelValue')).toEqual([[[2, 0, 3, 1]]])
+      expect(generateRandomRotationSequence).toHaveBeenCalledWith(5)
+      expect(lastEmitted(wrapper)).toEqual([3, 3, 3, 3, 3])
     })
 
-    it('labels the shuffle button and announces the new order', async () => {
+    it('labels the shuffle button and announces the new sequence', async () => {
       const wrapper = mountPicker([0, 1, 2, 3])
       const button = wrapper.find('button.rotation-sequence-picker__shuffle')
-
       expect(button.attributes('type')).toBe('button')
       expect(button.text()).toBe('Shuffle')
 
       await button.trigger('click')
 
-      expect(wrapper.find('[role="status"]').text()).toBe('New random order: 180°, 0°, 270°, 90°.')
+      expect(wrapper.find('[role="status"]').text()).toBe(
+        'New random sequence: 270°, 270°, 270°, 270°.',
+      )
+    })
+  })
+
+  describe('all-0° sequence', () => {
+    it('shows an error and marks the selects invalid when every angle is 0°', () => {
+      const wrapper = mountPicker([0, 0, 0, 0])
+      expect(wrapper.find('.rotation-sequence-picker__error').text()).toBe(en.rotationSequence.allZero)
+      expect(wrapper.findAll('select')[0].attributes('aria-invalid')).toBe('true')
     })
 
-    it('drops a keyboard-grabbed item when shuffling', async () => {
-      const wrapper = mountPicker([0, 1, 2, 3])
-      await wrapper.findAll('li')[0].trigger('keydown', { key: ' ' })
-      expect(wrapper.findAll('li')[0].attributes('aria-selected')).toBe('true')
+    it('announces the error and ties it to the selects', () => {
+      const wrapper = mountPicker([0, 0, 0, 0])
+      const error = wrapper.find('.rotation-sequence-picker__error')
+      expect(error.attributes('role')).toBe('alert')
+      expect(wrapper.findAll('select')[0].attributes('aria-describedby')).toBe(error.attributes('id'))
+    })
 
-      await wrapper.find('button.rotation-sequence-picker__shuffle').trigger('click')
-
-      expect(wrapper.findAll('[aria-selected="true"]')).toHaveLength(0)
+    it('shows no error as soon as one angle is not 0°', () => {
+      const wrapper = mountPicker([0, 0, 0, 2])
+      expect(wrapper.find('.rotation-sequence-picker__error').exists()).toBe(false)
+      expect(wrapper.findAll('select')[0].attributes('aria-invalid')).toBeUndefined()
     })
   })
 })

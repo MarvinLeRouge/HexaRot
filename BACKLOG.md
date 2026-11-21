@@ -3269,7 +3269,7 @@ generate/parse round trips matching.
 - **type:** feat
 - **id:** FEAT-033
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** frontend
 - **complexity:** M
@@ -3300,6 +3300,20 @@ the V2 sequence in the encode and key generation forms.
   HexaRot is a visual cipher, not strong encryption (an attacker who guesses
   the pivot size and reading order can recover angles block by block)
 - Tests cover the editor, the random draw and the all-0° guard
+
+#### Resolution (2026-11-21)
+
+`RotationSequencePicker` is rewritten without drag and drop (`vuedraggable`
+removed): a "Number of rotations" input (4-32, clamped, growing appends
+random angles), one native `select` per position labelled "Rotation n of L",
+an all-0° error with `aria-invalid`, and Shuffle. Both forms start on 8
+random angles (`generateRandomRotationSequence(length)`, drawn again if all
+0°), block submit on an all-0° sequence and no longer show a direction; the
+stores send `rotationDirection: 'cw'`, which the API still requires. The key
+parser shows the direction only for an `HR1` key (`parsedKey` in the
+store). Help page (EN/FR): the sequence section explains length, free angles
+and the visual-cipher limit, the "Rotation direction" section is removed
+from `HELP_SECTIONS` and both help files.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->

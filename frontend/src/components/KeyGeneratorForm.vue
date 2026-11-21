@@ -4,6 +4,7 @@ import { useI18n } from 'vue-i18n'
 import { useKeyStore } from '../stores/key'
 import { READING_ORDERS } from '../constants/reading-orders'
 import { revealResult } from '../utils/reveal-result'
+import { isAllZeroRotationSequence } from '../utils/random-rotation-sequence'
 import RotationSequencePicker from './RotationSequencePicker.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 
@@ -12,7 +13,12 @@ const { t } = useI18n()
 
 const canGenerate = computed(() => {
   if (store.generateStatus === 'loading') return false
-  return Number.isInteger(store.pivotBlockSize) && store.pivotBlockSize >= 1 && store.pivotBlockSize <= 255
+  return (
+    Number.isInteger(store.pivotBlockSize) &&
+    store.pivotBlockSize >= 1 &&
+    store.pivotBlockSize <= 255 &&
+    !isAllZeroRotationSequence(store.rotationSequence)
+  )
 })
 
 function handleGenerate(): void {
@@ -36,7 +42,7 @@ watch(
 )
 
 watch(
-  () => [store.pivotBlockSize, store.rotationSequence, store.rotationDirection, store.readingOrder],
+  () => [store.pivotBlockSize, store.rotationSequence, store.readingOrder],
   () => store.invalidateGenerated(),
 )
 
@@ -68,27 +74,21 @@ async function copyKey(): Promise<void> {
       {{ t('key.generator.form.pivotBlockSize.label') }}
       <input
         v-model.number="store.pivotBlockSize"
+        name="pivotBlockSize"
         type="number"
         min="1"
         max="255"
       >
     </label>
 
-    <div class="key-generator-form__field">
-      {{ t('key.generator.form.rotationSequence.label') }}
+    <div
+      class="key-generator-form__field"
+      role="group"
+      aria-labelledby="key-rotation-sequence-label"
+    >
+      <span id="key-rotation-sequence-label">{{ t('key.generator.form.rotationSequence.label') }}</span>
       <RotationSequencePicker v-model="store.rotationSequence" />
     </div>
-
-    <label class="key-generator-form__field">
-      {{ t('key.generator.form.rotationDirection.label') }}
-      <select
-        v-model="store.rotationDirection"
-        name="rotationDirection"
-      >
-        <option value="cw">{{ t('key.generator.form.rotationDirection.cw') }}</option>
-        <option value="ccw">{{ t('key.generator.form.rotationDirection.ccw') }}</option>
-      </select>
-    </label>
 
     <label class="key-generator-form__field">
       {{ t('key.generator.form.readingOrder.label') }}

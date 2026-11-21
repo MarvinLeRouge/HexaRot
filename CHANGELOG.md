@@ -303,6 +303,7 @@ automatically from Conventional Commits history.
 - Start on a random rotation sequence with a shuffle control
 - Encode keys as format v2 with a variable-length rotation sequence
 - Reject a rotation sequence that leaves every block unrotated
+- Edit a variable-length rotation sequence without a direction control
 
 ### Miscellaneous
 

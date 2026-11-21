@@ -15,7 +15,7 @@ vi.mock('../utils/random-rotation-sequence', async () => {
   const actual = await vi.importActual<typeof import('../utils/random-rotation-sequence')>(
     '../utils/random-rotation-sequence',
   )
-  return { generateRandomRotationSequence: vi.fn(actual.generateRandomRotationSequence) }
+  return { ...actual, generateRandomRotationSequence: vi.fn(actual.generateRandomRotationSequence) }
 })
 
 import { generateRandomRotationSequence } from '../utils/random-rotation-sequence'
@@ -32,8 +32,8 @@ describe('useEncodeStore', () => {
     expect(store.mode).toBe('params')
     expect(store.message).toBe('')
     expect(store.pivotBlockSize).toBe(5)
-    expect([...store.rotationSequence].sort()).toEqual([0, 1, 2, 3])
-    expect(store.rotationDirection).toBe('cw')
+    expect(store.rotationSequence).toHaveLength(8)
+    expect(store.rotationSequence.some((angle) => angle !== 0)).toBe(true)
     expect(store.readingOrder).toBe('LR-TB')
     expect(store.size).toBe('medium')
     expect(store.overrideWeaknessWarning).toBe(false)
@@ -164,14 +164,14 @@ describe('useEncodeStore', () => {
   })
 
   it('starts on a random rotation sequence and draws a new one on reset', () => {
-    vi.mocked(generateRandomRotationSequence).mockReturnValueOnce([2, 0, 3, 1]).mockReturnValueOnce([1, 3, 0, 2])
+    vi.mocked(generateRandomRotationSequence).mockReturnValueOnce([2, 0, 3, 1, 1, 0, 0, 2]).mockReturnValueOnce([1, 3, 0, 2, 2, 2, 0, 1])
     const store = useEncodeStore()
 
-    expect(store.rotationSequence).toEqual([2, 0, 3, 1])
+    expect(store.rotationSequence).toEqual([2, 0, 3, 1, 1, 0, 0, 2])
 
     store.reset()
 
-    expect(store.rotationSequence).toEqual([1, 3, 0, 2])
+    expect(store.rotationSequence).toEqual([1, 3, 0, 2, 2, 2, 0, 1])
   })
 
   it('restores default state when reset is called', async () => {

@@ -1,8 +1,8 @@
 # HexaRot Test Spec: Frontend Domain
 
 Covers: FEAT-014 (encode view), FEAT-015 (decode view), FEAT-016 (key view),
-their associated Pinia stores, FEAT-020 (French interface), FEAT-025 (help page) and FEAT-031 (random rotation
-sequence).
+their associated Pinia stores, FEAT-020 (French interface), FEAT-025 (help page), FEAT-031 (random rotation
+sequence) and FEAT-033 (rotation sequence editor).
 
 All tests in this document are **unit tests** using Vitest and Vue Test Utils.
 API calls are mocked with `vi.mock`, so no real HTTP requests are made.
@@ -17,8 +17,8 @@ describe('EncodeView')
 
 **Initial state**
 - it renders the message input field
-- it renders all parameter controls (pivotBlockSize, rotationDirection, readingOrder,
-  size, rotationSequence)
+- it renders all parameter controls (pivotBlockSize, readingOrder, size,
+  rotationSequence); no rotationDirection control since FEAT-033
 - it renders the submit button
 - it does not display a cryptogram preview on initial render
 - it does not display warnings or unknown chars on initial render
@@ -246,30 +246,56 @@ describe('router guards') - help page
 
 ---
 
-## 9. Random rotation sequence (FEAT-031)
+## 9. Rotation sequence editor (FEAT-031, FEAT-033)
 
 ```
 describe('generateRandomRotationSequence')
 ```
 
-- it always returns a permutation of [0, 1, 2, 3]
+- it returns DEFAULT_ROTATION_SEQUENCE_LENGTH (8) angle indices by default
+- it returns the requested number of angle indices, each an integer 0-3
 - it draws its randomness from crypto.getRandomValues
-- it produces more than one ordering across draws
-- it returns the identity permutation when every draw selects the current index
+- it allows repeated angles
+- it draws again when a draw is only 0° rotations
 
 ```
-describe('RotationSequencePicker') - shuffle
+describe('RotationSequencePicker')
 ```
 
-- it emits a freshly drawn random sequence when the shuffle button is clicked
-- it labels the shuffle button and announces the new order
-- it drops a keyboard-grabbed item when shuffling
+- it renders one angle select per position, showing the sequence angles
+- it offers the four angles in each select
+- it labels each select with its position for assistive technology
+- it emits the sequence with the edited angle when a select changes
+- it shows the length in a number input bounded to 4-32
+- it appends random angles when the length grows, drops the last ones when it shrinks
+- it clamps a length outside 4-32 and shows the clamped value back in the field
+- it ignores an empty length
+- shuffle: it emits a fresh random sequence of the current length, labels the button and announces the new sequence
+- all-0° sequence: it shows an error and marks the selects invalid, announces it (`role="alert"`) and ties it to the selects, and no error as soon as one angle is not 0°
 
 ```
-describe('KeyGeneratorForm') - stale key invalidation
+describe('KeyGeneratorForm'), describe('EncodeView')
 ```
 
 - it marks the generated key stale when the rotation sequence is shuffled
+- it sends the edited rotation sequence, with rotationDirection 'cw'
+- it disables generate / submit when every rotation is 0°
+- it renders no rotation direction control
+- it names the rotation sequence group for assistive technology
+
+```
+describe('KeyParserForm')
+```
+
+- it shows the rotation direction, as a human-readable label, for a V1 key
+- it does not show a rotation direction for a V2 key
+
+```
+describe('useKeyStore')
+```
+
+- it starts on 8 random angles and draws new ones on reset
+- it remembers which key the parsed parameters came from
 
 ---
 

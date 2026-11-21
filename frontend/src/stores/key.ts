@@ -11,6 +11,7 @@ export type KeyStatus = 'idle' | 'loading' | 'success' | 'error'
 export interface KeyParseResult {
   pivotBlockSize: number
   rotationSequence: number[]
+  /** Always `cw` for a V2 key, whose angles already carry the direction. */
   rotationDirection: RotationDirection
   readingOrder: string
 }
@@ -18,7 +19,6 @@ export interface KeyParseResult {
 interface KeyState {
   pivotBlockSize: number
   rotationSequence: number[]
-  rotationDirection: RotationDirection
   readingOrder: ReadingOrder
   generateStatus: KeyStatus
   generatedKey: string | null
@@ -29,6 +29,8 @@ interface KeyState {
   keyInput: string
   parseStatus: KeyStatus
   parsedParams: KeyParseResult | null
+  /** The normalized key `parsedParams` came from, to tell V1 keys apart. */
+  parsedKey: string | null
   parsedParamsStale: boolean
   parseErrorMessage: string | null
   parseErrorCode: 'network' | 'unknown' | null
@@ -38,7 +40,6 @@ function initialState(): KeyState {
   return {
     pivotBlockSize: 5,
     rotationSequence: generateRandomRotationSequence(),
-    rotationDirection: 'cw',
     readingOrder: 'LR-TB',
     generateStatus: 'idle',
     generatedKey: null,
@@ -49,6 +50,7 @@ function initialState(): KeyState {
     keyInput: '',
     parseStatus: 'idle',
     parsedParams: null,
+    parsedKey: null,
     parsedParamsStale: false,
     parseErrorMessage: null,
     parseErrorCode: null,
@@ -71,7 +73,8 @@ export const useKeyStore = defineStore('key', {
         const response = await postJson<{ key: string }>('/key/generate', {
           pivotBlockSize: this.pivotBlockSize,
           rotationSequence: this.rotationSequence,
-          rotationDirection: this.rotationDirection,
+          // V2 keys hold no direction (angles carry it); the API still requires the field.
+          rotationDirection: 'cw',
           readingOrder: this.readingOrder,
         })
         this.generatedKey = response.key
@@ -99,7 +102,9 @@ export const useKeyStore = defineStore('key', {
       // successful result. Only a successful response replaces it, below.
 
       try {
-        this.parsedParams = await postJson<KeyParseResult>('/key/parse', { key: normalizeKeyInput(this.keyInput) })
+        const key = normalizeKeyInput(this.keyInput)
+        this.parsedParams = await postJson<KeyParseResult>('/key/parse', { key })
+        this.parsedKey = key
         this.parsedParamsStale = false
         this.parseStatus = 'success'
       } catch (err) {

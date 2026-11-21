@@ -5,7 +5,6 @@ import { generateRandomRotationSequence } from '../utils/random-rotation-sequenc
 import type { ReadingOrder } from '../constants/reading-orders'
 
 export type EncodeMode = 'params' | 'key'
-export type RotationDirection = 'cw' | 'ccw'
 export type CryptogramSize = 'small' | 'medium' | 'large'
 export type EncodeStatus = 'idle' | 'loading' | 'success' | 'error'
 
@@ -29,7 +28,6 @@ interface EncodeState {
   message: string
   pivotBlockSize: number
   rotationSequence: number[]
-  rotationDirection: RotationDirection
   readingOrder: ReadingOrder
   size: CryptogramSize
   keyInput: string
@@ -47,7 +45,6 @@ function initialState(): EncodeState {
     message: '',
     pivotBlockSize: 5,
     rotationSequence: generateRandomRotationSequence(),
-    rotationDirection: 'cw',
     readingOrder: 'LR-TB',
     size: 'medium',
     keyInput: '',
@@ -82,7 +79,8 @@ export const useEncodeStore = defineStore('encode', {
               message: this.message,
               pivotBlockSize: this.pivotBlockSize,
               rotationSequence: this.rotationSequence,
-              rotationDirection: this.rotationDirection,
+              // V2 keys hold no direction (angles carry it); the API still requires the field.
+              rotationDirection: 'cw',
               readingOrder: this.readingOrder,
               size: this.size,
               overrideWeaknessWarning: this.overrideWeaknessWarning,

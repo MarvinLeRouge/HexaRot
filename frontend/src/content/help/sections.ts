@@ -9,7 +9,6 @@ export const HELP_SECTIONS = [
   'message',
   'pivot-block-size',
   'rotation-sequence',
-  'rotation-direction',
   'reading-order',
   'cryptogram-size',
   'weakness-warning',

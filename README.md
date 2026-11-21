@@ -141,7 +141,7 @@ frontend/
 
 V1 is complete: infra, cipher pipeline, key codec, API, frontend, and test
 coverage are all done. V2 has already shipped the French interface, the
-correlation score (API endpoint), user authentication, the help page and a random default rotation sequence. Still
+correlation score (API endpoint), user authentication, the help page and a random, variable-length rotation sequence (4 to 32 angles). Still
 to come: an animated decoding mode and a spiral reading order. See
 [docs/roadmap.md](docs/roadmap.md) for the full breakdown.
 

@@ -1,15 +1,14 @@
 <script setup lang="ts">
-import { computed, nextTick, ref } from 'vue'
-import draggable from 'vuedraggable'
+import { computed, ref, useId } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { generateRandomRotationSequence } from '../utils/random-rotation-sequence'
+import {
+  MAX_ROTATION_SEQUENCE_LENGTH,
+  MIN_ROTATION_SEQUENCE_LENGTH,
+  generateRandomRotationSequence,
+  isAllZeroRotationSequence,
+} from '../utils/random-rotation-sequence'
 
 const ANGLES = [0, 90, 180, 270] as const
-
-interface RotationItem {
-  index: number
-  angle: number
-}
 
 const props = defineProps<{
   modelValue: number[]
@@ -21,166 +20,84 @@ const emit = defineEmits<{
 
 const { t } = useI18n()
 
-const items = computed<RotationItem[]>({
-  get: () => props.modelValue.map((index) => ({ index, angle: ANGLES[index] })),
-  set: (value) => emit('update:modelValue', value.map((item) => item.index)),
-})
-
-const focusedKey = ref<number>(items.value[0]?.index ?? 0)
-const grabbedKey = ref<number | null>(null)
 const liveMessage = ref('')
-const itemEls = new Map<number, HTMLLIElement>()
-let preGrabOrder: RotationItem[] = []
+const errorId = useId()
+const allZero = computed(() => isAllZeroRotationSequence(props.modelValue))
 
-function setItemRef(key: number, el: Element | null): void {
-  if (el instanceof HTMLLIElement) {
-    itemEls.set(key, el)
-  } else {
-    itemEls.delete(key)
-  }
+function setAngle(position: number, value: string): void {
+  const next = [...props.modelValue]
+  next[position] = Number(value)
+  emit('update:modelValue', next)
 }
 
-async function focusItem(key: number): Promise<void> {
-  await nextTick()
-  itemEls.get(key)?.focus()
-}
-
-function moveItem(fromPos: number, toPos: number): void {
-  const next = [...items.value]
-  const [moved] = next.splice(fromPos, 1)
-  next.splice(toPos, 0, moved)
-  items.value = next
-}
-
-function announce(key: string, params: Record<string, number>): void {
-  liveMessage.value = t(key, params)
+function setLength(input: HTMLInputElement): void {
+  const requested = Number.parseInt(input.value, 10)
+  // An empty field is not a length yet.
+  if (Number.isNaN(requested)) return
+  const length = Math.min(MAX_ROTATION_SEQUENCE_LENGTH, Math.max(MIN_ROTATION_SEQUENCE_LENGTH, requested))
+  // Show the clamped length even when it equals the current one (no re-render then).
+  input.value = String(length)
+  const current = props.modelValue
+  if (length === current.length) return
+  emit(
+    'update:modelValue',
+    length < current.length
+      ? current.slice(0, length)
+      : [...current, ...generateRandomRotationSequence(length - current.length)],
+  )
 }
 
 function shuffle(): void {
-  const sequence = generateRandomRotationSequence()
-  grabbedKey.value = null
+  const sequence = generateRandomRotationSequence(props.modelValue.length)
   emit('update:modelValue', sequence)
   liveMessage.value = t('rotationSequence.shuffled', {
     order: sequence.map((index) => `${ANGLES[index]}°`).join(', '),
   })
 }
-
-function onKeydown(event: KeyboardEvent, key: number): void {
-  const pos = items.value.findIndex((item) => item.index === key)
-  const angle = ANGLES[key]
-
-  if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
-    event.preventDefault()
-    const dir = event.key === 'ArrowRight' ? 1 : -1
-    const newPos = pos + dir
-    if (newPos < 0 || newPos >= items.value.length) return
-
-    if (grabbedKey.value === key) {
-      moveItem(pos, newPos)
-      announce('rotationSequence.moved', { position: newPos + 1, total: items.value.length })
-      void focusItem(key)
-    } else {
-      const destinationKey = items.value[newPos].index
-      focusedKey.value = destinationKey
-      void focusItem(destinationKey)
-    }
-    return
-  }
-
-  if (event.key === ' ' || event.key === 'Enter') {
-    event.preventDefault()
-    if (grabbedKey.value === key) {
-      grabbedKey.value = null
-      announce('rotationSequence.dropped', { angle, position: pos + 1, total: items.value.length })
-    } else {
-      preGrabOrder = [...items.value]
-      grabbedKey.value = key
-      announce('rotationSequence.grabbed', { angle, position: pos + 1, total: items.value.length })
-    }
-    return
-  }
-
-  if (event.key === 'Escape' && grabbedKey.value === key) {
-    event.preventDefault()
-    items.value = preGrabOrder
-    grabbedKey.value = null
-    liveMessage.value = t('rotationSequence.cancelled')
-    void focusItem(key)
-  }
-}
 </script>
 
 <template>
-  <div class="rotation-sequence-picker-field">
-    <draggable
-      v-model="items"
-      item-key="index"
-      tag="ul"
-      class="rotation-sequence-picker"
-      role="listbox"
-      :aria-label="t('encode.form.rotationSequence.label')"
-    >
-      <template #item="{ element }: { element: RotationItem }">
-        <li
-          :ref="(el) => setItemRef(element.index, el as Element | null)"
-          class="rotation-sequence-picker__item"
-          role="option"
-          aria-roledescription="sortable item"
-          :aria-selected="element.index === grabbedKey"
-          :tabindex="element.index === focusedKey ? 0 : -1"
-          :class="{ 'rotation-sequence-picker__item--grabbed': element.index === grabbedKey }"
-          @keydown="onKeydown($event, element.index)"
-          @focus="focusedKey = element.index"
+  <div class="rotation-sequence-picker">
+    <label class="rotation-sequence-picker__length">
+      {{ t('rotationSequence.length') }}
+      <input
+        type="number"
+        :min="MIN_ROTATION_SEQUENCE_LENGTH"
+        :max="MAX_ROTATION_SEQUENCE_LENGTH"
+        :value="modelValue.length"
+        @change="setLength($event.target as HTMLInputElement)"
+      >
+    </label>
+    <ol class="rotation-sequence-picker__angles">
+      <li
+        v-for="(angle, position) in modelValue"
+        :key="position"
+      >
+        <select
+          :value="String(angle)"
+          :aria-label="t('rotationSequence.angle', { position: position + 1, total: modelValue.length })"
+          :aria-invalid="allZero ? 'true' : undefined"
+          :aria-describedby="allZero ? errorId : undefined"
+          @change="setAngle(position, ($event.target as HTMLSelectElement).value)"
         >
-          <svg
-            class="rotation-sequence-picker__handle"
-            width="10"
-            height="16"
-            viewBox="0 0 10 16"
-            aria-hidden="true"
-            focusable="false"
+          <option
+            v-for="(degrees, index) in ANGLES"
+            :key="degrees"
+            :value="String(index)"
           >
-            <circle
-              cx="2.5"
-              cy="2.5"
-              r="1.5"
-              fill="currentColor"
-            />
-            <circle
-              cx="7.5"
-              cy="2.5"
-              r="1.5"
-              fill="currentColor"
-            />
-            <circle
-              cx="2.5"
-              cy="8"
-              r="1.5"
-              fill="currentColor"
-            />
-            <circle
-              cx="7.5"
-              cy="8"
-              r="1.5"
-              fill="currentColor"
-            />
-            <circle
-              cx="2.5"
-              cy="13.5"
-              r="1.5"
-              fill="currentColor"
-            />
-            <circle
-              cx="7.5"
-              cy="13.5"
-              r="1.5"
-              fill="currentColor"
-            />
-          </svg>
-          <span>{{ element.angle }}°</span>
-        </li>
-      </template>
-    </draggable>
+            {{ degrees }}°
+          </option>
+        </select>
+      </li>
+    </ol>
+    <p
+      v-if="allZero"
+      :id="errorId"
+      class="rotation-sequence-picker__error"
+      role="alert"
+    >
+      {{ t('rotationSequence.allZero') }}
+    </p>
     <button
       type="button"
       class="rotation-sequence-picker__shuffle btn-secondary"
@@ -199,45 +116,35 @@ function onKeydown(event: KeyboardEvent, key: number): void {
 </template>
 
 <style scoped>
-.rotation-sequence-picker-field {
+.rotation-sequence-picker {
   position: relative;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.rotation-sequence-picker {
+.rotation-sequence-picker__length {
   display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rotation-sequence-picker__length input {
+  width: 5em;
+}
+
+.rotation-sequence-picker__angles {
+  display: flex;
+  flex-wrap: wrap;
   gap: 8px;
   list-style: none;
   padding: 0;
   margin: 0;
 }
 
-.rotation-sequence-picker__item {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 12px;
-  box-sizing: border-box;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  cursor: grab;
-  background: var(--code-bg);
-  color: var(--text);
-}
-
-.rotation-sequence-picker__item--grabbed {
-  cursor: grabbing;
-  border: 2px solid var(--accent);
-  background: var(--accent-bg);
-  color: var(--text-h);
-  box-shadow: var(--shadow);
-}
-
-.rotation-sequence-picker__handle {
-  color: var(--text-muted);
-  flex-shrink: 0;
+.rotation-sequence-picker__error {
+  margin: 0;
+  color: var(--danger);
 }
 
 .rotation-sequence-picker__shuffle {

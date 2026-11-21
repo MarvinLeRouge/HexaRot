@@ -31,7 +31,7 @@
 - ✅ Health check endpoint, wired to the production container healthcheck
 - ✅ Structured JSON logging, with no private data
 - ✅ Random rotation sequence by default
-- ⬜ Variable-length rotation sequence (key format v2): backend done, editor to come
+- ✅ Variable-length rotation sequence (key format v2), with its editor
 
 ## Ideas for later (not yet scoped)
 

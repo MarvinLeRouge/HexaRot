@@ -5,6 +5,7 @@ import { useEncodeStore } from '../stores/encode'
 import { READING_ORDERS } from '../constants/reading-orders'
 import { isValidKeyFormat } from '../utils/key-format'
 import { countEncodedCharacters, imageFits } from '../utils/image-budget'
+import { isAllZeroRotationSequence } from '../utils/random-rotation-sequence'
 import RotationSequencePicker from './RotationSequencePicker.vue'
 import LoadingSpinner from './LoadingSpinner.vue'
 
@@ -17,7 +18,6 @@ watch(
     store.message,
     store.pivotBlockSize,
     store.rotationSequence,
-    store.rotationDirection,
     store.readingOrder,
     store.size,
     store.overrideWeaknessWarning,
@@ -50,7 +50,11 @@ const canSubmit = computed(() => {
     return store.keyInput.length > 0 && keyFormatError.value === null
   }
   if (store.mode === 'params') {
-    return validPivotBlockSize.value && imageBudgetWarning.value === null
+    return (
+      validPivotBlockSize.value &&
+      imageBudgetWarning.value === null &&
+      !isAllZeroRotationSequence(store.rotationSequence)
+    )
   }
   return true
 })
@@ -105,27 +109,21 @@ function handleSubmit(): void {
         {{ t('encode.form.pivotBlockSize.label') }}
         <input
           v-model.number="store.pivotBlockSize"
+          name="pivotBlockSize"
           type="number"
           min="1"
           max="255"
         >
       </label>
 
-      <div class="encode-params-form__field">
-        {{ t('encode.form.rotationSequence.label') }}
+      <div
+        class="encode-params-form__field"
+        role="group"
+        aria-labelledby="encode-rotation-sequence-label"
+      >
+        <span id="encode-rotation-sequence-label">{{ t('encode.form.rotationSequence.label') }}</span>
         <RotationSequencePicker v-model="store.rotationSequence" />
       </div>
-
-      <label class="encode-params-form__field">
-        {{ t('encode.form.rotationDirection.label') }}
-        <select
-          v-model="store.rotationDirection"
-          name="rotationDirection"
-        >
-          <option value="cw">{{ t('encode.form.rotationDirection.cw') }}</option>
-          <option value="ccw">{{ t('encode.form.rotationDirection.ccw') }}</option>
-        </select>
-      </label>
 
       <label class="encode-params-form__field">
         {{ t('encode.form.readingOrder.label') }}

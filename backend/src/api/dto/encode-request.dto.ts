@@ -13,7 +13,12 @@ import {
   IsBoolean,
   ValidateIf,
 } from 'class-validator';
-import { READING_ORDERS } from '../../key/key-codec';
+import {
+  MAX_KEY_INPUT_LENGTH,
+  MAX_ROTATION_SEQUENCE_LENGTH,
+  MIN_ROTATION_SEQUENCE_LENGTH,
+  READING_ORDERS,
+} from '../../key/key-codec';
 import { MAX_ENCODE_MESSAGE_LENGTH } from '../../cipher/max-message-length';
 
 /**
@@ -33,6 +38,7 @@ export class EncodeRequestDto {
 
   @IsOptional()
   @IsString()
+  @MaxLength(MAX_KEY_INPUT_LENGTH)
   key?: string;
 
   @ValidateIf((o: EncodeRequestDto) => !o.key)
@@ -43,8 +49,8 @@ export class EncodeRequestDto {
 
   @ValidateIf((o: EncodeRequestDto) => !o.key)
   @IsArray()
-  @ArrayMinSize(4)
-  @ArrayMaxSize(4)
+  @ArrayMinSize(MIN_ROTATION_SEQUENCE_LENGTH)
+  @ArrayMaxSize(MAX_ROTATION_SEQUENCE_LENGTH)
   @IsInt({ each: true })
   @Min(0, { each: true })
   @Max(3, { each: true })

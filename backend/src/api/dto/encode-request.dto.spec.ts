@@ -16,6 +16,14 @@ const VALID_PARAMS_BODY = {
 };
 
 describe('EncodeRequestDto', () => {
+  it('fails when the key is longer than any real key could be', async () => {
+    const errors = await validateBody({
+      message: 'ABC',
+      key: `HR2·${'A'.repeat(40)}`,
+    });
+    expect(errors.some((e) => e.property === 'key')).toBe(true);
+  });
+
   describe('valid bodies', () => {
     it('passes with a fully specified individual-params body', async () => {
       const errors = await validateBody(VALID_PARAMS_BODY);
@@ -107,12 +115,28 @@ describe('EncodeRequestDto', () => {
       expect(errors.some((e) => e.property === 'readingOrder')).toBe(true);
     });
 
-    it('fails when rotationSequence does not have exactly 4 entries', async () => {
+    it.each([
+      ['fewer than 4', [0, 1, 2]],
+      ['more than 32', Array.from({ length: 33 }, () => 1)],
+    ])(
+      'fails when rotationSequence has %s entries',
+      async (_label, rotationSequence) => {
+        const errors = await validateBody({
+          ...VALID_PARAMS_BODY,
+          rotationSequence,
+        });
+        expect(errors.some((e) => e.property === 'rotationSequence')).toBe(
+          true,
+        );
+      },
+    );
+
+    it('passes with a 32-entry rotationSequence with repeated angles', async () => {
       const errors = await validateBody({
         ...VALID_PARAMS_BODY,
-        rotationSequence: [0, 1, 2],
+        rotationSequence: Array.from({ length: 32 }, (_, i) => i % 2),
       });
-      expect(errors.some((e) => e.property === 'rotationSequence')).toBe(true);
+      expect(errors).toHaveLength(0);
     });
   });
 

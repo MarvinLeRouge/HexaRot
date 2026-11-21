@@ -1,6 +1,8 @@
 # HexaRot Test Spec: Key Domain
 
-Covers: FEAT-004 (KeyCodec: encode, decode, validate).
+Covers: FEAT-004 (KeyCodec: encode, decode, validate) and FEAT-032 (key format V2,
+variable-length rotation sequence). Since FEAT-032, sections 1 and 2 describe V1
+keys, which `KeyCodec` only decodes; `encode` always produces V2 (section 3).
 
 All tests in this document are **unit tests**. No database access, no filesystem.
 
@@ -76,6 +78,49 @@ and be fully recoverable.
 - it recovers permutation [90, 0, 270, 180]
 - it recovers permutation [180, 270, 0, 90]
 - it produces no two permutations with the same index
+
+---
+
+## 3. Key format V2 (FEAT-032)
+
+```
+describe('KeyCodec.encode()')
+```
+
+- it always returns a V2 key (HR2·), whatever `params.version` says
+- it returns a 6-character payload for a 4-angle sequence and 16 for a 32-angle one
+- it accepts sequence lengths from 4 to 32
+- it throws for a sequence shorter than 4 or longer than 32
+- it throws for an angle index outside 0-3 or not an integer
+- it throws for a sequence made only of 0° rotations
+- it throws for a pivotBlockSize outside 1-255 or not an integer, and for an unknown size
+- it folds a counter-clockwise direction into the angles (ccw [1, 2, 3, 0] gives the cw [3, 2, 1, 0] key)
+
+```
+describe('KeyCodec.decode()')
+```
+
+- it throws for a V2 key whose payload length does not match its sequence length (truncated key)
+- it throws for a V2 key with bits set beyond its sequence
+- it throws for a V2 key that unpacks to pivotBlockSize=0, an all-0° sequence, a sequence length over 32, or the reserved size index
+- it decodes lowercase V2 keys
+
+```
+describe('KeyCodec round-trip (V2)')
+```
+
+- it recovers the base params, every reading order, pivot size and case size
+- it round-trips sequences of various lengths (4, 5, 17, 32), with repeated angles
+- it decodes every V2 key as clockwise
+- it produces different keys for sequences that differ only by length
+
+```
+describe('KeyCodec V1 decoding')
+```
+
+- it decodes a V1 key to its V1 params, keeping its rotation direction
+- it decodes all 24 V1 permutations to distinct sequences, and all V1 reading orders
+- it still rejects out-of-range V1 payloads and decodes pre-FEAT-022 keys as size "small"
 
 ---
 

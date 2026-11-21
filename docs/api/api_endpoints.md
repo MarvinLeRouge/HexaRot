@@ -35,7 +35,7 @@ POST /api/encode
 {
   "png": "<base64-encoded PNG>",
   "svg": "<SVG string>",
-  "key": "HR1·2T51",
+  "key": "HR2·0ZL3ID",
   "warnings": [],
   "unknownChars": [],
   "size": "medium"
@@ -61,7 +61,7 @@ POST /api/decode
 {
   "cryptogram": "<base64-encoded PNG or raw SVG string>",
   "format": "png",
-  "key": "HR1·2T51"
+  "key": "HR2·0ZL3ID"
 }
 ```
 
@@ -113,16 +113,24 @@ POST /api/key/generate
 
 ```json
 {
-  "key": "HR1·2T51"
+  "key": "HR2·0ZL3ID"
 }
 ```
+
+`rotationSequence` takes 4 to 32 angle indices (`0` to `3` for 0°, 90°,
+180°, 270°), repetitions allowed, never only `0`; the same rule applies to
+`POST /encode` and `POST /correlation-score`. The key does not store a
+direction: a `ccw` request gets a key whose angles are rewritten as their
+clockwise equivalent (A° counter-clockwise is (360 - A)° clockwise), so
+`POST /key/parse` returns `cw` for it. Keys starting with `HR1` (one of the 24
+permutations of the four angles, plus a direction) still decode and parse.
 
 ## `POST /key/parse`
 
 ```json
 POST /api/key/parse
 {
-  "key": "HR1·2T51"
+  "key": "HR2·0ZL3ID"
 }
 ```
 
@@ -131,7 +139,8 @@ POST /api/key/parse
   "pivotBlockSize": 5,
   "rotationSequence": [0, 90, 180, 270],
   "rotationDirection": "cw",
-  "readingOrder": "LR-TB"
+  "readingOrder": "LR-TB",
+  "size": "medium"
 }
 ```
 
@@ -140,7 +149,7 @@ POST /api/key/parse
 A HexaRot key encodes all encryption parameters into a short base36 string:
 
 ```
-HR1·2T51
+HR2·0ZL3ID
 │  │ └─── encoded parameters (base36)
 │  └───── separator
 └──────── version prefix
@@ -148,10 +157,9 @@ HR1·2T51
 
 | Parameter | Example value | Meaning |
 |---|---|---|
-| Version | `1` | System version |
+| Version | `2` | Key format version (`1` keys still decode) |
 | Pivot block size | `5` | 5×5 cases per rotation block |
-| Rotation sequence | `[0°, 90°, 180°, 270°]` | One of 24 possible permutations |
-| Rotation direction | `cw` | Clockwise |
+| Rotation sequence | `[0°, 90°, 180°, 270°]` | 4 to 32 angles, repetitions allowed, never only 0° |
 | Reading order | `LR-TB` | Left-right, top-bottom |
 
 The key is message-independent: the same key encrypts and decrypts any number of

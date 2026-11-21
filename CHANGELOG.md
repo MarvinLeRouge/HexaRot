@@ -300,6 +300,7 @@ automatically from Conventional Commits history.
 - Add health check endpoint wired to the container healthcheck
 - Log backend entries and requests as structured JSON
 - Start on a random rotation sequence with a shuffle control
+- Encode keys as format v2 with a variable-length rotation sequence
 
 ### Miscellaneous
 
@@ -424,6 +425,7 @@ automatically from Conventional Commits history.
 - Load prod config only from shared/env (CHORE-015)
 - Align the node runtime on 26 lts (CHORE-016)
 - Auto-promote ready items (#339)
+- Update CHANGELOG.md (#340)
 
 ### Other
 

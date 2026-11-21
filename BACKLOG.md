@@ -3191,12 +3191,12 @@ and `docs/tests/frontend.md` updated in English and French where user-facing.
 <!-- ITEM:END -->
 
 <!-- ITEM:BEGIN -->
-### [FEAT-032] Variable-length rotation sequence (key format v2)
+### [FEAT-032] Variable-length rotation sequence: key format v2 (backend)
 
 - **type:** feat
 - **id:** FEAT-032
 - **milestone:** v2
-- **status:** ready
+- **status:** done
 - **priority:** medium
 - **domain:** key
 - **complexity:** L
@@ -3225,22 +3225,117 @@ a visual cipher, not strong encryption.
 #### Acceptance criteria
 
 - Key format v2 (`HR2·...`) encodes pivot size, reading order, case size, L
-  and L angles; V1 keys still decode and encode exactly as today
+  and L angles; every new key is V2, V1 keys still decode exactly as today
 - L ranges from 4 to 32; out-of-range lengths are rejected at the API
   boundary and by `KeyCodec.decode`
 - A sequence made only of 0° rotations is rejected (encode, key generation,
-  manual input and `KeyCodec.decode`): it would leave the cryptogram in clear
-- Random generation (FEAT-031) draws L free angles and redraws an all-zero
-  sequence
-- Verify with a test that a ccw rotation by 90° equals a cw rotation by 270°
-  in `rotateBlock` before dropping the direction from V2
+  correlation score and `KeyCodec.decode`): it would leave the cryptogram in
+  clear
+- A `ccw` request is folded into the angles (A° ccw is (360 - A)° cw), so the
+  API keeps accepting `rotationDirection`; a test checks the equivalence on a
+  full grid before the direction leaves the key
 - Rotation engine, encode, decode, correlation score and key endpoints accept
   sequences of any valid length
-- Frontend: choose L, edit each angle, shuffle; help page, API docs and
-  `docs/tests/key.md` / `docs/tests/rotation.md` updated (EN and FR where
-  user-facing)
-- Help page states the limit above (visual cipher, not strong encryption)
+- The frontend key shape check accepts V2 keys; placeholders, format error
+  and help text show a V2 key
+- API docs and `docs/tests/key.md` / `rotation.md` / `api.md` updated (EN and
+  FR where user-facing)
 - Real functional test: encode and decode round trip with a V2 key on the
-  local stack, and a V1 key still decodes an old cryptogram
+  local stack, and a V1 key still decodes a cryptogram made with the same
+  parameters
+- The frontend editor (choose L, edit each angle, random draw of L angles),
+  the removal of the direction control and the help page limit statement
+  move to FEAT-033
 
+#### Resolution (2026-11-21)
+
+`KeyCodec` now encodes V2 only: an (18 + 2L)-bit BigInt payload (pivot,
+reading order, size, L - 4 in the low bits, then 2 bits per angle) in base36,
+zero-padded to a length fixed by L (6 characters for L=4, 16 for L=32).
+`decode` reads V1 and V2, rejects a payload whose length does not match its
+L, bits beyond the sequence, and any all-0° sequence.
+`describeRotationSequenceError` holds the shared rule; the DTOs bound the
+array to 4-32. `ccw` is folded into the angles at encode, so services and
+the rotation engine are unchanged apart from the `number[]` type. Verified by
+unit and e2e tests (a V2 12-angle round trip, a V1 key decoding a cryptogram
+made with the same parameters) and on the local stack with curl: V2 round
+trip, V1 decode, all-0° and 33-angle sequences rejected with 400, 17 random
+generate/parse round trips matching.
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-033] Variable-length rotation sequence editor (frontend)
+
+- **type:** feat
+- **id:** FEAT-033
+- **milestone:** v2
+- **status:** backlog
+- **priority:** medium
+- **domain:** frontend
+- **complexity:** M
+- **parent:** ~
+- **depends-on:** FEAT-032
+- **learning:** [form design, accessible repeated inputs]
+- **labels:** [feat, domain:frontend, priority:medium, milestone:v2]
+
+#### Description
+
+FEAT-032 made the backend accept 4 to 32 free angles and fold the rotation
+direction into them, but the forms still only offer a reorderable
+permutation of the four angles plus a direction control. This item exposes
+the V2 sequence in the encode and key generation forms.
+
+#### Acceptance criteria
+
+- The rotation sequence editor lets the user choose the length L (4 to 32)
+  and the angle at each position (repetitions allowed), keyboard and screen
+  reader friendly
+- The default and Shuffle draw L free angles with `crypto.getRandomValues`,
+  redrawing an all-0° sequence; an all-0° manual sequence cannot be
+  submitted
+- The rotation direction control is removed from both forms (the key no
+  longer stores it); the key parser shows the angles and no direction for a
+  V2 key, and still shows the direction of a V1 key
+- Help page (EN and FR) explains the length, the free angles, and that
+  HexaRot is a visual cipher, not strong encryption (an attacker who guesses
+  the pivot size and reading order can recover angles block by block)
+- Tests cover the editor, the random draw and the all-0° guard
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-034] Warn when the rotation sequence leaves every block of the grid unrotated
+
+- **type:** feat
+- **id:** FEAT-034
+- **milestone:** v2
+- **status:** backlog
+- **priority:** medium
+- **domain:** cipher
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** FEAT-032
+- **learning:** [effective key strength, weak parameter warnings]
+- **labels:** [feat, domain:cipher, priority:medium, milestone:v2]
+
+#### Description
+
+FEAT-032 rejects a sequence made only of 0° rotations, but the engine only
+uses the first N angles when the grid has N blocks. A sequence such as
+`[0, 0, 0, ..., 1]` (32 angles) on a short message with few blocks leaves
+every real block unrotated: the cryptogram is the plain message. The
+sequence alone cannot tell; the encoder, which knows the block count, can.
+Found by the FEAT-032 security review.
+
+#### Acceptance criteria
+
+- POST /encode (and /correlation-score) detects when every block of the
+  actual grid gets a 0° rotation and reports it as a weakness warning,
+  blocking unless overridden, like the existing GCD warning
+  (`overrideWeaknessWarning`)
+- The frontend shows the warning and the override the same way as the GCD
+  one, in English and French
+- Optionally also warn when most blocks stay unrotated (threshold to decide
+  at planning time)
+- Tests cover a sequence whose non-zero angles all fall beyond the block
+  count, and one that rotates at least one block
 <!-- ITEM:END -->

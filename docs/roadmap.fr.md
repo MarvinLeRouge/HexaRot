@@ -31,7 +31,7 @@
 - ✅ Endpoint de contrôle de santé, branché sur le healthcheck du conteneur de production
 - ✅ Logs JSON structurés, sans donnée privée
 - ✅ Séquence de rotation aléatoire par défaut
-- ⬜ Séquence de rotation de longueur variable (format de clé v2)
+- ⬜ Séquence de rotation de longueur variable (format de clé v2) : backend fait, éditeur à venir
 
 ## Idées pour plus tard (pas encore cadrées)
 

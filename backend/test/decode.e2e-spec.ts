@@ -98,6 +98,39 @@ describe('POST /api/decode (e2e)', () => {
       },
     );
 
+    it('recovers the message with a 12-angle V2 sequence with repeated angles', async () => {
+      const encoded = await encode({
+        ...BASE_ENCODE_BODY,
+        message: 'VARIABLE LENGTH',
+        rotationSequence: [3, 3, 1, 0, 2, 1, 1, 0, 0, 2, 3, 1],
+      });
+      expect(encoded.key).toMatch(/^HR2·[0-9A-Z]{9}$/);
+      const res = await request(app.getHttpServer())
+        .post('/api/decode')
+        .send({ cryptogram: encoded.png, format: 'png', key: encoded.key });
+
+      expect(res.status).toBe(200);
+      const body = res.body as DecodeResponseBody;
+      expect(body.message.startsWith('VARIABLE LENGTH')).toBe(true);
+    });
+
+    it('still decodes with a V1 key describing the same parameters', async () => {
+      const encoded = await encode({
+        ...BASE_ENCODE_BODY,
+        rotationSequence: [2, 0, 3, 1],
+      });
+      // V1 payload: pivotBlockSize=5, LR-TB, cw, permutation 13 ([2,0,3,1]), medium.
+      const v1Payload = 5 | (13 << 12) | (1 << 17);
+      const v1Key = `HR1·${v1Payload.toString(36).toUpperCase().padStart(4, '0')}`;
+      const res = await request(app.getHttpServer())
+        .post('/api/decode')
+        .send({ cryptogram: encoded.png, format: 'png', key: v1Key });
+
+      expect(res.status).toBe(200);
+      const body = res.body as DecodeResponseBody;
+      expect(body.message.startsWith('ABC')).toBe(true);
+    });
+
     it.each(['cw', 'ccw'])(
       'recovers the message for rotation direction %s',
       async (rotationDirection) => {
@@ -158,6 +191,17 @@ describe('POST /api/decode (e2e)', () => {
         key: 'not-a-key',
       });
       expect(res.status).toBe(400);
+    });
+
+    it('returns 400 without echoing back a key longer than any real key', async () => {
+      const longKey = `HR2·${'A'.repeat(10_000)}`;
+      const res = await request(app.getHttpServer()).post('/api/decode').send({
+        cryptogram: 'irrelevant',
+        format: 'png',
+        key: longKey,
+      });
+      expect(res.status).toBe(400);
+      expect(JSON.stringify(res.body)).not.toContain('A'.repeat(100));
     });
 
     it('returns 400 when format is not png or svg', async () => {

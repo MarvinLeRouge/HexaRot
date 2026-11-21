@@ -45,7 +45,7 @@ describe('Key endpoints (e2e)', () => {
         });
       expect(res.status).toBe(200);
       const body = res.body as KeyGenerateResult;
-      expect(body.key).toMatch(/^HR1·[0-9A-Z]{4}$/);
+      expect(body.key).toMatch(/^HR2·[0-9A-Z]{6}$/);
     });
 
     it('returns 200 with a valid HR key string when no body is provided', async () => {
@@ -54,7 +54,7 @@ describe('Key endpoints (e2e)', () => {
         .send({});
       expect(res.status).toBe(200);
       const body = res.body as KeyGenerateResult;
-      expect(body.key).toMatch(/^HR1·[0-9A-Z]{4}$/);
+      expect(body.key).toMatch(/^HR2·[0-9A-Z]{6}$/);
     });
 
     it.each([
@@ -74,7 +74,7 @@ describe('Key endpoints (e2e)', () => {
           .send({ readingOrder });
         expect(res.status).toBe(200);
         const body = res.body as KeyGenerateResult;
-        expect(body.key).toMatch(/^HR1·[0-9A-Z]{4}$/);
+        expect(body.key).toMatch(/^HR2·[0-9A-Z]{6}$/);
       },
     );
 
@@ -86,7 +86,7 @@ describe('Key endpoints (e2e)', () => {
           .send({ rotationDirection });
         expect(res.status).toBe(200);
         const body = res.body as KeyGenerateResult;
-        expect(body.key).toMatch(/^HR1·[0-9A-Z]{4}$/);
+        expect(body.key).toMatch(/^HR2·[0-9A-Z]{6}$/);
       },
     );
 
@@ -207,9 +207,10 @@ describe('Key endpoints (e2e)', () => {
       const parseBody = parseRes.body as KeyParseResult;
       expect(parseBody.pivotBlockSize).toBe(requestBody.pivotBlockSize);
       expect(parseBody.rotationSequence).toEqual(
-        requestBody.rotationSequence.map((i) => i * 90),
+        requestBody.rotationSequence.map((i) => ((4 - i) % 4) * 90),
       );
-      expect(parseBody.rotationDirection).toBe(requestBody.rotationDirection);
+      // V2 keys fold ccw into the angles: A° ccw is (360 - A)° cw.
+      expect(parseBody.rotationDirection).toBe('cw');
       expect(parseBody.readingOrder).toBe(requestBody.readingOrder);
     });
 

@@ -1,6 +1,6 @@
 # HexaRot Test Spec: Rotation Domain
 
-Covers: FEAT-007 (block rotation engine).
+Covers: FEAT-007 (block rotation engine) and FEAT-032 (variable-length sequences).
 
 All tests in this document are **unit tests**. No database access, no filesystem.
 The rotation engine operates on pure 2D colour grids, with no alphabet or key dependency
@@ -88,6 +88,18 @@ describe('rotateBlock: direction symmetry')
 - it produces different results for CW vs CCW at 90° for a non-uniform block
 - it produces the same result for CW vs CCW at 0°
 - it produces the same result for CW vs CCW at 180°
+
+---
+
+## 4. Variable-length sequences (FEAT-032)
+
+```
+describe('RotationEngine variable-length sequences (FEAT-032)')
+```
+
+- it gives the same grid for a ccw sequence and its (4 - a) % 4 cw rewrite
+- it recovers the original grid with a 7-angle sequence with repeated angles
+- it recovers the original grid with a 32-angle sequence, longer than the block count
 
 ---
 

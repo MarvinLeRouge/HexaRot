@@ -53,8 +53,8 @@
       },
       "key": {
         "label": "Clé HexaRot",
-        "placeholder": "HR1·xxxx",
-        "formatError": "Une clé HexaRot ressemble à HR1·a3f9 : \"HR\", un numéro de version, un séparateur, puis 4 caractères."
+        "placeholder": "HR2·xxxxxx",
+        "formatError": "Une clé HexaRot ressemble à HR2·0zl3id : \"HR\", un numéro de version, un séparateur, puis 6 à 16 caractères (4 pour les anciennes clés HR1)."
       },
       "submit": {
         "label": "Encoder",
@@ -96,8 +96,8 @@
       },
       "key": {
         "label": "Clé HexaRot",
-        "placeholder": "HR1·xxxx",
-        "formatError": "Une clé HexaRot ressemble à HR1·a3f9 : \"HR\", un numéro de version, un séparateur, puis 4 caractères."
+        "placeholder": "HR2·xxxxxx",
+        "formatError": "Une clé HexaRot ressemble à HR2·0zl3id : \"HR\", un numéro de version, un séparateur, puis 6 à 16 caractères (4 pour les anciennes clés HR1)."
       },
       "submit": {
         "label": "Décoder",
@@ -160,8 +160,8 @@
       "form": {
         "key": {
           "label": "Clé HexaRot",
-          "placeholder": "HR1·xxxx",
-          "formatError": "Une clé HexaRot ressemble à HR1·a3f9 : \"HR\", un numéro de version, un séparateur, puis 4 caractères."
+          "placeholder": "HR2·xxxxxx",
+          "formatError": "Une clé HexaRot ressemble à HR2·0zl3id : \"HR\", un numéro de version, un séparateur, puis 6 à 16 caractères (4 pour les anciennes clés HR1)."
         },
         "submit": {
           "label": "Analyser",

@@ -85,8 +85,10 @@ un résultat plus solide.
 
 La clé regroupe tous les réglages (taille du bloc pivot, séquence et sens de
 rotation, sens de lecture et taille du cryptogramme) dans un code court comme
-`HR1·0005` : les lettres HR, un numéro de version, un séparateur, puis
-quelques caractères.
+`HR2·0ZL3ID` : les lettres HR, un numéro de version, un séparateur, puis 6 à
+16 caractères (davantage pour une séquence de rotation plus longue). Les clés
+commençant par `HR1`, créées avant que la séquence puisse varier en longueur,
+fonctionnent toujours.
 
 La clé ne dépend pas du message : vous pouvez la réutiliser pour autant de
 messages que vous le souhaitez. Choisissez "Clé existante" sur la page

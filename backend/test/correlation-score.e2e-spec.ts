@@ -117,7 +117,7 @@ describe('POST /api/correlation-score (e2e)', () => {
       expect(res.status).toBe(400);
     });
 
-    it('returns 400 when rotationSequence is not a valid permutation', async () => {
+    it('returns 400 when rotationSequence is only 0° rotations', async () => {
       const res = await request(app.getHttpServer())
         .post('/api/correlation-score')
         .send({ ...VALID_ENCODE_BODY, rotationSequence: [0, 0, 0, 0] });

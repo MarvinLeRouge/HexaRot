@@ -8,7 +8,11 @@ import {
   ArrayMaxSize,
   IsIn,
 } from 'class-validator';
-import { READING_ORDERS } from '../../key/key-codec';
+import {
+  MAX_ROTATION_SEQUENCE_LENGTH,
+  MIN_ROTATION_SEQUENCE_LENGTH,
+  READING_ORDERS,
+} from '../../key/key-codec';
 
 /**
  * Request body for POST /key/generate. Every field is independently
@@ -24,14 +28,15 @@ export class KeyGenerateRequestDto {
   pivotBlockSize?: number;
 
   /**
-   * Permutation indices (0-3), NOT angles - each index maps to
-   * [0, 90, 180, 270] degrees respectively. Contrast with POST /key/parse's
-   * response, which returns this same concept as literal angle values.
+   * 4 to 32 angle indices (0-3, repetitions allowed, not all 0), NOT
+   * angles - each index maps to [0, 90, 180, 270] degrees respectively.
+   * Contrast with POST /key/parse's response, which returns this same
+   * concept as literal angle values.
    */
   @IsOptional()
   @IsArray()
-  @ArrayMinSize(4)
-  @ArrayMaxSize(4)
+  @ArrayMinSize(MIN_ROTATION_SEQUENCE_LENGTH)
+  @ArrayMaxSize(MAX_ROTATION_SEQUENCE_LENGTH)
   @IsInt({ each: true })
   @Min(0, { each: true })
   @Max(3, { each: true })

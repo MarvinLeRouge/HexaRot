@@ -143,6 +143,18 @@ history/cache - a secret must not travel through that channel (REFACTOR-004).
 
 ---
 
+## 5. Key format V2 (FEAT-032)
+
+- POST /encode, /key/generate and /key/parse return `HR2·` keys (6 payload characters for a 4-angle sequence)
+- the DTOs accept a `rotationSequence` of 4 to 32 entries, repetitions allowed, and reject fewer or more
+- a `rotationSequence` made only of 0° rotations returns 400 (key generation, encode, correlation score)
+- a key generated with `ccw` parses back as `cw` with the angles rewritten as (4 - a) % 4
+- POST /decode recovers the message with a 12-angle V2 sequence with repeated angles
+- POST /decode still decodes with a V1 key describing the same parameters
+- POST /decode returns 400 without echoing back a key longer than any real key (`key` capped at 32 characters on every endpoint)
+
+---
+
 ## Fixtures
 
 The following shared fixtures must be defined in `test/fixtures/api.fixtures.ts`:

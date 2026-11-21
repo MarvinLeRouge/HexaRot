@@ -30,6 +30,8 @@
 - ✅ Relais du suivi des erreurs, pour que les bloqueurs ne perdent pas les erreurs du frontend
 - ✅ Endpoint de contrôle de santé, branché sur le healthcheck du conteneur de production
 - ✅ Logs JSON structurés, sans donnée privée
+- ⬜ Séquence de rotation aléatoire par défaut
+- ⬜ Séquence de rotation de longueur variable (format de clé v2)
 
 ## Idées pour plus tard (pas encore cadrées)
 

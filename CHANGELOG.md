@@ -206,6 +206,7 @@ automatically from Conventional Commits history.
 - Rewrite the roadmap paragraph from the current roadmap
 - Replace em dashes with plain punctuation
 - Replace em dashes in the test specs and operations guide
+- Plan random and variable-length rotation sequences
 
 ### Features
 

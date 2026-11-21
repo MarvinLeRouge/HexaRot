@@ -3144,3 +3144,93 @@ instead of the address. Verified on the local stack: boot and access lines
 come out structured, a request with a JWT, a cookie and a query token left
 none of them in the logs, health checks are skipped.
 <!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-031] Random rotation sequence by default
+
+- **type:** feat
+- **id:** FEAT-031
+- **milestone:** v2
+- **status:** ready
+- **priority:** high
+- **domain:** frontend
+- **complexity:** S
+- **parent:** ~
+- **depends-on:** ~
+- **learning:** [key entropy, crypto.getRandomValues]
+- **labels:** [feat, domain:frontend, priority:high, milestone:v2]
+
+#### Description
+
+Every form starts on the rotation sequence `[0, 1, 2, 3]`, so most users keep
+it and hand-picked sequences follow predictable patterns. A random default
+costs nothing in the key format (still a V1 permutation) and removes the most
+likely guesses from an attacker's list.
+
+#### Acceptance criteria
+
+- The encode and key generation forms start on a random permutation of
+  `[0, 1, 2, 3]`, drawn with `crypto.getRandomValues` (not `Math.random`)
+- A "shuffle" control draws a new random sequence; manual reordering still
+  works as today (drag and drop, keyboard)
+- A sequence loaded from an existing key is never overwritten by the random
+  default
+- Help page (EN and FR) says the default sequence is random
+- Tests cover the random default, the shuffle control and the loaded-key case
+
+<!-- ITEM:END -->
+
+<!-- ITEM:BEGIN -->
+### [FEAT-032] Variable-length rotation sequence (key format v2)
+
+- **type:** feat
+- **id:** FEAT-032
+- **milestone:** v2
+- **status:** backlog
+- **priority:** medium
+- **domain:** key
+- **complexity:** L
+- **parent:** ~
+- **depends-on:** [FEAT-031]
+- **learning:** [key format versioning, bit packing, key space analysis]
+- **labels:** [feat, domain:key, priority:medium, milestone:v2]
+
+#### Description
+
+The V1 rotation sequence is one of 24 permutations, applied cyclically over
+the blocks, so the whole key space is about 98,000 keys and brute force takes
+seconds. A V2 key carries a sequence of length L (4 to 32) where each entry is
+a free angle (repetitions allowed): 4^L sequences instead of 24, and no
+periodicity when L reaches the number of blocks.
+
+The rotation direction bit is redundant: a ccw rotation by 90° is a cw
+rotation by 270°, so every V1 key has a twin and the real key space is half
+the announced one. V2 drops the direction; V1 keys keep it for decoding.
+
+Limit to document: an attacker who guesses the pivot size and reading order
+can still recover angles block by block (each symbol only depends on the
+blocks it overlaps), so the cost grows roughly with L, not 4^L. HexaRot stays
+a visual cipher, not strong encryption.
+
+#### Acceptance criteria
+
+- Key format v2 (`HR2·...`) encodes pivot size, reading order, case size, L
+  and L angles; V1 keys still decode and encode exactly as today
+- L ranges from 4 to 32; out-of-range lengths are rejected at the API
+  boundary and by `KeyCodec.decode`
+- A sequence made only of 0° rotations is rejected (encode, key generation,
+  manual input and `KeyCodec.decode`): it would leave the cryptogram in clear
+- Random generation (FEAT-031) draws L free angles and redraws an all-zero
+  sequence
+- Verify with a test that a ccw rotation by 90° equals a cw rotation by 270°
+  in `rotateBlock` before dropping the direction from V2
+- Rotation engine, encode, decode, correlation score and key endpoints accept
+  sequences of any valid length
+- Frontend: choose L, edit each angle, shuffle; help page, API docs and
+  `docs/tests/key.md` / `docs/tests/rotation.md` updated (EN and FR where
+  user-facing)
+- Help page states the limit above (visual cipher, not strong encryption)
+- Real functional test: encode and decode round trip with a V2 key on the
+  local stack, and a V1 key still decodes an old cryptogram
+
+<!-- ITEM:END -->

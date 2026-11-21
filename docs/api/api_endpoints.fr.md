@@ -35,7 +35,7 @@ POST /api/encode
 {
   "png": "<PNG encodé en base64>",
   "svg": "<chaîne SVG>",
-  "key": "HR1·2T51",
+  "key": "HR2·0ZL3ID",
   "warnings": [],
   "unknownChars": [],
   "size": "medium"
@@ -62,7 +62,7 @@ POST /api/decode
 {
   "cryptogram": "<PNG encodé en base64 ou chaîne SVG brute>",
   "format": "png",
-  "key": "HR1·2T51"
+  "key": "HR2·0ZL3ID"
 }
 ```
 
@@ -114,16 +114,25 @@ POST /api/key/generate
 
 ```json
 {
-  "key": "HR1·2T51"
+  "key": "HR2·0ZL3ID"
 }
 ```
+
+`rotationSequence` accepte de 4 à 32 indices d'angle (`0` à `3` pour 0°, 90°,
+180°, 270°), répétitions permises, jamais uniquement `0` ; la même règle vaut
+pour `POST /encode` et `POST /correlation-score`. La clé ne stocke pas de
+sens : une requête `ccw` reçoit une clé dont les angles sont réécrits en leur
+équivalent horaire (A° antihoraire vaut (360 - A)° horaire), donc
+`POST /key/parse` renvoie `cw` pour elle. Les clés commençant par `HR1` (une
+des 24 permutations des quatre angles, plus un sens) se décodent et
+s'analysent toujours.
 
 ## `POST /key/parse`
 
 ```json
 POST /api/key/parse
 {
-  "key": "HR1·2T51"
+  "key": "HR2·0ZL3ID"
 }
 ```
 
@@ -132,7 +141,8 @@ POST /api/key/parse
   "pivotBlockSize": 5,
   "rotationSequence": [0, 90, 180, 270],
   "rotationDirection": "cw",
-  "readingOrder": "LR-TB"
+  "readingOrder": "LR-TB",
+  "size": "medium"
 }
 ```
 
@@ -142,7 +152,7 @@ Une clé HexaRot condense tous les paramètres de chiffrement dans une courte
 chaîne base36 :
 
 ```
-HR1·2T51
+HR2·0ZL3ID
 │  │ └─── paramètres encodés (base36)
 │  └───── séparateur
 └──────── préfixe de version
@@ -150,10 +160,9 @@ HR1·2T51
 
 | Paramètre | Valeur exemple | Signification |
 |---|---|---|
-| Version | `1` | Version du système |
+| Version | `2` | Version du format de clé (les clés `1` se décodent toujours) |
 | Taille de bloc pivot | `5` | Blocs de 5×5 cases |
-| Séquence de rotations | `[0°, 90°, 180°, 270°]` | Une des 24 permutations possibles |
-| Direction de rotation | `cw` | Sens horaire |
+| Séquence de rotations | `[0°, 90°, 180°, 270°]` | De 4 à 32 angles, répétitions permises, jamais uniquement 0° |
 | Ordre de lecture | `LR-TB` | Gauche-droite, haut-bas |
 
 La clé est indépendante du message : la même clé chiffre et déchiffre autant de

@@ -1,10 +1,11 @@
 /**
- * Cheap client-side shape check for a HexaRot key (`HR{version}·{4-char
- * base36 payload}`) - not a correctness check. The backend's
+ * Cheap client-side shape check for a HexaRot key (`HR1·` + 4 base36
+ * characters, or `HR2·` + 6 to 16 depending on the rotation sequence
+ * length) - not a correctness check. The backend's
  * KeyCodec.decode() remains the sole source of truth for whether a
  * well-formed-looking key actually decodes to valid parameters.
  */
-const KEY_FORMAT_REGEX = /^HR\d·[0-9A-Za-z]{4}$/
+const KEY_FORMAT_REGEX = /^HR(?:1·[0-9A-Za-z]{4}|2·[0-9A-Za-z]{6,16})$/
 
 /**
  * Matches near-misses of the canonical shape: a case-insensitive "HR"
@@ -17,7 +18,7 @@ const KEY_FORMAT_REGEX = /^HR\d·[0-9A-Za-z]{4}$/
  * before the size moved into the key (e.g. "HR1·A1B2 · Medium"), so keys
  * saved that way still paste cleanly.
  */
-const KEY_INPUT_NEAR_MISS = /^hr(\d)[·.\-_ ]([0-9a-z]{4})(?:\s*·\s*\p{L}+)?$/iu
+const KEY_INPUT_NEAR_MISS = /^hr(\d)[·.\-_ ]([0-9a-z]{4,16})(?:\s*·\s*\p{L}+)?$/iu
 
 /** Rewrites a near-miss key into the exact form the backend accepts. */
 export function normalizeKeyInput(key: string): string {

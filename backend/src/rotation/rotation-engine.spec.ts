@@ -184,6 +184,35 @@ describe('RotationEngine.decode', () => {
   });
 });
 
+describe('RotationEngine variable-length sequences (FEAT-032)', () => {
+  const engine = new RotationEngine(new ReadingOrderRegistry());
+  const grid: ColorGrid = Array.from({ length: 20 }, (_, row) =>
+    Array.from({ length: 20 }, (_, col) => `${row}-${col}`),
+  ); // 4x4 = 16 blocks of T=5
+
+  it('gives the same grid for a ccw sequence and its (4 - a) % 4 cw rewrite', () => {
+    const sequence = [1, 2, 3, 0, 1, 1, 3];
+    const asClockwise = sequence.map((angle) => (4 - angle) % 4);
+    expect(engine.encode(grid, 5, sequence, 'ccw', 'LR-TB')).toEqual(
+      engine.encode(grid, 5, asClockwise, 'cw', 'LR-TB'),
+    );
+  });
+
+  it('recovers the original grid with a 7-angle sequence with repeated angles', () => {
+    const sequence = [3, 3, 1, 0, 2, 2, 1];
+    const encoded = engine.encode(grid, 5, sequence, 'cw', 'BT-LR-ALT');
+    expect(engine.decode(encoded, 5, sequence, 'cw', 'BT-LR-ALT')).toEqual(
+      grid,
+    );
+  });
+
+  it('recovers the original grid with a 32-angle sequence, longer than the block count', () => {
+    const sequence = Array.from({ length: 32 }, (_, i) => (i * 5 + 2) % 4);
+    const encoded = engine.encode(grid, 5, sequence, 'cw', 'RL-TB');
+    expect(engine.decode(encoded, 5, sequence, 'cw', 'RL-TB')).toEqual(grid);
+  });
+});
+
 describe('RotationEngine round-trip (encode then decode)', () => {
   it('recovers the original grid for a 2x2 block grid, sequence [90, 180, 270, 0], CW', () => {
     const engine = new RotationEngine(new ReadingOrderRegistry());

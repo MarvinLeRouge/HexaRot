@@ -37,17 +37,18 @@ describe('KeyService', () => {
         readingOrder: 'RL-TB',
       };
       const result = service.generate(dto);
-      expect(result.key).toMatch(/^HR1·[0-9A-Z]{4}$/);
+      expect(result.key).toMatch(/^HR2·[0-9A-Z]{6}$/);
       const decoded = KeyCodec.decode(result.key);
       expect(decoded.pivotBlockSize).toBe(7);
-      expect(decoded.rotationSequence).toEqual([3, 2, 1, 0]);
-      expect(decoded.rotationDirection).toBe('ccw');
+      // ccw is folded into the angles: [3,2,1,0] ccw is [1,2,3,0] cw.
+      expect(decoded.rotationSequence).toEqual([1, 2, 3, 0]);
+      expect(decoded.rotationDirection).toBe('cw');
       expect(decoded.readingOrder).toBe('RL-TB');
     });
 
     it('returns a valid HR key string with default parameters when no body is provided', () => {
       const result = service.generate({});
-      expect(result.key).toMatch(/^HR1·[0-9A-Z]{4}$/);
+      expect(result.key).toMatch(/^HR2·[0-9A-Z]{6}$/);
       const decoded = KeyCodec.decode(result.key);
       expect(decoded.pivotBlockSize).toBe(5);
       expect(decoded.rotationSequence).toEqual([0, 1, 2, 3]);
@@ -72,19 +73,26 @@ describe('KeyService', () => {
       expect(decoded.readingOrder).toBe(readingOrder);
     });
 
-    it.each(['cw', 'ccw'] as const)(
-      'returns a valid HR key string for rotation direction %s',
-      (rotationDirection) => {
-        const result = service.generate({
-          rotationDirection,
-        });
-        const decoded = KeyCodec.decode(result.key);
-        expect(decoded.rotationDirection).toBe(rotationDirection);
-      },
-    );
+    it('folds a ccw direction into the angles of a cw key', () => {
+      const result = service.generate({
+        rotationSequence: [1, 2, 3, 0],
+        rotationDirection: 'ccw',
+      });
+      const decoded = KeyCodec.decode(result.key);
+      expect(decoded.rotationDirection).toBe('cw');
+      expect(decoded.rotationSequence).toEqual([3, 2, 1, 0]);
+    });
 
-    it('throws BadRequestException when the provided rotationSequence is not a valid permutation', () => {
-      const dto = { rotationSequence: [0, 0, 1, 2] } as KeyGenerateRequestDto;
+    it('returns a key for a 32-angle sequence with repeated angles', () => {
+      const rotationSequence = Array.from({ length: 32 }, (_, i) => i % 3);
+      const result = service.generate({ rotationSequence });
+      expect(KeyCodec.decode(result.key).rotationSequence).toEqual(
+        rotationSequence,
+      );
+    });
+
+    it('throws BadRequestException when the rotationSequence is only 0° rotations', () => {
+      const dto = { rotationSequence: [0, 0, 0, 0] } as KeyGenerateRequestDto;
       expect(() => service.generate(dto)).toThrow(BadRequestException);
     });
 
@@ -107,7 +115,7 @@ describe('KeyService', () => {
   describe('parse', () => {
     it('returns all decoded params for a valid HR key', () => {
       const key = KeyCodec.encode({
-        version: 1,
+        version: 2,
         pivotBlockSize: 5,
         rotationSequence: [0, 1, 2, 3],
         rotationDirection: 'cw',
@@ -124,7 +132,7 @@ describe('KeyService', () => {
 
     it('returns the correct rotationSequence as an array of angles for a non-identity sequence', () => {
       const key = KeyCodec.encode({
-        version: 1,
+        version: 2,
         pivotBlockSize: 5,
         rotationSequence: [3, 1, 0, 2],
         rotationDirection: 'cw',
@@ -133,6 +141,14 @@ describe('KeyService', () => {
       });
       const result = service.parse(key);
       expect(result.rotationSequence).toEqual([270, 90, 0, 180]);
+    });
+
+    it('returns the angles and direction of a V1 key handed out before V2', () => {
+      // V1 payload: pivotBlockSize=5, LR-TB, ccw, permutation 23 ([3,2,1,0]), medium.
+      const payload = 5 | (1 << 11) | (23 << 12) | (1 << 17);
+      const result = service.parse(`HR1·${payload.toString(36).toUpperCase()}`);
+      expect(result.rotationSequence).toEqual([270, 180, 90, 0]);
+      expect(result.rotationDirection).toBe('ccw');
     });
 
     it('throws BadRequestException for a malformed key string', () => {

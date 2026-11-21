@@ -1,13 +1,11 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
-import { KeyCodec, KeyParams, RotationSequence } from '../key/key-codec';
+import { KeyCodec, KeyParams } from '../key/key-codec';
 import { KeyGenerateRequestDto } from './dto/key-generate-request.dto';
 import { HexahueAlphabet } from '../alphabet/hexahue-alphabet.service';
 import { assertImageFits } from './assert-image-fits';
 
 const DEFAULT_PIVOT_BLOCK_SIZE = 5;
-const DEFAULT_ROTATION_SEQUENCE: RotationSequence = Object.freeze([
-  0, 1, 2, 3,
-]) as unknown as RotationSequence;
+const DEFAULT_ROTATION_SEQUENCE: readonly number[] = [0, 1, 2, 3];
 const DEFAULT_ROTATION_DIRECTION: 'cw' | 'ccw' = 'cw';
 const DEFAULT_READING_ORDER: KeyParams['readingOrder'] = 'LR-TB';
 const DEFAULT_SIZE: KeyParams['size'] = 'medium';
@@ -21,6 +19,7 @@ export interface KeyParseResult {
    * name, which takes indices (0-3).
    */
   rotationSequence: number[];
+  /** Always `cw` for a V2 key, whose angles already carry the direction. */
   rotationDirection: 'cw' | 'ccw';
   readingOrder: KeyParams['readingOrder'];
   size: KeyParams['size'];
@@ -32,10 +31,9 @@ export class KeyService {
 
   generate(dto: KeyGenerateRequestDto): { key: string } {
     const keyParams: KeyParams = {
-      version: 1,
+      version: 2,
       pivotBlockSize: dto.pivotBlockSize ?? DEFAULT_PIVOT_BLOCK_SIZE,
-      rotationSequence:
-        (dto.rotationSequence as RotationSequence) ?? DEFAULT_ROTATION_SEQUENCE,
+      rotationSequence: dto.rotationSequence ?? [...DEFAULT_ROTATION_SEQUENCE],
       rotationDirection: dto.rotationDirection ?? DEFAULT_ROTATION_DIRECTION,
       readingOrder:
         (dto.readingOrder as KeyParams['readingOrder']) ??

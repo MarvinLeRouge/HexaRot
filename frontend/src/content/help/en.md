@@ -81,8 +81,9 @@ stronger result.
 
 The key packs every setting (pivot block size, rotation sequence, rotation
 direction, reading order and cryptogram size) into a short code such as
-`HR1·0005`: the letters HR, a version number, a separator, then a few
-characters.
+`HR2·0ZL3ID`: the letters HR, a version number, a separator, then 6 to 16
+characters (more for a longer rotation sequence). Keys starting with `HR1`,
+made before the rotation sequence could vary in length, still work.
 
 The key does not depend on the message, so you can reuse it for as many
 messages as you like. Use "Existing key" on the Encode page to encode with a

@@ -1,4 +1,11 @@
-import { IsString, IsNotEmpty, IsIn, IsOptional } from 'class-validator';
+import {
+  IsString,
+  IsNotEmpty,
+  IsIn,
+  IsOptional,
+  MaxLength,
+} from 'class-validator';
+import { MAX_KEY_INPUT_LENGTH } from '../../key/key-codec';
 
 /** Request body for POST /decode. */
 export class DecodeRequestDto {
@@ -11,6 +18,7 @@ export class DecodeRequestDto {
 
   @IsString()
   @IsNotEmpty()
+  @MaxLength(MAX_KEY_INPUT_LENGTH)
   key!: string;
 
   /**

@@ -6,8 +6,9 @@ describe('isValidKeyFormat', () => {
   it.each([
     ['HR1·a1b2'],
     ['HR1·0000'],
-    ['HR9·zzzz'],
     ['HR1·A1B2'],
+    ['HR2·0ZL3ID'],
+    ['HR2·0123456789ABCDEF'],
   ])('accepts a well-formed key: %s', (key) => {
     expect(isValidKeyFormat(key)).toBe(true)
   })
@@ -18,6 +19,9 @@ describe('isValidKeyFormat', () => {
     ['wrong prefix', 'XX1·a1b2'],
     ['payload too short', 'HR1·a1b'],
     ['payload too long', 'HR1·a1b23'],
+    ['an unknown version', 'HR9·zzzz'],
+    ['a V2 payload too short', 'HR2·a1b2'],
+    ['a V2 payload too long', 'HR2·0123456789ABCDEFG'],
     ['empty string', ''],
   ])('rejects %s', (_label, key) => {
     expect(isValidKeyFormat(key)).toBe(false)
@@ -45,6 +49,7 @@ describe('normalizeKeyInput', () => {
     ['HR1·a1b2', 'HR1·a1b2'],
     ['HR1·A1B2 · Medium', 'HR1·A1B2'],
     ['HR1·A1B2 · Petite', 'HR1·A1B2'],
+    ['hr2.0zl3id', 'HR2·0zl3id'],
   ])('rewrites %s to the canonical form %s', (input, expected) => {
     expect(normalizeKeyInput(input)).toBe(expected)
   })

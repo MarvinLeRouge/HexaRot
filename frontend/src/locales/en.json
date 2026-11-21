@@ -53,8 +53,8 @@
       },
       "key": {
         "label": "HexaRot key",
-        "placeholder": "HR1·xxxx",
-        "formatError": "A HexaRot key looks like HR1·a3f9 - \"HR\", a version number, a separator, then 4 characters."
+        "placeholder": "HR2·xxxxxx",
+        "formatError": "A HexaRot key looks like HR2·0zl3id - \"HR\", a version number, a separator, then 6 to 16 characters (4 for older HR1 keys)."
       },
       "submit": {
         "label": "Encode",
@@ -96,8 +96,8 @@
       },
       "key": {
         "label": "HexaRot key",
-        "placeholder": "HR1·xxxx",
-        "formatError": "A HexaRot key looks like HR1·a3f9 - \"HR\", a version number, a separator, then 4 characters."
+        "placeholder": "HR2·xxxxxx",
+        "formatError": "A HexaRot key looks like HR2·0zl3id - \"HR\", a version number, a separator, then 6 to 16 characters (4 for older HR1 keys)."
       },
       "submit": {
         "label": "Decode",
@@ -160,8 +160,8 @@
       "form": {
         "key": {
           "label": "HexaRot key",
-          "placeholder": "HR1·xxxx",
-          "formatError": "A HexaRot key looks like HR1·a3f9 - \"HR\", a version number, a separator, then 4 characters."
+          "placeholder": "HR2·xxxxxx",
+          "formatError": "A HexaRot key looks like HR2·0zl3id - \"HR\", a version number, a separator, then 6 to 16 characters (4 for older HR1 keys)."
         },
         "submit": {
           "label": "Parse",

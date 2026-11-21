@@ -3,7 +3,7 @@ import { preprocess } from '../cipher/preprocess';
 import { buildGrid } from '../cipher/build-grid';
 import { assertMessageLength } from './assert-message-length';
 import { RotationEngine } from '../rotation/rotation-engine';
-import { KeyCodec, KeyParams, RotationSequence } from '../key/key-codec';
+import { KeyCodec, KeyParams } from '../key/key-codec';
 import { HexahueAlphabet } from '../alphabet/hexahue-alphabet.service';
 import { computeCorrelationScore } from '../correlation/correlation-score';
 import { CorrelationScoreRequestDto } from './dto/correlation-score-request.dto';
@@ -52,9 +52,9 @@ export class CorrelationScoreService {
       }
     } else {
       keyParams = {
-        version: 1,
+        version: 2,
         pivotBlockSize: dto.pivotBlockSize as number,
-        rotationSequence: dto.rotationSequence as RotationSequence,
+        rotationSequence: dto.rotationSequence as number[],
         rotationDirection: dto.rotationDirection as 'cw' | 'ccw',
         readingOrder: dto.readingOrder as KeyParams['readingOrder'],
         size: 'medium',

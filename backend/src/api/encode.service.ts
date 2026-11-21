@@ -5,7 +5,7 @@ import { validateParams } from '../validation/validate-params';
 import { RotationEngine } from '../rotation/rotation-engine';
 import { PngRenderer } from '../renderer/png-renderer';
 import { SvgRenderer } from '../renderer/svg-renderer';
-import { KeyCodec, KeyParams, RotationSequence } from '../key/key-codec';
+import { KeyCodec, KeyParams } from '../key/key-codec';
 import { HexahueAlphabet } from '../alphabet/hexahue-alphabet.service';
 import { EncodeRequestDto } from './dto/encode-request.dto';
 import { assertMessageLength } from './assert-message-length';
@@ -44,9 +44,9 @@ export class EncodeService {
       key = dto.key;
     } else {
       keyParams = {
-        version: 1,
+        version: 2,
         pivotBlockSize: dto.pivotBlockSize as number,
-        rotationSequence: dto.rotationSequence as RotationSequence,
+        rotationSequence: dto.rotationSequence as number[],
         rotationDirection: dto.rotationDirection as 'cw' | 'ccw',
         readingOrder: dto.readingOrder as KeyParams['readingOrder'],
         size: dto.size ?? 'medium',

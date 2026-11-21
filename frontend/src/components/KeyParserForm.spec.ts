@@ -116,14 +116,14 @@ describe('KeyParserForm', () => {
   })
 
   it('displays a clear error message when the API returns 400', async () => {
-    vi.mocked(postJson).mockRejectedValue(new ApiError('unsupported key version', 'http', 400))
+    vi.mocked(postJson).mockRejectedValue(new ApiError('rotation sequence index out of range', 'http', 400))
     const wrapper = mountForm()
 
-    await wrapper.find('input[type="text"]').setValue('HR9·zzzz')
+    await wrapper.find('input[type="text"]').setValue('HR1·zzzz')
     await wrapper.find('form').trigger('submit')
     await flushPromises()
 
-    expect(wrapper.text()).toContain('unsupported key version')
+    expect(wrapper.text()).toContain('rotation sequence index out of range')
   })
 
   describe('stale parsed parameters', () => {
@@ -166,13 +166,13 @@ describe('KeyParserForm', () => {
       await flushPromises()
       expect(wrapper.text()).toContain(String(MOCK_KEY_PARSE_RESPONSE.pivotBlockSize))
 
-      vi.mocked(postJson).mockRejectedValue(new ApiError('unsupported key version', 'http', 400))
-      await wrapper.find('input[type="text"]').setValue('HR9·zzzz')
+      vi.mocked(postJson).mockRejectedValue(new ApiError('rotation sequence index out of range', 'http', 400))
+      await wrapper.find('input[type="text"]').setValue('HR1·zzzz')
       await wrapper.find('form').trigger('submit')
       await flushPromises()
 
       expect(wrapper.text()).toContain(String(MOCK_KEY_PARSE_RESPONSE.pivotBlockSize))
-      expect(wrapper.text()).toContain('unsupported key version')
+      expect(wrapper.text()).toContain('rotation sequence index out of range')
     })
   })
 })

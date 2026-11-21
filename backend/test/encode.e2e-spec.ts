@@ -76,7 +76,7 @@ describe('POST /api/encode (e2e)', () => {
 
       expect(res.status).toBe(200);
       const body = res.body as EncodeResult;
-      expect(body.key).toMatch(/^HR1·[0-9A-Z]{4}$/);
+      expect(body.key).toMatch(/^HR2·[0-9A-Z]{6}$/);
     });
 
     it('returns 200 with an empty warnings array when params are strong', async () => {

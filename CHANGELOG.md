@@ -112,6 +112,7 @@ automatically from Conventional Commits history.
 - Run CI on the changelog bot PR so its auto-merge can complete
 - Pin actions to current majors by sha (CI-007)
 - Split deploy workflow into build & push and deploy jobs (CI-008)
+- Scan staged changes for secrets with gitleaks (CI-009)
 
 ### Documentation
 

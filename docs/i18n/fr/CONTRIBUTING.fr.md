@@ -12,6 +12,7 @@ Il s'agit avant tout d'un projet personnel. Les contributions externes (rapports
 - **Node.js 26 LTS** : pour développer le backend ou le frontend sans Docker
 - **Une instance Traefik locale** : nécessaire pour accéder à l'application via son domaine local, voir [Reverse proxy local](#reverse-proxy-local) ci-dessous
 - **Git**
+- [gitleaks](https://github.com/gitleaks/gitleaks) : le hook pre-commit analyse les modifications indexées à la recherche de secrets et refuse de committer s'il est absent
 
 ## Installation locale
 

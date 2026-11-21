@@ -50,6 +50,7 @@
 - [x] FIX-009 - Corriger l'alerte ReDoS de effect (haute, figée par @prisma/config de Prisma 7)
 - [x] CI-007 - Épingler chaque GitHub Action sur sa majeure actuelle par SHA de commit, workflow changelog sur Node 26, aligner la config Dependabot (groupe actions unique)
 - [x] CI-008 - Renommer le workflow de déploiement en build-push-deploy.yml, deux jobs explicites (Build & push, Deploy), sans changement fonctionnel
+- [x] CI-009 - Analyser les modifications indexées avec gitleaks dans le hook pre-commit
 
 ---
 

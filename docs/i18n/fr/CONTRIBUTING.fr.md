@@ -140,3 +140,31 @@ Aller dans **repo GitHub → Settings → Secrets and variables → Actions → 
 ### Sécurité
 
 Le token est lié au compte propriétaire du repo. Ne jamais le committer dans le code. Le renouveler immédiatement s'il est compromis.
+
+## Secrets du pipeline Build, Push & Deploy
+
+`.github/workflows/build-push-deploy.yml` construit les images de production du backend et du frontend, les pousse sur GHCR et déploie sur le VPS en SSH. Il nécessite les secrets de repository suivants, en plus du `GITHUB_TOKEN` fourni par GitHub pour le push GHCR (aucun token supplémentaire nécessaire).
+
+Aller dans **repo GitHub → Settings → Secrets and variables → Actions → Repository secrets** et créer chacun des secrets suivants :
+
+| Secret | Rôle |
+|---|---|
+| `DEPLOY_SSH_HOST` | Nom d'hôte ou IP du VPS |
+| `DEPLOY_SSH_USER` | Utilisateur SSH utilisé pour se connecter au VPS |
+| `DEPLOY_SSH_PRIVATE_KEY` | Clé privée autorisée sur le VPS pour cet utilisateur |
+| `VITE_API_BASE_URL` | URL de base de l'API backend utilisée par le frontend, intégrée au build |
+
+### Sécurité
+
+Ces secrets donnent un accès SSH au serveur de production et contrôlent le routage public. Ne jamais les committer dans le code. Renouveler immédiatement la clé SSH si elle est compromise.
+
+### Fichiers d'environnement du VPS
+
+Indépendamment des secrets de repository ci-dessus, le seed lancé par l'étape de déploiement (`npx prisma db seed`, voir `backend/prisma/seed.ts`) lit deux variables dans les fichiers d'environnement du service backend sur le VPS. Les ajouter dans `shared/env/secrets.env` (jamais dans `app.env`, ce sont des identifiants) :
+
+| Variable | Rôle |
+|---|---|
+| `SEED_ADMIN_EMAIL` | Email de l'unique compte administrateur |
+| `SEED_ADMIN_PASSWORD` | Son mot de passe, hashé au moment du seed - ne jamais stocker la valeur en clair ailleurs |
+
+Le seed est idempotent (`upsert` avec `update: {}` en cas de conflit) : il crée le compte administrateur une seule fois et n'y touche plus lors des déploiements suivants, même si ces valeurs changent ensuite.

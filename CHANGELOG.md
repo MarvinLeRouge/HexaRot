@@ -209,6 +209,7 @@ automatically from Conventional Commits history.
 - Replace em dashes in the test specs and operations guide
 - Plan random and variable-length rotation sequences
 - Fix FEAT-032 depends-on format for the sync parser
+- Add the deploy secrets section to the french contributing (DOCS-003)
 
 ### Features
 
@@ -431,6 +432,7 @@ automatically from Conventional Commits history.
 - Update CHANGELOG.md (#340)
 - Auto-promote ready items (#342)
 - Update CHANGELOG.md (#343)
+- Update CHANGELOG.md (#352)
 
 ### Other
 

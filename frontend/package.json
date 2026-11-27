@@ -16,10 +16,10 @@
     "test:cov": "vitest run --passWithNoTests --coverage"
   },
   "dependencies": {
-    "@sentry/vue": "^11.14.0",
+    "@sentry/vue": "^11.15.0",
     "pinia": "^4.1.0",
     "vue": "^3.5.45",
-    "vue-i18n": "^11.4.22",
+    "vue-i18n": "^11.4.23",
     "vue-router": "^5.5.1"
   },
   "devDependencies": {

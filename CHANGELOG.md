@@ -463,6 +463,8 @@ automatically from Conventional Commits history.
 - Bump the npm-minor-patch group across 1 directory with 8 updates
 - Bump lint-staged
 - Bump the npm-minor-patch group across 1 directory with 11 updates
+- Bump the npm-minor-patch group in /backend with 2 updates
+- Bump the npm-minor-patch group in /frontend with 2 updates
 
 ### Refactoring
 

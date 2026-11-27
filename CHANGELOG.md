@@ -114,6 +114,7 @@ automatically from Conventional Commits history.
 - Split deploy workflow into build & push and deploy jobs (CI-008)
 - Scan staged changes for secrets with gitleaks (CI-009)
 - Run backlog syncs one at a time and tolerate duplicate issues
+- Run one deploy at a time (CI-011)
 
 ### Documentation
 

@@ -55,6 +55,7 @@
 - [x] CI-009 - Analyser les modifications indexées avec gitleaks dans le hook pre-commit
 - [x] CI-010 - Exécuter les synchronisations du backlog une par une (plus d'issues en double), et garder l'issue la plus ancienne quand les workflows Track en trouvent plusieurs
 - [x] DOCS-003 - Ajouter au CONTRIBUTING français la section manquante sur les secrets du pipeline Build, Push & Deploy
+- [x] CI-011 - Un seul déploiement à la fois (groupe concurrency), pour que deux merges rapprochés ne suppriment plus les conteneurs l'un de l'autre
 
 ---
 
